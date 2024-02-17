@@ -1,30 +1,40 @@
 import './globals.css';
+import "primereact/resources/themes/lara-light-pink/theme.css";
+import 'primereact/resources/primereact.min.css'
+import 'primeicons/primeicons.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { Analytics } from '@vercel/analytics/react';
 import Nav from './nav';
-import Toast from './toast';
 import { Suspense } from 'react';
+import { ClerkProvider } from '@clerk/nextjs';
+import { dark, neobrutalism, shadesOfPurple } from '@clerk/themes';
 
 export const metadata = {
-  title: 'Next.js App Router + NextAuth + Tailwind CSS',
+  title: 'Paint Nail',
   description:
-    'A user admin dashboard configured with Next.js, Postgres, NextAuth, Tailwind CSS, TypeScript, ESLint, and Prettier.'
+    'A dashboard for PNBS'
 };
+
 
 export default function RootLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
+
+
   return (
     <html lang="en" className="h-full bg-gray-50">
       <body className="h-full">
+      <ClerkProvider>
         <Suspense>
-          <Nav />
-        </Suspense>
-        {children}
-        <Analytics />
-        <Toast />
+            <Nav />
+          </Suspense>
+          {children}
+          <Analytics />
+      </ClerkProvider>
+
       </body>
     </html>
   );

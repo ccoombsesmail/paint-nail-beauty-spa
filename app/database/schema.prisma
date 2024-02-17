@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DEV_POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("DEV_POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+  id                  String         @id @default(uuid())
+  firstName           String         @map("first_name") @db.VarChar(100)
+  lastName            String?        @map("last_name") @db.VarChar(100)
+  email               String         @map("email") @db.VarChar(100)
+  phoneNumber         String         @map("phone_number") @db.VarChar(50)
+  dialCode            String         @map("dial_code") @db.VarChar(10)
+  cashbackBalance     Decimal        @default(0) @map("cashback_balance") @db.Decimal()
+  membershipLevel     Membership     @default(NonMember)
+  membershipStartDate DateTime?      @map("membership_start_date")
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+  Transactions        Transactions[]
+
+  @@map("users")
+}
+
+model Transactions {
+  id              String   @id @default(uuid())
+  serviceType     String   @db.VarChar(100)
+  serviceDuration Int // Assuming duration is in minutes
+  amount          Decimal  @db.Decimal(10, 2)
+  paymentMethod   String   @db.VarChar(50)
+  technician      String   @db.VarChar(100)
+  userId          String
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  // Relation to User model
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@map("services")
+}
+
+model CountryCode {
+  id       Int    @id @default(autoincrement())
+  name     String @map("name") @db.VarChar(100)
+  dialCode String @map("dial_code") @db.VarChar(10)
+  emoji    String @map("emoji") @db.VarChar(10)
+  code     String @map("cashback_balance") @db.VarChar(10)
+
+  @@map("country_codes")
+}
+
+enum Membership {
+  Bronze
+  Silver
+  Gold
+  NonMember
+}
+
+enum ServiceType {
+  scm
+  scp
+  md
+  pd
+  ee
+}
