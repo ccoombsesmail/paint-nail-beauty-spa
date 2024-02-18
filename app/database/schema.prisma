@@ -11,37 +11,63 @@ datasource db {
   directUrl = env("DEV_POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model User {
-  id                  String         @id @default(uuid())
-  firstName           String         @map("first_name") @db.VarChar(100)
-  lastName            String?        @map("last_name") @db.VarChar(100)
-  email               String         @map("email") @db.VarChar(100)
-  phoneNumber         String         @map("phone_number") @db.VarChar(50)
-  dialCode            String         @map("dial_code") @db.VarChar(10)
-  cashbackBalance     Decimal        @default(0) @map("cashback_balance") @db.Decimal()
-  membershipLevel     Membership     @default(NonMember)
-  membershipStartDate DateTime?      @map("membership_start_date")
-  createdAt           DateTime       @default(now()) @map("created_at")
-  updatedAt           DateTime       @updatedAt @map("updated_at")
-  Transactions        Transactions[]
+model Employee {
+  id              String    @id @default(uuid())
+  userId          String    @unique @map("user_id") @db.VarChar(100)
+  email           String    @unique
+  firstName       String?   @map("first_name") @db.VarChar(100)
+  lastName        String?   @map("last_name") @db.VarChar(100)
+  phoneNumber     String?   @unique @map("phone_number") @db.VarChar(100)
+  profileImage    String?   @map("profile_image") @db.VarChar(1000)
+  isEmailVerified Boolean   @default(false) @map("is_email_verified")
+  franchiseCode   String    @map("franchise_code")
+  lastSignIn      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  @@map("users")
+  transactions Transactions[]
+
+  @@map("employees")
+}
+
+model Customer {
+  id                     String     @id @default(uuid())
+  firstName              String     @map("first_name") @db.VarChar(100)
+  lastName               String?    @map("last_name") @db.VarChar(100)
+  email                  String     @unique @map("email") @db.VarChar(100)
+  phoneNumber            String     @unique @map("phone_number") @db.VarChar(50)
+  dialCode               String     @map("dial_code") @db.VarChar(10)
+  cashbackBalance        Decimal    @default(0) @map("cashback_balance") @db.Decimal()
+  membershipLevel        Membership @default(NonMember) @map("membership_level")
+  membershipStartDate    DateTime?  @map("membership_start_date")
+  createdAtFranchiseCode String     @map("created_at_franchise_code")
+  createdAt              DateTime   @default(now()) @map("created_at")
+  updatedAt              DateTime   @updatedAt @map("updated_at")
+
+  transactions Transactions[]
+
+  @@map("customers")
 }
 
 model Transactions {
-  id              String   @id @default(uuid())
-  serviceType     String   @db.VarChar(100)
-  serviceDuration Int // Assuming duration is in minutes
-  amount          Decimal  @db.Decimal(10, 2)
-  paymentMethod   String   @db.VarChar(50)
-  technician      String   @db.VarChar(100)
-  userId          String
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id                     String        @id @default(uuid())
+  userEnteredDate        DateTime      @map("user_entered_date")
+  serviceType            ServiceType   @map("service_type")
+  serviceDuration        Int           @map("service_duration") // in minutes
+  totalServicePrice      Decimal       @map("total_service_price") @db.Decimal(10, 2)
+  actualPaymentCollected Decimal       @map("actual_payment_collected") @db.Decimal(10, 2)
+  tip                    Decimal       @db.Decimal(10, 2)
+  paymentMethod          PaymentMethod @map("payment_method")
+  technicianEmployeeId   String        @map("technician_employee_id") @db.VarChar(100)
+  customerId             String        @map("customer_id") @db.VarChar(100)
+  franchiseCode          String        @map("franchise_code")
+  createdAt              DateTime      @default(now()) @map("created_at")
+  updatedAt              DateTime      @updatedAt @map("updated_at")
   // Relation to User model
-  user            User     @relation(fields: [userId], references: [id])
+  employee               Employee      @relation(fields: [technicianEmployeeId], references: [id])
+  customer               Customer      @relation(fields: [customerId], references: [id])
 
-  @@map("services")
+  @@map("transactions")
 }
 
 model CountryCode {
@@ -62,9 +88,17 @@ enum Membership {
 }
 
 enum ServiceType {
-  scm
-  scp
-  md
-  pd
-  ee
+  SCM @map("Single Color Manicure")
+  SCP @map("Single Color Pedicure")
+  MD  @map("Manicure Design")
+  PD  @map("Pedicure Design")
+  EE  @map("Eyelash Extension")
+}
+
+enum PaymentMethod {
+  Venmo
+  Zelle
+  PayPal
+  Cash
+  CreditCard
 }

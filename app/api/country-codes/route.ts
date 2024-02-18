@@ -2,10 +2,10 @@
 
 
 import { NextRequest, NextResponse } from 'next/server';
-import { CountryCode, PrismaClient } from '@prisma/client';
+import { CountryCode } from '@prisma/client';
+import prisma from '../../database/prismaClient';
 
 
-const prisma = new PrismaClient()
 
 export async function GET(req: NextRequest){
 

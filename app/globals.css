@@ -25,6 +25,12 @@ input:focus-visible {
 
 }
 
+.no-input-border input {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
 .cl-avatarBox {
     width: 3rem;
     height: 3rem;

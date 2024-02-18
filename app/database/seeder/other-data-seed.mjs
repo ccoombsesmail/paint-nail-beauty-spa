@@ -3,14 +3,14 @@
 
 
 
-export async function seedUsers(data , prismaClient) {
+export async function seedCustomers(data , prismaClient) {
 
-  const userExists = await prismaClient.user.findFirst();
-  if (!userExists) {
-    await prismaClient.user.createMany({ data });
-    console.log('Seeded Users data successfully!');
+  const customerExists = await prismaClient.customer.findFirst();
+  if (!customerExists) {
+    await prismaClient.customer.createMany({ data });
+    console.log('Seeded Customers data successfully!');
   } else {
-    console.log('Users have already been seeded!');
+    console.log('Customers have already been seeded!');
   }
 }
 

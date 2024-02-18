@@ -1,22 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import prisma from '../../database/prismaClient';
+import { currentUser } from '@clerk/nextjs/server';
 
-const prisma = new PrismaClient()
 
 export async function POST(req: NextRequest) {
 
   try {
-    // Accumulate the request body content from the ReadableStream
+    const user = await currentUser()
+    if (!user){
+      return new NextResponse(JSON.stringify({ error: "User Not Authorized"}), {
+        headers: { "content-type": "application/json" },
+        status: 401,
+      })
+    }
+
+    const { franchise_code } = user.publicMetadata
+    console.log(user)
+
     const body = await req.json();
 
-    console.log(body)
-    // Create a new user record in the database using the parsed data
-    const user = await prisma.transactions.create({
-      data: body,
+    const transaction = await prisma.transactions.create({
+      data: {
+        ...body,
+        franchiseCode: franchise_code
+      },
     });
 
-    // Send the created user as a response
-    return new NextResponse(JSON.stringify(user), {
+    return new NextResponse(JSON.stringify(transaction), {
       headers: { "content-type": "application/json" },
       status: 200,
     })
@@ -29,3 +40,7 @@ export async function POST(req: NextRequest) {
   }
 
 }
+
+
+
+

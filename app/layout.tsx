@@ -8,7 +8,6 @@ import { Analytics } from '@vercel/analytics/react';
 import Nav from './nav';
 import { Suspense } from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
-import { dark, neobrutalism, shadesOfPurple } from '@clerk/themes';
 
 export const metadata = {
   title: 'Paint Nail',
@@ -28,11 +27,14 @@ export default function RootLayout({
     <html lang="en" className="h-full bg-gray-50">
       <body className="h-full">
       <ClerkProvider>
-        <Suspense>
-            <Nav />
+          <Suspense>
+              <Nav />
           </Suspense>
-          {children}
+            {children}
           <Analytics />
+
+
+
       </ClerkProvider>
 
       </body>

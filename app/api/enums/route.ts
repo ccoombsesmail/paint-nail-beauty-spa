@@ -2,24 +2,31 @@
 
 
 import { NextRequest, NextResponse } from 'next/server';
-import { MembershipLevel, ServiceType } from '../../types/enums';
+import { membershipTypeEnumMap, paymentMethodTypeEnumMap, serviceTypeEnumMap } from '../../types/enums';
 
-
+import { $Enums } from '@prisma/client'
 
 export async function GET(req: NextRequest){
-  const membershipLevelsArray = Object.keys(MembershipLevel).map(key => ({
-    name: MembershipLevel[key as keyof typeof MembershipLevel],
-    code: MembershipLevel[key as keyof typeof MembershipLevel],
+  const membershipTypes = Object.keys($Enums.Membership).map(key => ({
+    name: membershipTypeEnumMap.get(key),
+    code: $Enums.Membership[key as keyof typeof $Enums.Membership],
   }));
 
-  const serviceTypeArray = Object.keys(ServiceType).map(key => ({
-    name: ServiceType[key as keyof typeof ServiceType],
-    code: ServiceType[key as keyof typeof ServiceType],
+
+  const serviceTypes = Object.keys($Enums.ServiceType).map(key => ({
+    name: serviceTypeEnumMap.get(key),
+    code: $Enums.ServiceType[key as keyof typeof $Enums.ServiceType],
+  }));
+
+  const paymentMethodTypes = Object.keys($Enums.PaymentMethod).map(key => ({
+    name: paymentMethodTypeEnumMap.get(key),
+    code: $Enums.PaymentMethod[key as keyof typeof $Enums.PaymentMethod],
   }));
 
   return NextResponse.json({ enums: {
-      serviceTypes: serviceTypeArray,
-      membershipLevel: membershipLevelsArray
+      serviceTypes,
+      membershipTypes,
+      paymentMethodTypes
     }
   })
 }

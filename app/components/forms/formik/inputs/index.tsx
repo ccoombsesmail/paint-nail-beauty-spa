@@ -19,6 +19,22 @@ export const FloatingLabelInput = (props: any) => {
   )
 }
 
+export const ServiceDurationInput = (props: any) => {
+  const [field, meta, helpers] = useField(props);
+
+  return (
+    <div>
+
+      <div className="p-inputgroup flex-1">
+        <InputText id={props.name} {...props} />
+        <span className="p-inputgroup-addon">Hrs</span>
+      </div>
+
+      {meta.error && meta.touched ? (<span className="text-red-500 ml-2 text-sm">{meta.error}</span>) : null}
+    </div>
+
+  )
+}
 
 export const PhoneInput = (props: any) => {
   const [field, meta, helpers] = useField(props);

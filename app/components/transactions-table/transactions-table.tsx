@@ -5,8 +5,10 @@ import Search from './search';
 import Table from './table';
 import { useState } from 'react';
 import TransactionForm from '../forms/transaction-form';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 
+const queryClient = new QueryClient();
 
 export default function TransactionsTable() {
 
@@ -28,12 +30,16 @@ export default function TransactionsTable() {
 
   return (
     <div>
-      <TransactionForm />
-      <Divider />
-      <Search setSearch={setSearch} />
-      <Card className="mt-6">
-        <Table transactions={transactions} />
-      </Card>
+      <QueryClientProvider client={queryClient} >
+
+        <TransactionForm />
+        <Divider />
+        <Search setSearch={setSearch} />
+        <Card className="mt-6">
+          <Table transactions={transactions} />
+        </Card>
+      </QueryClientProvider>
+
     </div>
 
   );
