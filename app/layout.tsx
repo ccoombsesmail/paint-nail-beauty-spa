@@ -25,6 +25,19 @@ export default function RootLayout({
 
   return (
     <html lang="en" className="h-full bg-gray-50">
+    <head>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+              const style = document.createElement('style')
+              style.innerHTML = '@layer tailwind-base, primereact, tailwind-utilities;'
+              style.setAttribute('type', 'text/css')
+              document.querySelector('head').prepend(style)
+            `,
+        }}
+      />
+      <title>Paint Nail & Beauty Spa</title>
+    </head>
       <body className="h-full">
       <ClerkProvider>
           <Suspense>

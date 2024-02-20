@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
     console.error("No Franchise Code Associated With This User")
     return NextResponse.json({ transactions: [] });
   }
-  // where.franchiseCode = franchise_code;
+  where.franchiseCode = franchise_code;
 
 
   if (search) {
