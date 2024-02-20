@@ -143,10 +143,9 @@ export const SearchableUserSelect = (props: any) => {
     setSearch([e.query])
     await refetch(e.query)
   }, [refetch])
-
   return (
-    <div>
-      <span className={`p-float-label ${props.className}`}>
+    <div className={` ${props.width ? props.width : 'w-[14rem]'}`}>
+      <span className={`p-float-label ${props.className}  ${props.width ? props.width : 'w-[14rem]'}`}>
         <AutoComplete
           {...props}
           multiple
@@ -162,7 +161,13 @@ export const SearchableUserSelect = (props: any) => {
           completeMethod={onFilter}
           forceSelection
           onChange={onChange}
-          className="max-w-[18rem] max-h-[50px] no-input-border"
+          className={`max-h-[50px] no-input-border  ${props.width ? props.width : 'w-[14rem]'}`}
+          pt={{
+            input: {
+              className: `${props.width ? props.width : 'w-[14rem]'}`
+            }
+
+          }}
         />
 
            <label htmlFor={props.name}>{props.placeholder}</label>
@@ -199,8 +204,8 @@ export const SearchableEmployeeSelect = (props: any) => {
   }, [refetch])
 
   return (
-    <div>
-      <span className={`p-float-label ${props.className}`}>
+    <div className={` ${props.width ? props.width : 'w-[14rem]'}`}>
+      <span className={`p-float-label ${props.className} ${props.width ? props.width : 'w-[14rem]'}`}>
         <AutoComplete
           {...props}
           multiple
@@ -216,7 +221,13 @@ export const SearchableEmployeeSelect = (props: any) => {
           completeMethod={onFilter}
           forceSelection
           onChange={onChange}
-          className="max-w-[18rem] max-h-[50px] no-input-border"
+          className={`max-h-[50px] no-input-border  ${props.width ? props.width : 'w-[14rem]'}`}
+          pt={{
+            input: {
+              className: `${props.width ? props.width : 'w-[14rem]'}`
+            }
+
+          }}
         />
 
            <label htmlFor={props.name}>{props.placeholder}</label>

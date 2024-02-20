@@ -46,8 +46,14 @@ const editTemplate = (customer: { membershipLevel: string, id: string }, router:
   }
   return (
     <button type='button' onClick={onClick} className="flex items-center justify-between hover:opacity-50 cursor-pointer">
-      <i className="pi pi-customer-edit text-xl"></i>
+      <i className="pi pi-user-edit text-xl"></i>
     </button>
+  )
+}
+
+const cashbackBalanceTemplate = (rowData: any) => {
+  return (
+    <span>${rowData.cashbackBalance}</span>
   )
 }
 export default function CustomersTable({ customers }: { customers: Customer[] }) {
@@ -61,7 +67,7 @@ export default function CustomersTable({ customers }: { customers: Customer[] })
         <Column field="lastName" header="Last" style={{ width: '16%' }}></Column>
         <Column field="email" header="Email"  style={{ width: '16%' }}></Column>
         <Column field="phoneNumber" header="Phone Number"  style={{width: '16%' }}></Column>
-        <Column field="cashbackBalance" header="Cashback Balance"  style={{ width: '16%'}}></Column>
+        <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance"  style={{ width: '16%'}}></Column>
         <Column field="membershipLevel" header="Membership"  style={{ width: '16%' }} body={membershipColTemplate}></Column>
       </DataTable>
     </div>

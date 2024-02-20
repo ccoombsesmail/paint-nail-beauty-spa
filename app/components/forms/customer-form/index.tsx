@@ -77,7 +77,7 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
               loading: 'Creating Customer...',
               success: (data: any) => {
                 setSubmitting(false);
-                return `${data.name} toast has been added`;
+                return `Customer has been created`;
               },
               error: (data: AxiosError<{ error: string }>) => {
                 setSubmitting(false);

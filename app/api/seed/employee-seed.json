@@ -1,0 +1,19 @@
+{
+  "employees": [{"emailAddress":["tdurran0@howstuffworks.com"],"username":"tdurran0","password":12345678,"firstName":"Theo","lastName":"Durran","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"826-228-7586"}},
+    {"emailAddress":["ibalogh1@webeden.co.uk"],"username":"ibalogh1","password":12345678,"firstName":"Iris","lastName":"Balogh","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"la","phone_number":"889-494-0049"}},
+    {"emailAddress":["cproschke2@cargocollective.com"],"username":"cproschke2","password":12345678,"firstName":"Carolee","lastName":"Proschke","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"wsj","phone_number":"436-776-4273"}},
+    {"emailAddress":["krenzini3@ted.com"],"username":"krenzini3","password":12345678,"firstName":"Karylin","lastName":"Renzini","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"cupertino","phone_number":"386-260-7706"}},
+    {"emailAddress":["mitzkov4@elegantthemes.com"],"username":"mitzkov4","password":12345678,"firstName":"Maribel","lastName":"Itzkov","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"wsj","phone_number":"719-329-0422"}},
+    {"emailAddress":["iewings5@google.co.uk"],"username":"iewings5","password":12345678,"firstName":"Iormina","lastName":"Ewings","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"842-959-8635"}},
+    {"emailAddress":["sbolgar6@wunderground.com"],"username":"sbolgar6","password":12345678,"firstName":"Sinclair","lastName":"Bolgar","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"cupertino","phone_number":"816-305-4252"}},
+    {"emailAddress":["gstapforth7@nytimes.com"],"username":"gstapforth7","password":12345678,"firstName":"Ginevra","lastName":"Stapforth","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"la","phone_number":"142-359-9025"}},
+    {"emailAddress":["jdemeza8@state.gov"],"username":"jdemeza8","password":12345678,"firstName":"Janaye","lastName":"Demeza","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"wsj","phone_number":"995-729-9147"}},
+    {"emailAddress":["bsivill9@instagram.com"],"username":"bsivill9","password":12345678,"firstName":"Blithe","lastName":"Sivill","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"926-837-5163"}},
+    {"emailAddress":["hhawkyensa@hhs.gov"],"username":"hhawkyensa","password":12345678,"firstName":"Haroun","lastName":"Hawkyens","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"wsj","phone_number":"546-489-7428"}},
+    {"emailAddress":["feliazb@1688.com"],"username":"feliazb","password":12345678,"firstName":"Fidelio","lastName":"Eliaz","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"584-281-7736"}},
+    {"emailAddress":["ldousec@msu.edu"],"username":"ldousec","password":12345678,"firstName":"Lorelle","lastName":"Douse","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"cupertino","phone_number":"136-486-5398"}},
+    {"emailAddress":["rfannd@ox.ac.uk"],"username":"rfannd","password":12345678,"firstName":"Rafferty","lastName":"Fann","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"935-707-8834"}},
+    {"emailAddress":["dgueinne@dot.gov"],"username":"dgueinne","password":12345678,"firstName":"Doti","lastName":"Gueinn","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"826-515-7423"}},
+    {"emailAddress":["nbaldingf@sun.com"],"username":"nbaldingf","password":12345678,"firstName":"Ninnetta","lastName":"Balding","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"la","phone_number":"125-876-4491"}}
+    ]
+}

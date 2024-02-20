@@ -37,3 +37,21 @@ input:focus-visible {
 }
 
 
+/* This styles the scrollbar track */
+::-webkit-scrollbar {
+    width: 12px; /* Adjust scrollbar width */
+    height: 12px; /* Adjust scrollbar height for horizontal scrollbars */
+}
+
+/* This styles the scrollbar thumb (the part that you drag) */
+::-webkit-scrollbar-thumb {
+    background: #FF47A0; /* Scrollbar color */
+    border-radius: 6px; /* Scrollbar corner radius */
+    padding: 1px;
+}
+
+/* (Optional) This styles the scrollbar track */
+::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Scrollbar track color */
+    border-radius: 6px; /* Scrollbar track corner radius */
+}

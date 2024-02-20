@@ -1,15 +1,12 @@
 'use client';
-import dynamic from 'next/dynamic';
 
-// import TransactionsTable from '../components/transactions-table/transactions-table';
-import { AnimatePresence, motion } from 'framer-motion';
-import { router } from 'next/client';
-import LottieTransition from '../components/screen-transitions/lottie-sloth-transition';
 import TransactionsTable from '../components/transactions-table/transactions-table';
 import { useEffect, useState } from 'react';
 import { LoadingSpinner } from '../components/loading-screen';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 
+const queryClient = new QueryClient();
 
 
 function TransactionsPage() {
@@ -25,7 +22,10 @@ function TransactionsPage() {
   if (isLoading) return  <LoadingSpinner />
   return (
     <main className="p-4 md:p-10 mx-auto max-w-8xl">
-        <TransactionsTable />
+      <QueryClientProvider client={queryClient} >
+
+      <TransactionsTable />
+      </QueryClientProvider>
     </main>
   );
 }

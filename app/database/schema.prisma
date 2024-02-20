@@ -25,7 +25,7 @@ model Employee {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  transactions Transactions[]
+  transactions Transaction[]
 
   @@map("employees")
 }
@@ -44,12 +44,12 @@ model Customer {
   createdAt              DateTime   @default(now()) @map("created_at")
   updatedAt              DateTime   @updatedAt @map("updated_at")
 
-  transactions Transactions[]
+  transactions Transaction[]
 
   @@map("customers")
 }
 
-model Transactions {
+model Transaction {
   id                     String        @id @default(uuid())
   userEnteredDate        DateTime      @map("user_entered_date")
   serviceType            ServiceType   @map("service_type")
@@ -81,9 +81,9 @@ model CountryCode {
 }
 
 enum Membership {
-  Bronze
-  Silver
   Gold
+  Silver
+  Bronze
   NonMember
 }
 

@@ -9,7 +9,7 @@ import { CountryCodeDropdown, FloatingSelect, selectedMembershipTemplate } from 
 import { Button } from 'primereact/button';
 import * as Yup from 'yup';
 import { Card } from 'primereact/card';
-import MembershipUpdate from './MembershipUpdate';
+import MembershipUpdate from './membership-update';
 import { Divider } from 'primereact/divider';
 import { ToastContainer } from 'react-toastify';
 import { Customer } from '@prisma/client';
@@ -78,7 +78,8 @@ export default function CustomerProfilePage() {
 
 
   return (
-      <Card title="Edit Customer Profile">
+
+    <Card title="Edit Customer Profile">
         <Formik
         initialValues={{
           ...customer
@@ -123,7 +124,7 @@ export default function CustomerProfilePage() {
 
         <Divider className="my-12" />
 
-        {customer && <MembershipUpdate customer={customer} membershipOptions={enums.membershipLevel} />}
+        {customer && <MembershipUpdate customer={customer}  />}
         <ToastContainer hideProgressBar={true} />
 
       </Card>

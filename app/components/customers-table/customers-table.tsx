@@ -6,9 +6,8 @@ import Table from './table';
 import React, { useCallback, useEffect, useState } from 'react';
 import CustomerForm from '../forms/customer-form';
 import { LoadingSpinner } from '../loading-screen';
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { ToastContainer } from 'react-toastify';
-import { getEnums } from '../../client-api/enums/enum-queries';
 
 const queryClient = new QueryClient();
 
@@ -50,6 +49,7 @@ export default function CustomersTable() {
   return (
     <QueryClientProvider client={queryClient}>
       <div>
+
         <CustomerForm refetchCustomers={fetchCustomers}/>
         <Divider />
         <Search setSearch={setSearch} />

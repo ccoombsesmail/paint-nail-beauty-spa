@@ -20,14 +20,14 @@ const validationSchema = Yup.object().shape({
   totalServicePrice: Yup.number().required('Total Service Price is required'),
   actualPaymentCollected: Yup.number().required('Actual Payment Collected is required'),
   tip: Yup.number().required('Tip is required (enter 0 if none)'),
-  paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'Paypal', 'CreditCard']).required('Payment Method is required'),
+  paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'PayPal', 'CreditCard']).required('Payment Method is required'),
   technicianEmployeeId: Yup.string().required('Technician is required'),
   userEnteredDate: Yup.date().required("Transaction DateTime is Required")
 });
 
 // @ts-ignore
 
-const CreateTransactionDialog = () => {
+const CreateTransactionDialog = ({ refetchTransactions }) => {
   const [showDialog, setShowDialog] = useState(false);
 
   const { data: enums } = useQuery('enums', getEnums, {
@@ -41,6 +41,7 @@ const CreateTransactionDialog = () => {
   const { mutateAsync } = useMutation(createTransaction, {
     onSuccess: () => {
       // Refetch customers list to reflect the new customer
+      refetchTransactions()
       setShowDialog(false);
     },
 
@@ -114,7 +115,7 @@ const CreateTransactionDialog = () => {
                 as={Calendar}
                 placeholder='Date'
                 type='text'
-                className='max-h-[50px]'
+                className='max-h-[50px] w-[17rem]'
                 showIcon
                 showButtonBar
                 showTime
@@ -123,11 +124,11 @@ const CreateTransactionDialog = () => {
 
               />
               <Field
+                width='w-[17rem]'
                 name='customerId'
                 as={SearchableUserSelect}
                 placeholder='Customer Search'
                 setFieldValue={setFieldValue}
-
               />
 
               <Field
@@ -138,6 +139,8 @@ const CreateTransactionDialog = () => {
                 placeholder='Service Type'
                 type='text'
                 options={enums.serviceTypes}
+                className='w-[17rem]'
+
               />
 
 
@@ -146,37 +149,52 @@ const CreateTransactionDialog = () => {
                 as={FloatingLabelInput}
                 placeholder='Total Service Price'
                 type='number'
+                className='w-[17rem]'
+
               />
               <Field
                 name='actualPaymentCollected'
                 as={FloatingLabelInput}
                 placeholder='Actual Payment Collected'
                 type='number'
+                className='w-[17rem]'
+
+
               />
               <Field
                 name='serviceDuration'
                 as={ServiceDurationInput}
                 placeholder='Service Duration'
                 type='text'
+                className='w-[17rem]'
+
               />
               <Field
                 name='tip'
                 as={FloatingLabelInput}
                 placeholder='Tip'
                 type='number'
+                className='w-[17rem]'
+
               />
               <Field
+                width='w-[17rem]'
                 name='paymentMethod'
                 as={FloatingSelect}
                 setFieldValue={setFieldValue}
                 placeholder='Payment Method'
                 options={enums.paymentMethodTypes}
+                className='w-[17rem]'
+
               />
               <Field
+                width='w-[17rem]'
                 name='technicianEmployeeId'
                 as={SearchableEmployeeSelect}
                 placeholder='Technician Search'
                 setFieldValue={setFieldValue}
+                className='w-[17rem]'
+
 
               />
               <Divider />

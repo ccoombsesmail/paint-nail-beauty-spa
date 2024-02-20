@@ -9,10 +9,21 @@ import { Button } from 'primereact/button';
 import { Customer } from '@prisma/client';
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { toast } from 'react-toastify';
-export default function MembershipUpdate({ membershipOptions, customer } : { membershipOptions: any[], customer: Customer}) {
+import { useQuery } from 'react-query';
+import { getEnums } from '../../../client-api/enums/enum-queries';
+export default function MembershipUpdate({ customer } : { customer: Customer}) {
   const [option, setOption] = useState({
     name: customer.membershipLevel,
-    code: customer.membershipLevel
+    code: customer.membershipLevel.replace(' ', '')
+  });
+  console.log(option)
+
+  const { data: enums } = useQuery('enums', getEnums, {
+    initialData: {
+      membershipTypes: [],
+      serviceTypes: [],
+      paymentMethodTypes: []
+    }
   });
   const [customerInfo, setCustomerInfo] = useState<Customer>(customer)
 
@@ -29,7 +40,7 @@ export default function MembershipUpdate({ membershipOptions, customer } : { mem
   const onChange = (e: any) => {
     setOption(e.value)
   }
-  const allowedOptions = useMemo(() => membershipOptions.map((option: {name: string}) => {
+  const allowedOptions = useMemo(() => enums.membershipTypes.map((option: {name: string, code: string}) => {
     if (!customerInfo.membershipStartDate) return option
     if (customerInfo.membershipLevel === "Bronze" && option.name === "Silver") {
       return {
@@ -44,7 +55,7 @@ export default function MembershipUpdate({ membershipOptions, customer } : { mem
       }
     }
     return option
-  }), [daysSinceStartDate, membershipOptions, customerInfo])
+  }), [daysSinceStartDate, enums.membershipTypes, customerInfo])
 
 
   const onConfirmClick = async () => {
@@ -95,8 +106,15 @@ export default function MembershipUpdate({ membershipOptions, customer } : { mem
 
       <div className='mt-4 flex w-4/6 justify-between'>
       <span className="p-float-label ">
-       <Dropdown id="membership_select" valueTemplate={selectedMembershipTemplate} value={option} onChange={onChange} options={allowedOptions} optionLabel="name"
-                 placeholder="Select Membership" className="w-[24rem]" />
+       <Dropdown
+         id="membership_select"
+         valueTemplate={selectedMembershipTemplate}
+         value={option} onChange={onChange}
+         options={allowedOptions}
+         optionLabel="name"
+         placeholder="Select Membership"
+         className="w-[24rem]"
+       />
            <label htmlFor="membership_select">Select Membership</label>
         </span>
         <ConfirmPopup />

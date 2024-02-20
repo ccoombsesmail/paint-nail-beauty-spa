@@ -7,6 +7,7 @@
     "start": "next start",
     "lint": "next lint",
     "seeder": "ts-node app/database/seeder/index.mjs",
+    "seed-employees": "ts-node app/clerk/index.mjs",
     "generate": "npx prisma generate --schema ./app/database/schema.prisma",
     "migrate": "npx prisma migrate dev --schema ./app/database/schema.prisma",
     "reset": "npx prisma migrate reset  --schema ./app/database/schema.prisma"
