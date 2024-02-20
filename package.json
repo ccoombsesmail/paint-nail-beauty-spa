@@ -10,7 +10,9 @@
     "seed-employees": "ts-node app/clerk/index.mjs",
     "generate": "npx prisma generate --schema ./app/database/schema.prisma",
     "migrate": "npx prisma migrate dev --schema ./app/database/schema.prisma",
-    "reset": "npx prisma migrate reset  --schema ./app/database/schema.prisma"
+    "reset": "npx prisma migrate reset  --schema ./app/database/schema.prisma",
+    "postinstall": "prisma generate"
+
   },
   "dependencies": {
     "@auth/core": "^0.26.3",

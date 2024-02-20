@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Transaction, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import prisma from '../../database/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';
 import { serviceTypeEnumMap } from '../../types/enums';
-import { Decimal } from '@prisma/client/runtime/library';
 
 
 export async function POST(req: NextRequest) {
@@ -100,10 +99,9 @@ export async function GET(req: NextRequest) {
     console.error("No Franchise Code Associated With This User")
     return NextResponse.json({ transactions: [] });
   }
-  where.franchiseCode = franchise_code;
+  // where.franchiseCode = franchise_code;
 
 
-  console.log(search)
   if (search) {
     // @ts-ignore
     where.OR = [
