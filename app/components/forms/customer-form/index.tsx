@@ -84,7 +84,7 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
           }}
           validationSchema={validationSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            console.log(values)
+            console.log(values);
             toast.promise(mutateAsync(values), {
               loading: 'Creating Customer...',
               success: (data: any) => {
@@ -140,25 +140,30 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
               <Divider />
 
               <div className='flex justify-between w-full'>
-
-                {!showSubAccountForm ? <Button
-                  label='Add Sub Account'
-                  icon='pi pi-plus'
-                  className=''
-                  onClick={() => setShowSubAccountForm(true)}
-                /> : <div></div>
-                }
-                {showSubAccountForm && <Button
-                  label='X'
-                  text
-                  raised
-                  className=''
-                  onClick={() => setShowSubAccountForm(false)}
-                />
+                {(values.membershipLevel === 'Silver' || values.membershipLevel === 'Gold') ?
+                  (
+                    <>
+                      {!showSubAccountForm ? <Button
+                        label='Add Sub Account'
+                        icon='pi pi-plus'
+                        className=''
+                        onClick={() => setShowSubAccountForm(true)}
+                      /> : <div></div>
+                      }
+                      {showSubAccountForm && <Button
+                        label='X'
+                        text
+                        raised
+                        className=''
+                        onClick={() => setShowSubAccountForm(false)}
+                      />
+                      }
+                    </>
+                  ) : null
                 }
               </div>
 
-              {showSubAccountForm && <SubAccountForm countryCodes={countryCodes} setFieldValue={setFieldValue} />
+              {(showSubAccountForm && (values.membershipLevel === 'Silver' || values.membershipLevel === 'Gold')) && <SubAccountForm countryCodes={countryCodes} setFieldValue={setFieldValue} />
 
               }
               <Divider />

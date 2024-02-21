@@ -56,7 +56,7 @@ export async function PATCH(req: NextRequest) {
       where: { id: body.customerId },
       data: {
         membershipLevel: body.newMembershipLevel as $Enums.Membership,
-        membershipStartDate: new Date(),
+        membershipPurchaseDate: new Date(),
       },
     });
     // Send the updated user as a response
