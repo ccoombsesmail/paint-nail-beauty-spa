@@ -11,7 +11,7 @@
     "generate": "npx prisma generate --schema ./app/database/schema.prisma",
     "migrate": "npx prisma migrate dev --schema ./app/database/schema.prisma",
     "reset": "npx prisma migrate reset  --schema ./app/database/schema.prisma",
-    "vercel-build": "prisma generate --schema ./app/database/schema.prisma && prisma migrate deploy --schema ./app/database/schema.prisma && next build",
+    "vercel-build": "pnpm i && prisma generate --schema ./app/database/schema.prisma && prisma migrate deploy --schema ./app/database/schema.prisma && npm run seeder && next build",
     "postinstall": "prisma generate"
 
   },

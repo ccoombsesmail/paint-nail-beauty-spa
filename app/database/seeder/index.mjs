@@ -17,7 +17,7 @@ const seederRun = async () => {
   } = JSON.parse(data);
 
   await Promise.all([
-    seedCustomers(customers, prismaClient),
+    // seedCustomers(customers, prismaClient),
     seedCountryCodes(countryCodes, prismaClient),
 
   ]);

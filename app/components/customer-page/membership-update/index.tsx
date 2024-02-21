@@ -30,9 +30,9 @@ export default function MembershipUpdate({ customer } : { customer: Customer}) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const daysSinceStartDate = useMemo(() => {
-    if (!customerInfo.membershipStartDate) return Number.MAX_VALUE
+    if (!customerInfo.membershipPurchaseDate) return Number.MAX_VALUE
     const now = new Date();
-    const membershipStartDate = new Date(customerInfo.membershipStartDate);
+    const membershipStartDate = new Date(customerInfo.membershipPurchaseDate);
     const diffTime = Math.abs(now.getTime() - membershipStartDate.getTime() || 0);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }, [customerInfo])
@@ -41,7 +41,7 @@ export default function MembershipUpdate({ customer } : { customer: Customer}) {
     setOption(e.value)
   }
   const allowedOptions = useMemo(() => enums.membershipTypes.map((option: {name: string, code: string}) => {
-    if (!customerInfo.membershipStartDate) return option
+    if (!customerInfo.membershipPurchaseDate) return option
     if (customerInfo.membershipLevel === "Bronze" && option.name === "Silver") {
       return {
         ...option,
