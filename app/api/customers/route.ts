@@ -4,21 +4,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Decimal } from '@prisma/client/runtime/library';
 import prisma from '../../database/prismaClient';
-import { $Enums } from '@prisma/client';
+import { $Enums, Customer } from '@prisma/client';
 import { membershipTypeEnumMap } from '../../types/enums';
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
 
-interface Customer {
-    id: string;
-    firstName: string;
-    lastName?: string | null;
-    phoneNumber: string,
-    dialCode: string,
-    cashbackBalance: Decimal,
-    email: string;
-    membershipLevel: $Enums.Membership
-}
 
 
 export async function GET(req: NextRequest){
@@ -59,16 +49,52 @@ export async function GET(req: NextRequest){
                         contains: search,
                         mode: 'insensitive',
                     }
+                },
+                {
+                    subAccount: {
+                        OR: [
+                            {
+                                firstName: {
+                                    contains: search,
+                                    mode: 'insensitive',
+                                },
+                            },
+                            {
+                                lastName: {
+                                    contains: search,
+                                    mode: 'insensitive',
+                                },
+                            },
+                            {
+                                phoneNumber: {
+                                    contains: search,
+                                    mode: 'insensitive',
+                                },
+                            },
+                            {
+                                email: {
+                                    contains: search,
+                                    mode: 'insensitive',
+                                },
+                            },
+                        ]
+                    }
                 }
+
             ]
         }
 
     }
     const customers: Customer[] = await prisma.customer.findMany({
-        where
+        where,
+        include: {
+            subAccount: true
+        }
     });
 
-    const formattedCustomer = customers.map(u => {
+    const formattedCustomer = customers
+      .filter(c => c.parentId === null)
+      .map((u: Customer) => {
         return {
             ...u,
             // @ts-ignore
@@ -78,17 +104,6 @@ export async function GET(req: NextRequest){
     })
 
     return NextResponse.json({ customers: formattedCustomer })
-}
-
-async function wait() {
-    const promise = new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve('Hello, world!');
-        }, 4000);
-    });
-
-    const result = await promise;
-    console.log(result);
 }
 
 export async function POST(req: NextRequest, res: NextResponse) {
@@ -102,11 +117,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
             })
         }
         // Accumulate the request body content from the ReadableStream
-        const body = await req.json();
+        const createCustomerPayload = await req.json();
 
         const customer = await prisma.customer.findUnique({
             where: {
-                phoneNumber: body.phoneNumber
+                phoneNumber: createCustomerPayload.phoneNumber
             },
         });
 
@@ -117,17 +132,55 @@ export async function POST(req: NextRequest, res: NextResponse) {
             })
         }
 
+        if (createCustomerPayload.membershipLevel === $Enums.Membership.Bronze && !createCustomerPayload.serviceCategorySelection) {
+            return new NextResponse(JSON.stringify({ error: "Failed To Create Customer. \n Bronze Members Must Select A Service Category"}), {
+                headers: { "content-type": "application/json" },
+                status: 400,
+            })
+        }
+
+        const canHaveSubAccount = createCustomerPayload.membershipLevel === $Enums.Membership.Silver || createCustomerPayload.membershipLevel === $Enums.Membership.Gold
+        if (!canHaveSubAccount && createCustomerPayload.subAccountInfo) {
+            return new NextResponse(JSON.stringify({ error: "Failed To Create Customer. \n Only Silver Or Gold Members Can Have Sub Accounts"}), {
+                headers: { "content-type": "application/json" },
+                status: 400,
+            })
+        }
+
+
+
+
         const { franchise_code } = user.publicMetadata
-        // Create a new customer record in the database using the parsed data
-        const createdCustomer = await prisma.customer.create({
-            data: {
-                ...body,
-                createdAtFranchiseCode: franchise_code
-            },
-        });
+
+        const { subAccountInfo, ...mainUserInfo } = createCustomerPayload
+        const result = await prisma.$transaction(async (tx) => {
+
+            const createdCustomer = await prisma.customer.create({
+                data: {
+                    ...mainUserInfo,
+                    serviceCategorySelection: mainUserInfo.serviceCategorySelection || null,
+                    createdAtFranchiseCode: franchise_code
+                },
+            });
+
+            if (subAccountInfo) {
+                await prisma.customer.create({
+                    data: {
+                        ...subAccountInfo,
+                        membershipLevel: createdCustomer.membershipLevel,
+                        serviceCategorySelection: createdCustomer.serviceCategorySelection || null,
+                        parentId: createdCustomer.id,
+                        membershipPurchaseDate: createdCustomer.membershipPurchaseDate,
+                        createdAtFranchiseCode: franchise_code
+                    },
+                });
+            }
+        })
+
+
 
         // Send the created customer as a response
-        return new NextResponse(JSON.stringify(createdCustomer), {
+        return new NextResponse(JSON.stringify(result), {
             headers: { "content-type": "application/json" },
             status: 200,
         })

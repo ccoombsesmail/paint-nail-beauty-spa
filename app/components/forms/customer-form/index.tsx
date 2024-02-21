@@ -5,12 +5,18 @@ import { Button } from 'primereact/button';
 import { FloatingLabelInput, PhoneInput } from '../formik/inputs';
 import { Divider } from '@tremor/react';
 import * as Yup from 'yup';
-import { CountryCodeDropdown, FloatingSelect, selectedMembershipTemplate } from '../formik/selects';
+import {
+  CountryCodeDropdown,
+  FloatingSelect,
+  selectedMembershipTemplate,
+  selectedServiceCategoryTemplate
+} from '../formik/selects';
 import { useMutation, useQuery } from 'react-query';
 import { createCustomer } from '../../../client-api/cutomers/customer-queries';
 import { AxiosError } from 'axios';
 import { getEnums } from '../../../client-api/enums/enum-queries';
 import { Toaster, toast } from 'sonner';
+import SubAccountForm from './sub-account-form';
 
 
 const validationSchema = Yup.object().shape({
@@ -18,26 +24,29 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
   phoneNumber: Yup.string().required('Phone Number is required'),
   dialCode: Yup.string().required('Country Code is required'),
-  membershipLevel: Yup.string().oneOf(['Gold', 'Silver', 'Bronze', 'NonMember']).required('Membership Level Is Required')
+  membershipLevel: Yup.string().required('Membership Level Is Required')
 });
 
 const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Promise<void> }) => {
   const [countryCodes, setCountryCodes] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
+  const [showSubAccountForm, setShowSubAccountForm] = useState(false);
+
   const [selectedCountryCode, setSelectedCountryCode] = useState();
-  const { data: enums } = useQuery("enums", getEnums, {
+  const { data: enums } = useQuery('enums', getEnums, {
     initialData: {
       membershipTypes: [],
-      serviceType: []
+      serviceType: [],
+      serviceCategoryTypes: []
     }
-  })
+  });
 
   const { mutateAsync } = useMutation(createCustomer, {
     onSuccess: () => {
       // Refetch customers list to reflect the new customer
       refetchCustomers();
       setShowDialog(false);
-    },
+    }
 
   });
 
@@ -54,7 +63,7 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
 
   return (
     <>
-      <Toaster richColors  position="top-right" />
+      <Toaster richColors position='top-right' />
 
       <Button style={{ backgroundColor: 'var(--pink-400)' }} label='Create Customer' icon='pi pi-plus'
               onClick={() => setShowDialog(true)} />
@@ -68,11 +77,14 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
             email: '',
             phoneNumber: '',
             dialCode: '',
-            membershipLevel: ''
-          }}
-          validationSchema={validationSchema} // Add the validation schema to Formik
-          onSubmit={async (values, { setSubmitting }) => {
+            membershipLevel: '',
+            serviceCategorySelection: undefined,
+            subAccountInfo: undefined
 
+          }}
+          validationSchema={validationSchema}
+          onSubmit={async (values, { setSubmitting }) => {
+            console.log(values)
             toast.promise(mutateAsync(values), {
               loading: 'Creating Customer...',
               success: (data: any) => {
@@ -82,25 +94,73 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
               error: (data: AxiosError<{ error: string }>) => {
                 setSubmitting(false);
                 return `${data.response?.data.error}`;
-              },
+              }
             });
 
 
           }}
         >
-          {({ isSubmitting, setFieldValue }) => (
+          {({ isSubmitting, setFieldValue, values }) => (
             <Form className='flex flex-wrap gap-x-2 my-7 gap-y-8 '>
               <Field name='firstName' as={FloatingLabelInput} placeholder='First Name' type='text' />
               <Field name='lastName' as={FloatingLabelInput} placeholder='Last Name' type='text' />
               <Field name='email' as={FloatingLabelInput} placeholder='Email' type='email' />
               <div className='flex gap-x-2'>
-                <Field setFieldValue={setFieldValue} name='dialCode' as={CountryCodeDropdown} placeholder='Dial Code'
-                       options={countryCodes} optionLabel='dialCode' optionValue='dialCode' />
+                <Field
+                  setFieldValue={setFieldValue}
+                  name='dialCode'
+                  as={CountryCodeDropdown}
+                  placeholder='Dial Code'
+                  options={countryCodes}
+                  optionLabel='dialCode'
+                  optionValue='dialCode'
+                />
                 <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number' />
               </div>
-              <Field setFieldValue={setFieldValue} name='membershipLevel' as={FloatingSelect}
-                     placeholder='Membership Level' options={enums.membershipTypes}
-                     valueTemplate={selectedMembershipTemplate} />
+              <Field
+                setFieldValue={setFieldValue}
+                name='membershipLevel'
+                as={FloatingSelect}
+                placeholder='Membership Level'
+                options={enums.membershipTypes}
+                valueTemplate={selectedMembershipTemplate}
+              />
+              {
+                values.membershipLevel === 'Bronze' || values.membershipLevel === 'BronzeNonActive' ? <Field
+                  setFieldValue={setFieldValue}
+                  name='serviceCategorySelection'
+                  as={FloatingSelect}
+                  placeholder='Service Category'
+                  options={enums.serviceCategoryTypes}
+                  valueTemplate={selectedServiceCategoryTemplate}
+                  values={values}
+                  disabled={values.membershipLevel !== 'Bronze' && values.membershipLevel !== 'BronzeNonActive'}
+                /> : null
+              }
+              <Divider />
+
+              <div className='flex justify-between w-full'>
+
+                {!showSubAccountForm ? <Button
+                  label='Add Sub Account'
+                  icon='pi pi-plus'
+                  className=''
+                  onClick={() => setShowSubAccountForm(true)}
+                /> : <div></div>
+                }
+                {showSubAccountForm && <Button
+                  label='X'
+                  text
+                  raised
+                  className=''
+                  onClick={() => setShowSubAccountForm(false)}
+                />
+                }
+              </div>
+
+              {showSubAccountForm && <SubAccountForm countryCodes={countryCodes} setFieldValue={setFieldValue} />
+
+              }
               <Divider />
               <div className='flex w-full justify-end'>
                 <Button label='Cancel' icon='pi pi-times' className='p-button-text'

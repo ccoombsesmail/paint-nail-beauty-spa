@@ -24,7 +24,6 @@ export default function CustomersTable() {
     try {
       const response = await fetch(`/api/customers?search=${search}`);
       const data = await response.json();
-      console.log(data);
       setCustomers(data?.customers || []);
     } catch (error) {
       console.error('Error:', error);

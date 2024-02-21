@@ -2,7 +2,12 @@
 
 
 import { NextRequest, NextResponse } from 'next/server';
-import { membershipTypeEnumMap, paymentMethodTypeEnumMap, serviceTypeEnumMap } from '../../types/enums';
+import {
+  membershipTypeEnumMap,
+  paymentMethodTypeEnumMap,
+  serviceCategoryTypeEnumMap,
+  serviceTypeEnumMap
+} from '../../types/enums';
 
 import { $Enums } from '@prisma/client'
 
@@ -23,10 +28,16 @@ export async function GET(req: NextRequest){
     code: $Enums.PaymentMethod[key as keyof typeof $Enums.PaymentMethod],
   }));
 
+  const serviceCategoryTypes = Object.keys($Enums.ServiceCategory).map(key => ({
+    name: serviceCategoryTypeEnumMap.get(key),
+    code: $Enums.ServiceCategory[key as keyof typeof $Enums.ServiceCategory],
+  }));
+
   return NextResponse.json({ enums: {
       serviceTypes,
       membershipTypes,
-      paymentMethodTypes
+      paymentMethodTypes,
+      serviceCategoryTypes
     }
   })
 }

@@ -20,10 +20,20 @@ export const selectedMembershipTemplate = (option: { name: string, code: string 
   return <span>Select Membership</span>;
 };
 
+export const selectedServiceCategoryTemplate = (option: { name: string, code: string }) => {
+  if (option) {
+    return (
+      <div className='flex align-items-center'>
+        <div>{option.name}</div>
+      </div>
+    );
+  }
+
+  return <span>Select Category</span>;
+};
 
 export const FloatingSelect = (props: any) => {
   const [field, meta, helpers] = useField(props);
-
   const [option, setOption] = useState(null);
 
   const onChange = (e: any) => {

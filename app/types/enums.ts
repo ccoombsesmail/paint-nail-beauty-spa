@@ -6,6 +6,9 @@ export const membershipTypeEnumMap = new Map<string, string>([
     [$Enums.Membership.Silver, "Silver"],
     [$Enums.Membership.Bronze, "Bronze"],
     [$Enums.Membership.NonMember, "Non Member"],
+    [$Enums.Membership.GoldNonActive, "Gold (Not Active)"],
+    [$Enums.Membership.SilverNonActive, "Silver (Not Active)"],
+    [$Enums.Membership.BronzeNonActive, "Bronze (Not Active)"]
   ]
 )
 
@@ -31,3 +34,12 @@ export const paymentMethodTypeEnumMap = new Map<string, string>([
       [$Enums.PaymentMethod.CreditCard, "Credit Card"]
   ]
 )
+
+export const serviceCategoryTypeEnumMap = new Map<string, string>([
+    [$Enums.ServiceCategory.Nail, "Nail"],
+    [$Enums.ServiceCategory.Eyelash, "Eyelash"],
+    [$Enums.ServiceCategory.Facial, "Facial"],
+    [$Enums.ServiceCategory.BodySpa, "Body Spa"],
+  ]
+)
+

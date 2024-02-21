@@ -1,11 +1,17 @@
-import { DataTable } from 'primereact/datatable';
+import { DataTable, DataTableExpandedRows } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import Image from 'next/image';
 import goldBadge from '../../gold-badge.png'
 import silverBadge from '../../silver-badge.png'
 import bronzeBadge from '../../bronze-badge.png'
 import sadFace from '../../sad-face.png'
-import { useCallback } from 'react';
+
+import nail from '../../nail.png'
+import facial from '../../facial.png'
+import bodySpa from '../../body-spa.png'
+import eyelash from '../../eyelash.png'
+
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { NextRouter } from 'next/router';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -40,6 +46,35 @@ const membershipColTemplate = (customer: { membershipLevel: string }) => {
   )
 }
 
+
+const serviceTypeColTemplate = (customer: { serviceCategorySelection: string }) => {
+  let badge = null
+  switch (customer.serviceCategorySelection) {
+    case "Nail":
+      badge = nail
+      break
+    case "Facial":
+      badge = facial
+      break
+    case "BodySpa":
+      badge = bodySpa
+      break
+    case "Eyelash":
+      badge = eyelash
+      break
+    default:
+      badge = null
+  }
+  return (
+    <div className="flex items-center justify-between">
+      <span className=''>
+        {customer.serviceCategorySelection || "All"}
+      </span>
+      { badge && <Image src={badge} width={32} height={32} alt={customer.serviceCategorySelection} /> }
+    </div>
+  )
+}
+
 const editTemplate = (customer: { membershipLevel: string, id: string }, router: AppRouterInstance) => {
   const onClick = () => {
     router.push(`customers/${customer.id}`)
@@ -56,20 +91,71 @@ const cashbackBalanceTemplate = (rowData: any) => {
     <span>${rowData.cashbackBalance}</span>
   )
 }
+
+const dateTemplate = (rowData: any) => {
+  const date = new Date(rowData.createdAt)
+  const formattedDate = date.toLocaleString('en-US', {
+    month: 'long', // "February"
+    day: '2-digit', // "19"
+    year: 'numeric', // "2024"
+  });
+  return (
+    <span>{formattedDate}</span>
+  )
+}
+const allowExpansion = (rowData: any) => {
+  return rowData.subAccount !== null;
+};
+
+const rowExpansionTemplate = (data: any) => {
+
+  return (
+    <div className="p-3 flex justify-center items-center flex-col w-full" >
+      <h1 className='mb-3 text-xl'>Sub Account For {data.firstName}</h1>
+      <DataTable showGridlines className='w-4/6 ' value={[data.subAccount]}>
+        <Column field="firstName" header="First" ></Column>
+        <Column field="lastName" header="Last" ></Column>
+        <Column field="email" header="Email"  ></Column>
+        <Column field="phoneNumber" header="Phone Number" ></Column>
+      </DataTable>
+    </div>
+  );
+};
+
 export default function CustomersTable({ customers }: { customers: Customer[] }) {
+  const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
+
   const router = useRouter()
 
   return (
     <div className="card">
-      <DataTable resizableColumns  columnResizeMode="expand" paginator rows={10} rowsPerPageOptions={[10, 25, 50]} value={customers} tableStyle={{ minWidth: '50rem' }}>
+      <DataTable
+        stripedRows
+        expandedRows={expandedRows}
+        onRowToggle={(e) => setExpandedRows(e.data)}
+        rowExpansionTemplate={rowExpansionTemplate}
+        sortField="createdAt"
+        sortOrder={-1}
+        resizableColumns
+        columnResizeMode="expand"
+        paginator
+        rows={10}
+        rowsPerPageOptions={[10, 25, 50]}
+        value={customers}
+        tableStyle={{ minWidth: '50rem' }}>
         <Column field="" header="" body={(customer) => editTemplate(customer, router)} />
-        <Column field="firstName" header="First" style={{ width: '16%' }}></Column>
-        <Column field="lastName" header="Last" style={{ width: '16%' }}></Column>
-        <Column field="email" header="Email"  style={{ width: '16%' }}></Column>
-        <Column field="phoneNumber" header="Phone Number"  style={{width: '16%' }}></Column>
-        <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance"  style={{ width: '16%'}}></Column>
-        <Column field="membershipLevel" header="Membership"  style={{ width: '16%' }} body={membershipColTemplate}></Column>
+        <Column expander={allowExpansion} style={{ width: '5rem' }} />
+        <Column field="createdAt" header="Joined" body={dateTemplate}  />
+        <Column field="firstName" header="First" ></Column>
+        <Column field="lastName" header="Last" ></Column>
+        <Column field="email" header="Email"  ></Column>
+        <Column field="phoneNumber" header="Phone Number" ></Column>
+        <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance" ></Column>
+        <Column field="membershipLevel" header="Membership"  body={membershipColTemplate}></Column>
+        <Column field="serviceCategorySelection" header="Category" body={serviceTypeColTemplate} ></Column>
+
       </DataTable>
     </div>
   );
 }
+

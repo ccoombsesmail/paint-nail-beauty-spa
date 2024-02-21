@@ -31,19 +31,24 @@ model Employee {
 }
 
 model Customer {
-  id                     String     @id @default(uuid())
-  firstName              String     @map("first_name") @db.VarChar(100)
-  lastName               String?    @map("last_name") @db.VarChar(100)
-  email                  String     @unique @map("email") @db.VarChar(100)
-  phoneNumber            String     @unique @map("phone_number") @db.VarChar(50)
-  dialCode               String     @map("dial_code") @db.VarChar(10)
-  cashbackBalance        Decimal    @default(0) @map("cashback_balance") @db.Decimal()
-  membershipLevel        Membership @default(NonMember) @map("membership_level")
-  membershipStartDate    DateTime?  @map("membership_start_date")
-  createdAtFranchiseCode String     @map("created_at_franchise_code")
-  createdAt              DateTime   @default(now()) @map("created_at")
-  updatedAt              DateTime   @updatedAt @map("updated_at")
+  id                       String           @id @default(uuid())
+  firstName                String           @map("first_name") @db.VarChar(100)
+  lastName                 String?          @map("last_name") @db.VarChar(100)
+  email                    String           @unique @map("email") @db.VarChar(100)
+  phoneNumber              String           @unique @map("phone_number") @db.VarChar(50)
+  dialCode                 String           @map("dial_code") @db.VarChar(10)
+  cashbackBalance          Decimal          @default(0) @map("cashback_balance") @db.Decimal()
+  membershipLevel          Membership       @default(NonMember) @map("membership_level")
+  membershipPurchaseDate   DateTime?        @map("membership_purchase_date")
+  membershipActivationDate DateTime?        @map("membership_activation_date")
+  createdAtFranchiseCode   String           @map("created_at_franchise_code")
+  parentId                 String?          @unique
+  serviceCategorySelection ServiceCategory? @map("service_category_selection")
+  createdAt                DateTime         @default(now()) @map("created_at")
+  updatedAt                DateTime         @updatedAt @map("updated_at")
 
+  parent       Customer?     @relation("SubAccount", fields: [parentId], references: [id])
+  subAccount   Customer?     @relation("SubAccount")
   transactions Transaction[]
 
   @@map("customers")
@@ -85,6 +90,9 @@ enum Membership {
   Silver
   Bronze
   NonMember
+  GoldNonActive
+  SilverNonActive
+  BronzeNonActive
 }
 
 enum ServiceType {
@@ -101,4 +109,11 @@ enum PaymentMethod {
   PayPal
   Cash
   CreditCard
+}
+
+enum ServiceCategory {
+  Nail
+  Eyelash
+  Facial
+  BodySpa
 }
