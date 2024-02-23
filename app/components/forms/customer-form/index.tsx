@@ -20,8 +20,16 @@ import SubAccountForm from './sub-account-form';
 
 
 const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required('First Name is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
+  firstName: Yup.string().when('membershipLevel', {
+    is: (membershipLevel: string) => membershipLevel === 'NonMember',
+    then: (schema) => schema.nullable(), // No validation rule
+    otherwise: (schema) => schema.required('First Name is required'), // Required if condition is not met
+  }),
+  email: Yup.string().when('membershipLevel', {
+    is: (membershipLevel: string) => membershipLevel === 'NonMember',
+    then: (schema) => schema.email('Invalid email'), // Only validate the format if provided
+    otherwise: (schema) => schema.email('Invalid email').required('Email is required'), // Required and format validation
+  }),
   phoneNumber: Yup.string().required('Phone Number is required'),
   dialCode: Yup.string().required('Country Code is required'),
   membershipLevel: Yup.string().required('Membership Level Is Required')

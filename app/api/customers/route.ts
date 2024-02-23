@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Decimal } from '@prisma/client/runtime/library';
 import prisma from '../../database/prismaClient';
-import { $Enums, Customer } from '@prisma/client';
+import { $Enums, Customer, Prisma } from '@prisma/client';
 import { membershipTypeEnumMap } from '../../types/enums';
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
@@ -14,7 +14,10 @@ import { currentUser } from '@clerk/nextjs/server';
 export async function GET(req: NextRequest){
     const searchParams = req.nextUrl.searchParams
     const search = searchParams.get('search')
-    let where = {}
+    const all = searchParams.get('all')
+    let where: Prisma.CustomerWhereInput = all ? {} : {
+        parentId:  null
+    }
     const user = await currentUser()
     if (!user){
         return new NextResponse(JSON.stringify({ error: "User Not Authorized"}), {
@@ -25,6 +28,7 @@ export async function GET(req: NextRequest){
 
     if (search) {
         where = {
+            ...where,
             OR: [
                 {
                     firstName: {
@@ -88,18 +92,19 @@ export async function GET(req: NextRequest){
     const customers: Customer[] = await prisma.customer.findMany({
         where,
         include: {
-            subAccount: true
+            subAccount: true,
+            parent: true
         }
     });
 
     const formattedCustomer = customers
-      .filter(c => c.parentId === null)
       .map((u: Customer) => {
         return {
             ...u,
             // @ts-ignore
             membershipLevel: membershipTypeEnumMap.get(u.membershipLevel),
-            phoneNumber: `${u.dialCode}-${u.phoneNumber}`
+            // phoneNumber: `${u.dialCode}-${u.phoneNumber}`,
+            isSubAccount: u.parentId !== null
         }
     })
 
@@ -153,13 +158,55 @@ export async function POST(req: NextRequest, res: NextResponse) {
         const { franchise_code } = user.publicMetadata
 
         const { subAccountInfo, ...mainUserInfo } = createCustomerPayload
+        const mainUser: Customer = mainUserInfo
+
+        let membershipDates = {}
+
+        switch (mainUser.membershipLevel) {
+            case $Enums.Membership.GoldNonActive:
+                membershipDates = {
+                    membershipPurchaseDate: new Date(),
+                }
+                break
+            case $Enums.Membership.SilverNonActive:
+                membershipDates = {
+                    membershipPurchaseDate: new Date(),
+                }
+                break
+            case $Enums.Membership.BronzeNonActive:
+                membershipDates = {
+                    membershipPurchaseDate: new Date(),
+                }
+                break
+            case $Enums.Membership.Gold:
+                membershipDates = {
+                    membershipPurchaseDate: new Date(),
+                    membershipActivationDate: new Date()
+                }
+                break
+            case $Enums.Membership.Silver:
+                membershipDates = {
+                    membershipPurchaseDate: new Date(),
+                    membershipActivationDate: new Date()
+                }
+                break
+            case $Enums.Membership.Bronze:
+                membershipDates = {
+                    membershipPurchaseDate: new Date(),
+                    membershipActivationDate: new Date()
+                }
+                break
+            default:
+                membershipDates = {}
+        }
         const result = await prisma.$transaction(async (tx) => {
 
             const createdCustomer = await prisma.customer.create({
                 data: {
                     ...mainUserInfo,
                     serviceCategorySelection: mainUserInfo.serviceCategorySelection || null,
-                    createdAtFranchiseCode: franchise_code
+                    createdAtFranchiseCode: franchise_code,
+                    ...membershipDates
                 },
             });
 
@@ -170,7 +217,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                         membershipLevel: createdCustomer.membershipLevel,
                         serviceCategorySelection: createdCustomer.serviceCategorySelection || null,
                         parentId: createdCustomer.id,
-                        membershipPurchaseDate: createdCustomer.membershipPurchaseDate,
+                        ...membershipDates,
                         createdAtFranchiseCode: franchise_code
                     },
                 });

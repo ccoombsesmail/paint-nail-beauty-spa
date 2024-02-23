@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
+import { Prisma, Transaction } from '@prisma/client';
 import prisma from '../../database/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';
 import { serviceTypeEnumMap } from '../../types/enums';
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
 
     const body = await req.json();
-    const { actualPaymentCollected, customerId } = body
+    const { actualPaymentCollected, customerId, cashbackBalanceToUse: balanceUsed } = body
 
 
 
@@ -41,7 +41,12 @@ export async function POST(req: NextRequest) {
       if (!customer) {
         throw new Error('Customer not found');
       }
-      const newCashbackBalance = Number(customer.cashbackBalance) + (.01 * actualPaymentCollected) ;
+      const newCashbackBalance = Number(customer.cashbackBalance) + (.01 * actualPaymentCollected) - (Number(balanceUsed) || 0);
+
+      console.log("Previous balance: ", customer.cashbackBalance )
+      console.log("Added Balance: ", (.01 * actualPaymentCollected) )
+      console.log("Used Balance: ", balanceUsed)
+      console.log("New Balance: ", newCashbackBalance)
 
       const updatedCustomer = await tx.customer.update({
         where: {
@@ -51,10 +56,10 @@ export async function POST(req: NextRequest) {
           cashbackBalance: newCashbackBalance,
         },
       });
-
+      const {cashbackBalanceToUse, ...transactionData} = body
       const newTransaction = await tx.transaction.create({
         data: {
-          ...body,
+          ...transactionData,
           franchiseCode: franchise_code
         },
       });
@@ -183,9 +188,94 @@ export async function GET(req: NextRequest) {
       customerName: transaction.customer ? `${transaction.customer.firstName} ${transaction.customer.lastName || ''}` : null,
       customerEmail: transaction.customer ? transaction.customer.email : null,
       customerPhoneNumber: transaction.customer ? transaction.customer.phoneNumber : null,
+      customerDialCode: transaction.customer ? transaction.customer.dialCode : null,
       technicianName: transaction.employee ? `${transaction.employee.firstName} ${transaction.employee.lastName || ''}` : null,
     };
   });
 
   return NextResponse.json({ transactions: formattedTransactions });
+}
+
+
+export async function PATCH(req: NextRequest, res: NextResponse) {
+
+  try {
+
+
+
+    const body: Transaction = await req.json();
+    const {
+      customerId,
+      userEnteredDate,
+      serviceType,
+      serviceDuration,
+      totalServicePrice,
+      discountedServicePrice,
+      actualPaymentCollected,
+      tip,
+      paymentMethod,
+      technicianEmployeeId
+    } = body
+
+    const originalTransaction = await prisma.transaction.findUnique({
+      where: { id: body.id },
+    });
+
+    if (!originalTransaction) {
+      return new NextResponse(JSON.stringify({ error: "Failed To Update Transaction"}), {
+        headers: { "content-type": "application/json" },
+        status: 500,
+      })
+    }
+
+    const originalAmount = Number(originalTransaction.actualPaymentCollected);
+    const difference = Number(actualPaymentCollected) - originalAmount;
+
+    console.log(difference)
+    // Create a new customer record in the database using the parsed data
+    const result = await prisma.$transaction(async (tx) => {
+      const customer = await tx.customer.findUnique({
+        where: { id: customerId },
+        select: { cashbackBalance: true },
+      });
+
+      if (!customer) {
+        throw new Error('Customer not found');
+      }
+      let newCashbackBalance = Number(customer.cashbackBalance) + (.01 * difference);
+      console.log(newCashbackBalance)
+      await tx.customer.update({
+        where: { id: customerId },
+        data: { cashbackBalance: newCashbackBalance },
+      });
+      return await prisma.transaction.update({
+        where: { id: body.id },
+        data: {
+          customerId,
+          userEnteredDate,
+          serviceType,
+          serviceDuration,
+          totalServicePrice,
+          discountedServicePrice,
+          actualPaymentCollected,
+          tip,
+          paymentMethod,
+          technicianEmployeeId
+        }
+      })
+    })
+
+    // Send the created customer as a response
+    return new NextResponse(JSON.stringify(result), {
+      headers: { "content-type": "application/json" },
+      status: 200,
+    })
+  } catch (error) {
+    console.error("Failed to Update Transaction:", error);
+    return new NextResponse(JSON.stringify({ error: "Failed To Update Transaction"}), {
+      headers: { "content-type": "application/json" },
+      status: 500,
+    })
+  }
+
 }

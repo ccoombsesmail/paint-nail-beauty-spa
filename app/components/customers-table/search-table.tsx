@@ -5,14 +5,13 @@ import goldBadge from '../../gold-badge.png'
 import silverBadge from '../../silver-badge.png'
 import bronzeBadge from '../../bronze-badge.png'
 import sadFace from '../../sad-face.png'
-import hourglass from '../../hourglass.png'
 
 import nail from '../../nail.png'
 import facial from '../../facial.png'
 import bodySpa from '../../body-spa.png'
 import eyelash from '../../eyelash.png'
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { NextRouter } from 'next/router';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -26,7 +25,6 @@ interface Customer {
 
 const membershipColTemplate = (customer: { membershipLevel: string }) => {
   let badge = null
-  console.log(customer.membershipLevel)
   switch (customer.membershipLevel) {
     case "Gold":
       badge = goldBadge
@@ -37,11 +35,8 @@ const membershipColTemplate = (customer: { membershipLevel: string }) => {
     case "Bronze":
       badge = bronzeBadge
       break
-    case "Non Member":
-      badge = sadFace
-      break
     default:
-      badge = hourglass
+      badge = sadFace
   }
   return (
     <div className="flex items-center justify-between">
@@ -52,7 +47,7 @@ const membershipColTemplate = (customer: { membershipLevel: string }) => {
 }
 
 
-const serviceTypeColTemplate = (customer: { serviceCategorySelection: string, membershipLevel: string }) => {
+const serviceTypeColTemplate = (customer: { serviceCategorySelection: string }) => {
   let badge = null
   switch (customer.serviceCategorySelection) {
     case "Nail":
@@ -70,28 +65,10 @@ const serviceTypeColTemplate = (customer: { serviceCategorySelection: string, me
     default:
       badge = null
   }
-  let serviceCategory = ''
-
-  switch (customer.membershipLevel) {
-    case "Gold":
-      serviceCategory = 'All'
-      break
-    case "Silver":
-      serviceCategory = "All"
-      break
-    case "Bronze":
-      serviceCategory = customer.serviceCategorySelection
-      break
-    case "Bronze (Non Active)":
-      serviceCategory = customer.serviceCategorySelection
-      break
-    default:
-      serviceCategory = ''
-  }
   return (
     <div className="flex items-center justify-between">
       <span className=''>
-        {serviceCategory}
+        {customer.serviceCategorySelection || "All"}
       </span>
       { badge && <Image src={badge} width={32} height={32} alt={customer.serviceCategorySelection} /> }
     </div>
@@ -145,15 +122,17 @@ const rowExpansionTemplate = (data: any) => {
   );
 };
 
-export default function CustomersTable({ customers }: { customers: Customer[] }) {
+export default function CustomersTransactionSearchTable({ customers, setSelectedUser: selectUser }: { customers: Customer[], setSelectedUser: (user: any) => void }) {
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
-
+  const [selectedUser, setSelectedUser] = useState<{ id: string} | null>(null)
   const router = useRouter()
 
+  useEffect(() => {
+    if(selectedUser) selectUser(selectedUser)
+  }, [selectedUser, selectUser])
   return (
     <div className="card">
       <DataTable
-        showGridlines
         stripedRows
         expandedRows={expandedRows}
         onRowToggle={(e) => setExpandedRows(e.data)}
@@ -161,13 +140,18 @@ export default function CustomersTable({ customers }: { customers: Customer[] })
         sortField="createdAt"
         sortOrder={-1}
         resizableColumns
-        columnResizeMode="fit"
+        columnResizeMode="expand"
         paginator
         rows={10}
-        rowsPerPageOptions={[10, 25, 50]}
         value={customers}
-        tableStyle={{ minWidth: '50rem' }}>
-        <Column field="" header="" body={(customer) => editTemplate(customer, router)} />
+        selectionMode={undefined}
+        selection={selectedUser}
+        onSelectionChange={(e: any) => setSelectedUser(e.value)}
+        tableStyle={{ minWidth: '50rem', height: '20vh' }}
+        scrollHeight="30vh"
+
+      >
+        <Column selectionMode="single" headerStyle={{ width: '3rem' }}></Column>
         <Column expander={allowExpansion} style={{ width: '5rem' }} />
         <Column field="createdAt" header="Joined" body={dateTemplate}  />
         <Column field="firstName" header="First" ></Column>
@@ -175,7 +159,7 @@ export default function CustomersTable({ customers }: { customers: Customer[] })
         <Column field="email" header="Email"  ></Column>
         <Column field="phoneNumber" header="Phone Number" ></Column>
         <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance" ></Column>
-        <Column className='min-w-[150px]' field="membershipLevel" header="Membership"  body={membershipColTemplate}></Column>
+        <Column field="membershipLevel" header="Membership"  body={membershipColTemplate}></Column>
         <Column field="serviceCategorySelection" header="Category" body={serviceTypeColTemplate} ></Column>
 
       </DataTable>

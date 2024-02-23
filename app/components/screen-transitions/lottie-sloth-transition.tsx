@@ -3,7 +3,6 @@ import Lottie from 'lottie-react';
 import animationData from '../loading-screen/loading-lottie.json';
 
 const LottieTransition = ({ isVisible, onComplete }: {isVisible: boolean, onComplete: () => void}) => {
-  console.log(isVisible)
   return (
     <div style={{ display: isVisible ? 'block' : 'none' }}>
       <Lottie

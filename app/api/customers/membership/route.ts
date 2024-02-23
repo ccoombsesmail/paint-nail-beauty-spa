@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, $Enums } from '@prisma/client';
+import { PrismaClient, $Enums, Prisma } from '@prisma/client';
 import { canUpgradeToGold } from '../utils/canUpgradeToGold';
 
 const prisma = new PrismaClient()
+
+const nonActiveMembershipLevels = [$Enums.Membership.GoldNonActive, $Enums.Membership.SilverNonActive, $Enums.Membership.BronzeNonActive]
 export async function PATCH(req: NextRequest) {
 
   try {
     const body: {newMembershipLevel: string, customerId: string } = await req.json();
 
     // Create a new user record in the database using the parsed data
-    const customer = await prisma.customer.findUnique({ where: { id: body.customerId } });
+    const customer = await prisma.customer.findUnique({
+      where: { id: body.customerId },
+      include: {
+        subAccount: true
+      }
+    });
 
     if (!customer) {
       console.error("Could not locate customer");
@@ -26,41 +33,103 @@ export async function PATCH(req: NextRequest) {
     }
 
     let canUpdate = false
+    const membershipChange = `${customer.membershipLevel}_${body.newMembershipLevel}`;
 
-    switch ([customer.membershipLevel, body.newMembershipLevel]) {
-      case [$Enums.Membership.NonMember, $Enums.Membership.Bronze]:
-        canUpdate = true
-        break
-      case [$Enums.Membership.NonMember, $Enums.Membership.Silver]:
-        canUpdate = true
-        break
-      case [$Enums.Membership.NonMember, $Enums.Membership.Gold]:
-        canUpdate = true
-        break
-      case [$Enums.Membership.Bronze, $Enums.Membership.Gold]:
-        canUpdate = canUpgradeToGold(customer)
-        break
-      case [$Enums.Membership.Silver, $Enums.Membership.Gold]:
-        canUpdate = canUpgradeToGold(customer)
-        break
-      case [$Enums.Membership.Bronze, $Enums.Membership.Silver]:
-        canUpdate = false
-        break
+    switch (membershipChange) {
+      case `${$Enums.Membership.NonMember}_${$Enums.Membership.Bronze}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.NonMember}_${$Enums.Membership.Silver}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.NonMember}_${$Enums.Membership.Gold}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.Bronze}_${$Enums.Membership.Gold}`:
+        canUpdate = canUpgradeToGold(customer);
+        break;
+      case `${$Enums.Membership.Silver}_${$Enums.Membership.Gold}`:
+        canUpdate = canUpgradeToGold(customer);
+        break;
+      case `${$Enums.Membership.Bronze}_${$Enums.Membership.Silver}`:
+        canUpdate = false;
+        break;
+      case `${$Enums.Membership.GoldNonActive}_${$Enums.Membership.Gold}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.SilverNonActive}_${$Enums.Membership.Silver}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.BronzeNonActive}_${$Enums.Membership.Bronze}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.BronzeNonActive}_${$Enums.Membership.GoldNonActive}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.SilverNonActive}_${$Enums.Membership.GoldNonActive}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.BronzeNonActive}_${$Enums.Membership.SilverNonActive}`:
+        canUpdate = false;
+        break;
       default:
-        canUpdate = false
+        canUpdate = false;
+    }
+    if (!canUpdate) {
+      return new NextResponse(JSON.stringify({ error: `Cannot Update Membership From ${customer.membershipLevel} to ${body.newMembershipLevel}`}), {
+        headers: { "content-type": "application/json" },
+        status: 400,
+      })
     }
 
     console.log("Updating customer:", customer)
     console.log(`Attempting to update membership for user ${customer.id} from ${customer.membershipLevel} to ${body.newMembershipLevel}. canUpdate: ${canUpdate}`)
-    const updatedUser = await prisma.customer.update({
-      where: { id: body.customerId },
-      data: {
+
+    let dataToUpdate: Prisma.CustomerUpdateInput
+    // @ts-ignore
+    if (nonActiveMembershipLevels.includes(customer.membershipLevel)) {
+      dataToUpdate = {
+        membershipLevel: body.newMembershipLevel as $Enums.Membership,
+        membershipActivationDate: new Date()
+      }
+      // @ts-ignore
+    } else if (customer.membershipLevel === $Enums.Membership.NonMember && nonActiveMembershipLevels.includes(body.newMembershipLevel)) {
+      dataToUpdate = {
+        membershipLevel: body.newMembershipLevel as $Enums.Membership,
+        membershipPurchaseDate: new Date()
+      }
+    } else if (customer.membershipLevel === $Enums.Membership.NonMember) {
+      dataToUpdate = {
         membershipLevel: body.newMembershipLevel as $Enums.Membership,
         membershipPurchaseDate: new Date(),
-      },
-    });
+        membershipActivationDate: new Date()
+      }
+    } else {
+      dataToUpdate = {
+        membershipLevel: body.newMembershipLevel as $Enums.Membership,
+      }
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedUser = await prisma.customer.update({
+        where: { id: body.customerId },
+        data: {
+          ...dataToUpdate
+        },
+      });
+      if (customer.subAccount) {
+        await prisma.customer.update({
+          where: { id: customer.subAccount.id },
+          data: {
+            ...dataToUpdate
+          },
+        });
+      }
+      return updatedUser
+    })
+
     // Send the updated user as a response
-    return new NextResponse(JSON.stringify(updatedUser), {
+    return new NextResponse(JSON.stringify(result), {
       headers: { "content-type": "application/json" },
       status: 200,
     })
@@ -69,7 +138,7 @@ export async function PATCH(req: NextRequest) {
       console.error("Failed to update user membership:", error);
       return new NextResponse(JSON.stringify({ error: "Failed to update user membership"}), {
         headers: { "content-type": "application/json" },
-        status: 400,
+        status: 500,
       })
     }
 

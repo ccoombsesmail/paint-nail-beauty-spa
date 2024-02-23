@@ -14,7 +14,7 @@ datasource db {
 model Employee {
   id              String    @id @default(uuid())
   userId          String    @unique @map("user_id") @db.VarChar(100)
-  email           String    @unique
+  email           String    @unique @map("email") @db.VarChar(200)
   firstName       String?   @map("first_name") @db.VarChar(100)
   lastName        String?   @map("last_name") @db.VarChar(100)
   phoneNumber     String?   @unique @map("phone_number") @db.VarChar(100)
@@ -32,9 +32,9 @@ model Employee {
 
 model Customer {
   id                       String           @id @default(uuid())
-  firstName                String           @map("first_name") @db.VarChar(100)
-  lastName                 String?          @map("last_name") @db.VarChar(100)
-  email                    String           @unique @map("email") @db.VarChar(100)
+  firstName                String?          @default("") @map("first_name") @db.VarChar(100)
+  lastName                 String?          @default("") @map("last_name") @db.VarChar(100)
+  email                    String?          @unique @map("email") @db.VarChar(100)
   phoneNumber              String           @unique @map("phone_number") @db.VarChar(50)
   dialCode                 String           @map("dial_code") @db.VarChar(10)
   cashbackBalance          Decimal          @default(0) @map("cashback_balance") @db.Decimal()
@@ -42,7 +42,7 @@ model Customer {
   membershipPurchaseDate   DateTime?        @map("membership_purchase_date")
   membershipActivationDate DateTime?        @map("membership_activation_date")
   createdAtFranchiseCode   String           @map("created_at_franchise_code")
-  parentId                 String?          @unique
+  parentId                 String?          @unique @db.VarChar(300)
   serviceCategorySelection ServiceCategory? @map("service_category_selection")
   createdAt                DateTime         @default(now()) @map("created_at")
   updatedAt                DateTime         @updatedAt @map("updated_at")
@@ -58,8 +58,9 @@ model Transaction {
   id                     String        @id @default(uuid())
   userEnteredDate        DateTime      @map("user_entered_date")
   serviceType            ServiceType   @map("service_type")
-  serviceDuration        Int           @map("service_duration") // in minutes
+  serviceDuration        Decimal       @map("service_duration") @db.Decimal(10, 2)
   totalServicePrice      Decimal       @map("total_service_price") @db.Decimal(10, 2)
+  discountedServicePrice Decimal       @map("discounted_service_price") @db.Decimal(10, 2)
   actualPaymentCollected Decimal       @map("actual_payment_collected") @db.Decimal(10, 2)
   tip                    Decimal       @db.Decimal(10, 2)
   paymentMethod          PaymentMethod @map("payment_method")
@@ -96,11 +97,44 @@ enum Membership {
 }
 
 enum ServiceType {
-  SCM @map("Single Color Manicure")
-  SCP @map("Single Color Pedicure")
-  MD  @map("Manicure Design")
-  PD  @map("Pedicure Design")
-  EE  @map("Eyelash Extension")
+  NailRemoval
+  HandCare
+  FootCare
+  HandNailRemovalExtraCare
+  FootNailRemovalExtraCare
+  ManicurePedicureSingleColor
+  ManicurePedicureCatEyeSingleColor
+  ManicurePedicureOmbreDesign
+  ManicurePedicureCustomDesign
+  ManicurePedicureNailExtensionCustomDesign
+  AddOnService
+  UpperEyelashExtensions
+  LowerEyelashExtensions
+  UpperEyelashRefill
+  EyelashExtensionsRemoval
+  ColoredEyelashExtensionsAddOn
+  AdditionalService
+  CavitationBodySlimmingTreatment
+  KoreanLiftingTighteningBodyTreatment
+  MermaidGingerDetoxSteamTreatment
+  MudDetoxTreatment
+  ScalpMassageAddOn
+  HydrafacialSignature
+  HydrafacialDeluxe
+  HydrafacialPlatinum
+  HydrafacialScalpTreatment
+  HydrafacialLipTreatmentAddOn
+  HydrafacialUnderEyeTreatmentAddOn
+  HydrafacialNeckTreatmentAddOn
+  MicroSonicPeelDetoxificationTreatment
+  MoisturizingFirmingAntiAgingTargetedSkinCareTreatment
+  FacialCareAddOn
+  FacialSlimmingMassageAddOn
+  SemiPermanentHairRemovalLipBikiniLineBikiniFaceFrontBackArms
+  SemiPermanentHairRemovalFullArmsFullLegsThighsCalves
+  FullBodySemiPermanentHairRemoval
+  WaxingCheeksLipEyebrowsFullFaceUnderarmsBikiniAreaButtocks
+  WaxingFrontBackArmsFullArmsFullLegsThighsCalvesBack
 }
 
 enum PaymentMethod {

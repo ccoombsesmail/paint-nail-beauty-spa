@@ -6,6 +6,7 @@ import { fetchCustomers } from '../../../../client-api/cutomers/customer-queries
 import { AutoComplete } from 'primereact/autocomplete';
 import { toast } from 'sonner';
 import { fetchEmployees } from '../../../../client-api/employees/employee-queries';
+import { formatName } from '../../../../utils/format-name';
 
 
 export const selectedMembershipTemplate = (option: { name: string, code: string }) => {
@@ -34,10 +35,10 @@ export const selectedServiceCategoryTemplate = (option: { name: string, code: st
 
 export const FloatingSelect = (props: any) => {
   const [field, meta, helpers] = useField(props);
-  const [option, setOption] = useState(null);
+  const [option, setOption] = useState(props.initValue || null);
 
   const onChange = (e: any) => {
-    console.log(e)
+    console.log(e.value.code)
     props.setFieldValue(props.name, e.value.code);
     setOption(e.value);
   };
@@ -109,10 +110,10 @@ export const CountryCodeDropdown = ({ options, setFieldValue, ...rest }) => {
 };
 
 
-const userOptionTemplate = (option: { firstName: string, phoneNumber: string }) => {
+const userOptionTemplate = (option: { firstName: string | null, lastName: string | null, phoneNumber: string }) => {
   return (
     <div className='flex items-center justify-between w-full'>
-      <div className='font-bold'>{option.firstName}</div>
+      <div className='font-bold truncate w-36'>{formatName(option)}</div>
       <div>{option.phoneNumber}</div>
     </div>
   );
@@ -135,9 +136,9 @@ export const SearchableUserSelect = (props: any) => {
 
   const [field, meta, helpers] = useField(props);
 
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(props.initValue ? [props.initValue] : null);
   const [search, setSearch] = useState<string[]>([]);
-  const { data: users, refetch } = useQuery(['customers', search], () => fetchCustomers(search[0]), {
+  const { data: users, refetch } = useQuery(['customers', search], () => fetchCustomers(search[0], true), {
     // onSuccess: (data) => console.log('Data fetched:', data),
     onError: (error) => toast.error(`Error Searching For Customers: ${error}`,),
   });
@@ -147,6 +148,7 @@ export const SearchableUserSelect = (props: any) => {
     console.log(e.value);
     props.setFieldValue(props.name, e.value[0] ? e.value[0].id : null);
     setSelectedUser(e.value);
+    props.setSelectedCustomer(e.value[0])
   };
 
   const onFilter = useCallback(async (e: any) => {
@@ -159,7 +161,6 @@ export const SearchableUserSelect = (props: any) => {
         <AutoComplete
           {...props}
           multiple
-          maximum
           delay={100}
           selectionLimit={1}
           emptyMessage="No Results"
@@ -194,7 +195,7 @@ export const SearchableEmployeeSelect = (props: any) => {
 
   const [field, meta, helpers] = useField(props);
 
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(props.initValue ? [props.initValue] : null);
   const [search, setSearch] = useState<string[]>([]);
   const { data: users, refetch } = useQuery(['employees', search], () => fetchEmployees(search[0]), {
     // onSuccess: (data) => console.log('Data fetched:', data),
@@ -219,7 +220,6 @@ export const SearchableEmployeeSelect = (props: any) => {
         <AutoComplete
           {...props}
           multiple
-          maximum
           delay={100}
           selectionLimit={1}
           emptyMessage="No Results"
