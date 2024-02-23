@@ -2,7 +2,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useRouter } from 'next/navigation';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
+import { Button } from 'primereact/button';
 
 
 const tipTemplate = (rowData: any) => {
@@ -64,25 +65,53 @@ const dateTemplate = (rowData: any) => {
 export default function TransactionsTable({ transactions, isLoading }: { transactions: any[], isLoading: boolean }) {
   const router = useRouter()
   const dt = useRef(null);
-  const exportCSV = (selectionOnly) => {
-    dt.current.exportCSV({ selectionOnly });
+  const exportCSV = useCallback( (selectionOnly: boolean) => {
+    if (dt.current) { // @ts-ignore
+      dt.current.exportCSV({ selectionOnly });
+    }
+
+  }, [dt]);
+
+  const exportExcel = () => {
+    import('xlsx').then((xlsx) => {
+      const worksheet = xlsx.utils.json_to_sheet(transactions);
+      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+      const excelBuffer = xlsx.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array'
+      });
+
+      saveAsExcelFile(excelBuffer, 'transactions');
+    });
   };
 
-  // const exportExcel = () => {
-  //   import('xlsx').then((xlsx) => {
-  //     const worksheet = xlsx.utils.json_to_sheet(products);
-  //     const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-  //     const excelBuffer = xlsx.write(workbook, {
-  //       bookType: 'xlsx',
-  //       type: 'array'
-  //     });
-  //
-  //     saveAsExcelFile(excelBuffer, 'products');
-  //   });
-  // };
+  // @ts-ignore
+  const saveAsExcelFile = (buffer, fileName) => {
+    // @ts-ignore
+    import('file-saver').then((module) => {
+      if (module && module.default) {
+        let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        let EXCEL_EXTENSION = '.xlsx';
+        const data = new Blob([buffer], {
+          type: EXCEL_TYPE
+        });
+
+        module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+      }
+    });
+  };
+
+  const header = (
+    <div className="flex items-center justify-end gap-2 w-full">
+      <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" />
+      <Button type="button" icon="pi pi-file-excel" severity="success" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
+    </div>
+  );
   return (
     <div className="card">
       <DataTable
+        ref={dt}
+        header={header}
         showGridlines
         resizableColumns
         columnResizeMode="expand"

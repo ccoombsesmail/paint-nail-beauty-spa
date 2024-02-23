@@ -11,9 +11,8 @@
     "generate": "npx prisma generate --schema ./app/database/schema.prisma",
     "migrate": "npx prisma migrate dev --schema ./app/database/schema.prisma",
     "reset": "npx prisma migrate reset  --schema ./app/database/schema.prisma",
-    "vercel-build": "pnpm i && prisma generate --schema ./app/database/schema.prisma && prisma migrate deploy --schema ./app/database/schema.prisma && npm run seeder && next build",
+    "vercel-build": "pnpm i && prisma generate --schema ./app/database/schema.prisma && prisma migrate reset --schema ./app/database/schema.prisma && npm run seeder && next build",
     "postinstall": "prisma generate"
-
   },
   "dependencies": {
     "@auth/core": "^0.26.3",
@@ -34,6 +33,7 @@
     "axios": "^1.6.7",
     "eslint": "8.52.0",
     "eslint-config-next": "14.0.0",
+    "file-saver": "^2.0.5",
     "formik": "^2.4.5",
     "framer-motion": "^11.0.3",
     "js-cookie": "^3.0.5",
@@ -56,6 +56,7 @@
     "tailwindcss": "^3.3.5",
     "ts-node": "^10.9.2",
     "typescript": "5.2.2",
+    "xlsx": "^0.18.5",
     "yup": "^1.3.3"
   },
   "prettier": {
