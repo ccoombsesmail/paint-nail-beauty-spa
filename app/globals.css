@@ -1,6 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url("primereact/resources/themes/lara-light-pink/theme.css");
+@import url('primereact/resources/primereact.min.css');
+@import url("primeicons/primeicons.css");
+
 
 
 @layer tailwind-base, primereact, tailwind-utilities;
