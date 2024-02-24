@@ -22,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full bg-gray-50">
     <head>
+      <style type='text/css'>@layer tailwind-base, primereact, tailwind-utilities;</style>
       <script
         dangerouslySetInnerHTML={{
           __html: `
@@ -35,7 +36,6 @@ export default function RootLayout({
               document.querySelector('head').prepend(style.cloneNode(true))
             `,
         }}
-
       />
       <title>Paint Nail & Beauty Spa</title>
     </head>
