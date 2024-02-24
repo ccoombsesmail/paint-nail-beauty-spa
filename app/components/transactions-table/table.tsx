@@ -4,6 +4,8 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { useRouter } from 'next/navigation';
 import { useCallback, useRef } from 'react';
 import { Button } from 'primereact/button';
+import { currentUser, useUser } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 
 
 const tipTemplate = (rowData: any) => {
@@ -64,6 +66,7 @@ const dateTemplate = (rowData: any) => {
 
 export default function TransactionsTable({ transactions, isLoading }: { transactions: any[], isLoading: boolean }) {
   const router = useRouter()
+  const { user, isLoaded } = useUser()
   const dt = useRef(null);
   const exportCSV = useCallback( (selectionOnly: boolean) => {
     if (dt.current) { // @ts-ignore
@@ -107,11 +110,16 @@ export default function TransactionsTable({ transactions, isLoading }: { transac
       <Button type="button" icon="pi pi-file-excel" severity="success" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
     </div>
   );
+
+  if (!isLoaded) return null
+
+  const franchiseCode = user?.publicMetadata.franchise_code
+
   return (
     <div className="card">
       <DataTable
         ref={dt}
-        header={header}
+        header={franchiseCode === 'admin' ? header : null}
         showGridlines
         resizableColumns
         columnResizeMode="expand"

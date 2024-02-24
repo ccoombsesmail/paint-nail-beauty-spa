@@ -1,8 +1,6 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Disclosure } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 // @ts-ignore
 import logo from './icon.jpg';
@@ -20,12 +18,14 @@ function classNames(...classes: string[]) {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const isOnNotAuthorizedPage = pathname.includes('not-authorized')
 
   return (
 
     <nav className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
       <div className='flex h-16 justify-between'>
-        <div className='flex'>
+
+        { !isOnNotAuthorizedPage  ? <div className='flex'>
           <div className='flex flex-shrink-0 items-center'>
             <Image alt='PNBS' src={logo} width={50} height={50} />
           </div>
@@ -47,7 +47,10 @@ export default function Navbar() {
             ))}
           </div>
 
-        </div>
+
+        </div> : <div />
+
+        }
         <div className='flex items-center'>
           <UserButton appearance={{
 

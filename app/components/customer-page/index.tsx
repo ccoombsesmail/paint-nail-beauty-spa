@@ -100,16 +100,6 @@ export default function CustomerProfilePage() {
             <div className='flex gap-x-2'>
               <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number' />
             </div>
-            {/*<Field*/}
-            {/*  className='hidden'*/}
-            {/*  disabled*/}
-            {/*  setFieldValue={setFieldValue}*/}
-            {/*  name='membershipLevel'*/}
-            {/*  as={FloatingSelect}*/}
-            {/*  placeholder='Membership Level'*/}
-            {/*  options={enums.membershipLevel}*/}
-            {/*  valueTemplate={selectedMembershipTemplate}*/}
-            {/*/>*/}
 
             <div className='flex w-full justify-end'>
               <Button
@@ -126,7 +116,8 @@ export default function CustomerProfilePage() {
 
       <Divider className='my-12' />
 
-      {customer && <MembershipUpdate customer={customer} />}
+      {/*  @ts-ignore */}
+      {customer && <MembershipUpdate customer={customer} refetchCustomer={refetch} />}
       <Toaster richColors position='top-right'/>
 
     </Card>

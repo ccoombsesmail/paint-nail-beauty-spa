@@ -14,7 +14,7 @@ import {
 import { useMutation, useQuery } from 'react-query';
 import { createCustomer } from '../../../client-api/cutomers/customer-queries';
 import { AxiosError } from 'axios';
-import { getEnums } from '../../../client-api/enums/enum-queries';
+import { fetchCountryCodes, getEnums } from '../../../client-api/enums/enum-queries';
 import { Toaster, toast } from 'sonner';
 import SubAccountForm from './sub-account-form';
 
@@ -35,18 +35,19 @@ const validationSchema = Yup.object().shape({
   membershipLevel: Yup.string().required('Membership Level Is Required')
 });
 
-const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Promise<void> }) => {
-  const [countryCodes, setCountryCodes] = useState([]);
+const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Promise<any> }) => {
   const [showDialog, setShowDialog] = useState(false);
   const [showSubAccountForm, setShowSubAccountForm] = useState(false);
-
-  const [selectedCountryCode, setSelectedCountryCode] = useState();
   const { data: enums } = useQuery('enums', getEnums, {
     initialData: {
       membershipTypes: [],
       serviceType: [],
       serviceCategoryTypes: []
     }
+  });
+
+  const { data: countryCodes } = useQuery('country-codes', fetchCountryCodes, {
+    initialData: []
   });
 
   const { mutateAsync } = useMutation(createCustomer, {
@@ -57,16 +58,6 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
     }
 
   });
-
-  useEffect(() => {
-    const loadCountryCodes = async () => {
-      const resp = await fetch(`/api/country-codes`);
-      const data = await resp.json();
-      setCountryCodes(data.countryCodes);
-    };
-
-    loadCountryCodes();
-  }, []);
 
 
   return (

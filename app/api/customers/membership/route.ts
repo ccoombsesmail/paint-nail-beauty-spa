@@ -45,6 +45,15 @@ export async function PATCH(req: NextRequest) {
       case `${$Enums.Membership.NonMember}_${$Enums.Membership.Gold}`:
         canUpdate = true;
         break;
+      case `${$Enums.Membership.NonMember}_${$Enums.Membership.BronzeNonActive}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.NonMember}_${$Enums.Membership.SilverNonActive}`:
+        canUpdate = true;
+        break;
+      case `${$Enums.Membership.NonMember}_${$Enums.Membership.GoldNonActive}`:
+        canUpdate = true;
+        break;
       case `${$Enums.Membership.Bronze}_${$Enums.Membership.Gold}`:
         canUpdate = canUpgradeToGold(customer);
         break;

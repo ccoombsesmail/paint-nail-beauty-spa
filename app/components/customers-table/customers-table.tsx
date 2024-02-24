@@ -3,13 +3,14 @@
 import { Card, Divider } from '@tremor/react';
 import Search from './search';
 import Table from './table';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomerForm from '../forms/customer-form';
 import { LoadingSpinner } from '../loading-screen';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { useQuery } from 'react-query';
 import { ToastContainer } from 'react-toastify';
+import { toast } from 'sonner';
+import { fetchCustomers } from '../../client-api/cutomers/customer-queries';
 
-const queryClient = new QueryClient();
 
 export default function CustomersTable() {
 
@@ -17,27 +18,20 @@ export default function CustomersTable() {
 
 
   const [search, setSearch] = useState("")
-  const [customers, setCustomers] = useState([])
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fetchCustomers = useCallback(async () => {
-    try {
-      const response = await fetch(`/api/customers?search=${search}`);
-      const data = await response.json();
-      setCustomers(data?.customers || []);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }, [search])
+  const { data: customers, isLoading: isCustomersLoading, refetch } = useQuery(['customers', search], () => fetchCustomers(search), {
+    // onSuccess: (data) => console.log('Data fetched:', data),
+    onError: (error) => toast.error(`Error Searching For Customers: ${error}`,),
+  });
 
-  useEffect(() => {
-      fetchCustomers()
-  }, [fetchCustomers, search]);
+  console.log(customers)
+
+
 
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false)
-    }, 2000)
+    }, 1500)
 
   }, []);
 
@@ -46,19 +40,19 @@ export default function CustomersTable() {
 
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <div>
 
-        <CustomerForm refetchCustomers={fetchCustomers}/>
+        <CustomerForm refetchCustomers={refetch} />
         <Divider />
         <Search setSearch={setSearch} />
-        <Card className="mt-6">
-          <Table customers={customers}  />
+        <Card className='mt-6'>
+          <Table customers={customers} isCustomersLoading={isCustomersLoading} />
         </Card>
       </div>
       <ToastContainer hideProgressBar={true} />
+    </>
 
-    </QueryClientProvider>
 
   );
 }

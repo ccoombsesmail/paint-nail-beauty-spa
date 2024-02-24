@@ -2,11 +2,9 @@
 
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Decimal } from '@prisma/client/runtime/library';
 import prisma from '../../database/prismaClient';
 import { $Enums, Customer, Prisma } from '@prisma/client';
-import { membershipTypeEnumMap } from '../../types/enums';
-import { auth } from '@clerk/nextjs';
+import { bronzeOrNonActiveBronze, membershipTypeEnumMap } from '../../types/enums';
 import { currentUser } from '@clerk/nextjs/server';
 
 
@@ -137,7 +135,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             })
         }
 
-        if (createCustomerPayload.membershipLevel === $Enums.Membership.Bronze && !createCustomerPayload.serviceCategorySelection) {
+        if (bronzeOrNonActiveBronze.includes(createCustomerPayload.membershipLevel) && !createCustomerPayload.serviceCategorySelection) {
             return new NextResponse(JSON.stringify({ error: "Failed To Create Customer. \n Bronze Members Must Select A Service Category"}), {
                 headers: { "content-type": "application/json" },
                 status: 400,

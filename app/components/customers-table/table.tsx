@@ -145,7 +145,7 @@ const rowExpansionTemplate = (data: any) => {
   );
 };
 
-export default function CustomersTable({ customers }: { customers: Customer[] }) {
+export default function CustomersTable({ customers, isCustomersLoading }: { customers: Customer[], isCustomersLoading: boolean }) {
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
 
   const router = useRouter()
@@ -166,6 +166,7 @@ export default function CustomersTable({ customers }: { customers: Customer[] })
         rows={10}
         rowsPerPageOptions={[10, 25, 50]}
         value={customers}
+        loading={isCustomersLoading}
         tableStyle={{ minWidth: '50rem' }}>
         <Column field="" header="" body={(customer) => editTemplate(customer, router)} />
         <Column expander={allowExpansion} style={{ width: '5rem' }} />

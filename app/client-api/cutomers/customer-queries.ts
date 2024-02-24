@@ -27,7 +27,6 @@ export const editMembership = async (membershipPatchData: any) => {
 
 
 export const fetchCustomers = async (search: string | null, all: boolean = false) => {
-  if (!search) return []
   const { data } = await axiosClient.get(`/customers?search=${search}&all=${all}`);
   // Or use your custom Axios instance: const { data } = await api.get(`/customers?search=${search}`);
   return data.customers || [];

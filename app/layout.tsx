@@ -21,8 +21,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
-
   return (
     <html lang="en" className="h-full bg-gray-50">
     <head>
@@ -43,6 +41,7 @@ export default function RootLayout({
           <Suspense>
               <Nav />
           </Suspense>
+
             {children}
           <Analytics />
 

@@ -14,22 +14,30 @@ import { formatDate } from '../../../utils/format-date';
 import { editMembership } from '../../../client-api/cutomers/customer-queries';
 import { AxiosError } from 'axios';
 import { toast, Toaster } from 'sonner';
-import { reversedMembershipTypeEnumMap } from '../../../types/enums';
+import {
+  belowBronze,
+  belowGold, belowSilver,
+  bronzeOrHigher,
+  bronzeOrSilver,
+  nonActiveMembershipLevels,
+  reversedMembershipTypeEnumMap
+} from '../../../types/enums';
 
-const nonActiveMembershipLevels = [$Enums.Membership.GoldNonActive, $Enums.Membership.SilverNonActive, $Enums.Membership.BronzeNonActive]
-const bronzeOrHigher = [$Enums.Membership.Bronze, $Enums.Membership.Silver, $Enums.Membership.Gold]
-export default function MembershipUpdate({ customer } : { customer: Customer}) {
+export default function MembershipUpdate({ customer, refetchCustomer } : { customer: Customer, refetchCustomer: () => Promise<Customer>}) {
   const [option, setOption] = useState({
     name: customer.membershipLevel,
     code: customer.membershipLevel.replaceAll(' ', '').replace('(', '').replace(')', '')
   });
 
   const { mutateAsync } = useMutation(editMembership, {
-    onSuccess: (data) => {
-      console.log(data)
+    onSuccess: async (data) => {
+      const customer = await refetchCustomer()
+      // @ts-ignore
       setOption({
-        name: data.membershipLevel,
-        code: data.membershipLevel
+        // @ts-ignore
+        name: customer.data.membershipLevel,
+        // @ts-ignore
+        code: customer.data.membershipLevel.replaceAll(' ', '').replace('(', '').replace(')', '')
       })
     },
   });
@@ -40,58 +48,69 @@ export default function MembershipUpdate({ customer } : { customer: Customer}) {
       paymentMethodTypes: []
     }
   });
-  const [customerInfo, setCustomerInfo] = useState<Customer>(customer)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const daysSinceStartDate = useMemo(() => {
-    if (!customerInfo.membershipActivationDate) return Number.MIN_VALUE
+    if (!customer.membershipActivationDate) return Number.MIN_VALUE
     const now = new Date();
-    const membershipActivationDate = new Date(customerInfo.membershipActivationDate);
+    const membershipActivationDate = new Date(customer.membershipActivationDate);
     const diffTime = Math.abs(now.getTime() - membershipActivationDate.getTime() || 0);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }, [customerInfo])
+  }, [customer])
 
   const onChange = (e: any) => {
     setOption(e.value)
   }
   const allowedOptions = useMemo(() => enums.membershipTypes.map((option: {name: string, code: string}) => {
     // const membershipLevelCode = reversedMembershipTypeEnumMap.get()
+    const customerCurrentMembeshipCode = reversedMembershipTypeEnumMap.get(customer.membershipLevel)
+    if (customerCurrentMembeshipCode === option.code) return option
+    if (customerCurrentMembeshipCode === $Enums.Membership.Gold &&  belowGold.includes(option.code)) {
+      return {
+        ...option,
+        disabled: true
+      }
+    }
 
-    if (reversedMembershipTypeEnumMap.get(customerInfo.membershipLevel) === option.code) return option
-    if (reversedMembershipTypeEnumMap.get(customerInfo.membershipLevel) === $Enums.Membership.Gold && option.code !== $Enums.Membership.Gold) {
+    if (customerCurrentMembeshipCode === $Enums.Membership.Silver && belowSilver.includes(option.code)) {
       return {
         ...option,
         disabled: true
       }
     }
-    if (reversedMembershipTypeEnumMap.get(customerInfo.membershipLevel) === $Enums.Membership.GoldNonActive && option.code !== $Enums.Membership.Gold){
-      console.log(reversedMembershipTypeEnumMap.get(customerInfo.membershipLevel))
+
+    if (customerCurrentMembeshipCode === $Enums.Membership.Bronze && belowBronze.includes(option.code)) {
       return {
         ...option,
         disabled: true
       }
     }
-    if (reversedMembershipTypeEnumMap.get(customerInfo.membershipLevel) === $Enums.Membership.SilverNonActive && option.code !== $Enums.Membership.Silver){
+    if (customerCurrentMembeshipCode === $Enums.Membership.GoldNonActive && option.code !== $Enums.Membership.Gold){
       return {
         ...option,
         disabled: true
       }
     }
-    if (reversedMembershipTypeEnumMap.get(customerInfo.membershipLevel) === $Enums.Membership.BronzeNonActive && option.code !== $Enums.Membership.Bronze){
+    if (customerCurrentMembeshipCode === $Enums.Membership.SilverNonActive && option.code !== $Enums.Membership.Silver){
       return {
         ...option,
         disabled: true
       }
     }
-    if (!customerInfo.membershipPurchaseDate) return option
-    if (customerInfo.membershipLevel === "Bronze" && option.name === "Silver") {
+    if (customerCurrentMembeshipCode === $Enums.Membership.BronzeNonActive && option.code !== $Enums.Membership.Bronze){
       return {
         ...option,
         disabled: true
       }
     }
-    console.log(daysSinceStartDate)
+    if (!customer.membershipPurchaseDate) return option
+    if (customer.membershipLevel === "Bronze" && option.name === "Silver") {
+      return {
+        ...option,
+        disabled: true
+      }
+    }
     if ((daysSinceStartDate >= 60 && option.name === "Gold")) {
       return {
         ...option,
@@ -106,16 +125,16 @@ export default function MembershipUpdate({ customer } : { customer: Customer}) {
       }
     }
     return option
-  }), [enums.membershipTypes, customerInfo.membershipLevel, customerInfo.membershipPurchaseDate, daysSinceStartDate, customer.membershipLevel])
+  }), [enums.membershipTypes, customer.membershipLevel, daysSinceStartDate])
 
 
   const onConfirmClick = async () => {
     try {
 
-      const payload = { customerId: customerInfo.id, newMembershipLevel: option.code}
+      const payload = { customerId: customer.id, newMembershipLevel: option.code}
       toast.promise(mutateAsync(payload), {
         loading: 'Updating Membership...',
-        success: (data: any) => {
+        success: async (data: any) => {
           return `Membership has been updated`;
         },
         error: (data: AxiosError<{ error: string }>) => {
@@ -141,9 +160,31 @@ export default function MembershipUpdate({ customer } : { customer: Customer}) {
     });
   };
 
+  const { text1, text2 } = useMemo(() => {
+    let text1 = '', text2 = ''
+    const customerMembershipLevelCode = reversedMembershipTypeEnumMap.get(customer.membershipLevel) || ''
+    if (customerMembershipLevelCode === $Enums.Membership.NonMember) {
+      return { text1: 'Not A Member', text2: '' }
+    }
+    if (nonActiveMembershipLevels.includes(customerMembershipLevelCode)) {
+      return { text1: 'Not Active', text2: 'Waiting For Activation' }
+    }
+    if (bronzeOrSilver.includes(customerMembershipLevelCode) && customer.membershipActivationDate) {
+      const eligibleForUpgrade = daysSinceStartDate <= 60
+      if (eligibleForUpgrade) {
+        text2 = `${60 - daysSinceStartDate} Days Left To Upgrade`
+      } else {
+        text2 ='Upgrade Period Has Passed'
+      }
+      return { text1: `Activated ${formatDate(new Date(customer.membershipActivationDate))}`, text2 }
+    }
+    if (customerMembershipLevelCode === $Enums.Membership.Gold) {
+      return { text1: `Full Membership`, text2: '' }
+    }
+    return { text1, text2 }
+  }, [daysSinceStartDate, customer])
 
-  const isBronzeOrSilver = reversedMembershipTypeEnumMap.get(customerInfo.membershipLevel) === $Enums.Membership.Bronze || reversedMembershipTypeEnumMap.get(customerInfo.membershipLevel) === $Enums.Membership.Silver
-  const showDaysLeftToActive = customer.membershipActivationDate && daysSinceStartDate <= 60 && isBronzeOrSilver
+
   return (
 
     <Panel header="Update Customer Membership">
@@ -152,11 +193,11 @@ export default function MembershipUpdate({ customer } : { customer: Customer}) {
         <div className='flex  items-center'>
         <div className='flex relative flex-col items-center mr-4'>
 
-          <span className='p-button p-component p-button-raised p-button-text h-[48px]'>
-             {customer.membershipActivationDate ? `Activated ${formatDate(new Date(customer.membershipActivationDate))}` : 'Not Activated'}
+          <span className='flex justify-center p-button p-component p-button-raised p-button-text h-[48px] min-w-[220px]'>
+             {text1}
           </span>
           <span className='mx-4 text-red-500 font-semibold absolute bottom-0 translate-y-[30px]'>
-            {showDaysLeftToActive ? `${60 - daysSinceStartDate} Days Left To Upgrade` : 'Not Eligible To Upgrade'}
+            {text2}
           </span>
 
         </div>
