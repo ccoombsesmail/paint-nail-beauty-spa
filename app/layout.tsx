@@ -6,11 +6,11 @@ import Nav from './nav';
 import { Suspense } from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
 
-export const metadata = {
-  title: 'Paint Nail',
-  description:
-    'A dashboard for PNBS'
-};
+// export const metadata = {
+//   title: 'Paint Nail',
+//   description:
+//     'A dashboard for PNBS'
+// };
 
 
 export default function RootLayout({
@@ -18,6 +18,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <html lang="en" className="h-full bg-gray-50">
     <head>
@@ -28,7 +29,10 @@ export default function RootLayout({
               style.innerHTML = '@layer tailwind-base, primereact, tailwind-utilities;'
               style.setAttribute('type', 'text/css')
               setTimeout(() => document.querySelector('head').prepend(style), 2000)
-              
+              document.querySelector('head').prepend(style.cloneNode(true))
+              document.querySelector('head').prepend(style.cloneNode(true))
+              document.querySelector('head').prepend(style.cloneNode(true))
+              document.querySelector('head').prepend(style.cloneNode(true))
             `,
         }}
       />
