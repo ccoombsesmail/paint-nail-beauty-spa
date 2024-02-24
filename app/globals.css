@@ -1,5 +1,4 @@
 
-@tailwind base;
 
 @layer tailwind-base, primereact, tailwind-utilities;
 
@@ -8,11 +7,8 @@
 }
 
 @layer tailwind-utilities {
-    /* purgecss start ignore */
     @tailwind components;
     @tailwind utilities;
-    /* purgecss end ignore */
-
 }
 
 

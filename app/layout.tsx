@@ -1,7 +1,7 @@
+import './globals.css';
 import "primereact/resources/themes/lara-light-pink/theme.css";
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css';
-import './globals.css';
 
 
 import { Analytics } from '@vercel/analytics/react';
@@ -30,7 +30,8 @@ export default function RootLayout({
               const style = document.createElement('style')
               style.innerHTML = '@layer tailwind-base, primereact, tailwind-utilities;'
               style.setAttribute('type', 'text/css')
-              document.querySelector('head').prepend(style)
+              setTimeout(() => document.querySelector('head').prepend(style), 2000)
+              
             `,
         }}
       />
