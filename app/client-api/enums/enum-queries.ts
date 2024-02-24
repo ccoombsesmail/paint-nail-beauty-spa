@@ -8,5 +8,5 @@ export const getEnums = async () => {
 
 export const fetchCountryCodes = async () => {
   const { data } = await axiosClient.get('country-codes');
-  return data.enums;
+  return data.countryCodes;
 }
