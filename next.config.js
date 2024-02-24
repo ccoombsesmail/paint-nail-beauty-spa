@@ -12,8 +12,7 @@ const nextConfig = {
       }
     ]
   },
-  pageExtensions: process.env["CC_SITE_ID"] ? ["static.tsx"] : ["server.tsx"],
-
+  // pageExtensions: process.env["CC_SITE_ID"] ? ["static.tsx"] : ["server.tsx"]
 };
 
 module.exports = nextConfig;
