@@ -35,10 +35,26 @@ export default function RootLayout({
               document.querySelector('head').prepend(style.cloneNode(true))
             `,
         }}
+
       />
       <title>Paint Nail & Beauty Spa</title>
     </head>
       <body className="h-full">
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+              const style = document.createElement('style')
+              style.innerHTML = '@layer tailwind-base, primereact, tailwind-utilities;'
+              style.setAttribute('type', 'text/css')
+              setTimeout(() => document.querySelector('head').prepend(style), 2000)
+              document.querySelector('head').prepend(style.cloneNode(true))
+              document.querySelector('head').prepend(style.cloneNode(true))
+              document.querySelector('head').prepend(style.cloneNode(true))
+              document.querySelector('head').prepend(style.cloneNode(true))
+            `,
+        }}
+
+      />
       <ClerkProvider>
           <Suspense>
               <Nav />
