@@ -16,6 +16,7 @@ import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { NextRouter } from 'next/router';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import Link from 'next/link';
 
 interface Customer {
   id: string;
@@ -111,7 +112,14 @@ const editTemplate = (customer: { membershipLevel: string, id: string }, router:
 
 const cashbackBalanceTemplate = (rowData: any) => {
   return (
-    <span>${rowData.cashbackBalance}</span>
+    <div className='flex justify-around items-center'>
+      <span>${rowData.cashbackBalance}</span>
+      <Link href='customers/transactions' className='flex justify-around items-center p-button p-component p-button-raised p-button-text py-1'>
+        <span className='mr-2 underline'>Audit</span>
+        <i className='pi pi-external-link' />
+      </Link>
+    </div>
+
   )
 }
 
