@@ -4,7 +4,6 @@ import { silverOrGold } from '../../../types/enums';
 
 const prisma = new PrismaClient()
 
-const nonActiveMembershipLevels = [$Enums.Membership.GoldNonActive, $Enums.Membership.SilverNonActive, $Enums.Membership.BronzeNonActive]
 export async function PATCH(req: NextRequest) {
 
   try {
@@ -90,10 +89,10 @@ export async function PATCH(req: NextRequest) {
 
 
     const result = await prisma.$transaction(async (tx) => {
-      const updatedUser = await prisma.customer.update({
+      const updatedUser = await tx.customer.update({
         where: { id: body.fromCustomerId },
         data: {
-          transferInitiatedOn: new Date(),
+          membershipTransferInitiatedOn: new Date(),
           canTransferMembership: false,
           membershipLevel: $Enums.Membership.NonMember,
           membershipPurchaseDate: null,
@@ -101,19 +100,19 @@ export async function PATCH(req: NextRequest) {
         },
       });
       if (fromCustomer.subAccount) {
-        await prisma.customer.update({
+        await tx.customer.update({
           where: { id: fromCustomer.subAccount.id },
           data: {
             parentId: null,
             canTransferMembership: false,
-            transferInitiatedOn: new Date()
+            membershipTransferInitiatedOn: new Date()
           },
         });
       }
-      await prisma.customer.update({
+      await tx.customer.update({
         where: { id: body.toCustomerId },
         data: {
-          transferReceivedOn: new Date(),
+          membershipTransferReceivedOn: new Date(),
           canTransferMembership: false,
           membershipLevel: fromCustomer.membershipLevel,
           membershipActivationDate: fromCustomer.membershipActivationDate,

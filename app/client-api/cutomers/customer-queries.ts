@@ -30,6 +30,11 @@ export const transferMembership = async (membershipPatchData: {fromCustomerId: s
   return data;
 };
 
+export const transferBalance = async (membershipPatchData: {fromCustomerId: string, toCustomerId: string}) => {
+  const { data } = await axiosClient.patch('customers/balance-transfer', membershipPatchData);
+  return data;
+};
+
 export const fetchCustomers = async (search: string | null, all: boolean = false) => {
   const { data } = await axiosClient.get(`/customers?search=${search}&all=${all}`);
   // Or use your custom Axios instance: const { data } = await api.get(`/customers?search=${search}`);

@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../database/prismaClient';
 import { $Enums, Customer, Prisma } from '@prisma/client';
-import { bronzeOrNonActiveBronze, membershipTypeEnumMap } from '../../types/enums';
+import { bronzeOrNonActiveBronze, membershipTypeEnumMap, silverOrGold } from '../../types/enums';
 import { currentUser } from '@clerk/nextjs/server';
 
 
@@ -159,6 +159,20 @@ export async function POST(req: NextRequest, res: NextResponse) {
         const mainUser: Customer = mainUserInfo
 
         let membershipDates = {}
+        let canTransferValues = {}
+
+        if (silverOrGold.includes(mainUser.membershipLevel)) {
+            canTransferValues = {
+                canTransferMembership: true,
+            }
+        }
+        if (mainUser.membershipLevel === $Enums.Membership.Gold) {
+            canTransferValues = {
+                canTransferMembership: true,
+                canTransferCashbackBalance: true
+            }
+        }
+
 
         switch (mainUser.membershipLevel) {
             case $Enums.Membership.GoldNonActive:
@@ -199,17 +213,18 @@ export async function POST(req: NextRequest, res: NextResponse) {
         }
         const result = await prisma.$transaction(async (tx) => {
 
-            const createdCustomer = await prisma.customer.create({
+            const createdCustomer = await tx.customer.create({
                 data: {
                     ...mainUserInfo,
                     serviceCategorySelection: mainUserInfo.serviceCategorySelection || null,
                     createdAtFranchiseCode: franchise_code,
-                    ...membershipDates
+                    ...membershipDates,
+                      ...canTransferValues
                 },
             });
 
             if (subAccountInfo) {
-                await prisma.customer.create({
+                await tx.customer.create({
                     data: {
                         ...subAccountInfo,
                         membershipLevel: createdCustomer.membershipLevel,

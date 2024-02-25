@@ -7,20 +7,19 @@ import {
   SearchableUserSelectNonFormik
 } from '../../forms/formik/selects';
 import { Button } from 'primereact/button';
-import { Customer } from '@prisma/client';
+import { $Enums, Customer } from '@prisma/client';
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
-import { useMutation, useQuery } from 'react-query';
-import { editMembership, transferMembership } from '../../../client-api/cutomers/customer-queries';
+import { useMutation } from 'react-query';
+import { transferBalance } from '../../../client-api/cutomers/customer-queries';
 import { AxiosError } from 'axios';
 import { toast, Toaster } from 'sonner';
-import { belowSilver, silverOrGold } from '../../../types/enums';
 
 
-export default function MembershipTransfer({ customer, refetchCustomer }: { customer: Customer, refetchCustomer: () => Promise<Customer> }) {
+export default function BalanceTransfer({ customer, refetchCustomer }: { customer: Customer, refetchCustomer: () => Promise<Customer> }) {
   const [selectedFromCustomer, setSelectedFromCustomer] = useState<Customer | null>(customer);
   const [selectedToCustomer, setSelectedToCustomer] = useState<Customer | null>(null);
 
-  const { mutateAsync } = useMutation(transferMembership, {
+  const { mutateAsync } = useMutation(transferBalance, {
     onSuccess: async (data) => {
       const customer = await refetchCustomer();
 
@@ -29,14 +28,6 @@ export default function MembershipTransfer({ customer, refetchCustomer }: { cust
 
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const daysSinceStartDate = useMemo(() => {
-    if (!customer.membershipActivationDate) return Number.MIN_VALUE
-    const now = new Date();
-    const membershipActivationDate = new Date(customer.membershipActivationDate);
-    const diffTime = Math.abs(now.getTime() - membershipActivationDate.getTime() || 0);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }, [customer])
 
 
   const onConfirmClick = async () => {
@@ -47,9 +38,9 @@ export default function MembershipTransfer({ customer, refetchCustomer }: { cust
       }
       const payload = { fromCustomerId: selectedFromCustomer.id, toCustomerId: selectedToCustomer.id };
       toast.promise(mutateAsync(payload), {
-        loading: 'Transferring Membership...',
+        loading: 'Transferring Balance...',
         success: async (data: any) => {
-          return `Membership has been transferred`;
+          return `Balance has been transferred`;
         },
         error: (data: AxiosError<{ error: string }>) => {
           return `${data.response?.data.error}`;
@@ -66,7 +57,7 @@ export default function MembershipTransfer({ customer, refetchCustomer }: { cust
   const openConfirmPopup = (event: any) => {
     confirmPopup({
       target: event.currentTarget,
-      message: 'Are you sure you want to proceed? Membership can only be transferred once',
+      message: 'Are you sure you want to proceed? Cashback Balance can only be transferred once',
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'accept',
       className: 'max-w-64',
@@ -75,27 +66,39 @@ export default function MembershipTransfer({ customer, refetchCustomer }: { cust
   };
 
 
+  const { reason, memberCanTransfer } = useMemo(() => {
 
-  const { reason, memberCanTransfer} = useMemo(() => {
+    if (customer.membershipLevel !== $Enums.Membership.Gold) {
+      return { reason: 'Only Activated Gold Members Can Transfer Their Cashback Balance', memberCanTransfer: false };
+    }
+    if (Number(customer.cashbackBalance) === 0) {
+      return { reason: 'No Balance To Transfer', memberCanTransfer: false };
+    }
+    if (customer.cashbackBalanceTransferInitiatedOn) {
+      return { reason: 'Cashback Balance Can Only Be Transferred Once', memberCanTransfer: false };
+    }
+    if (!customer.canTransferCashbackBalance) {
+      return { reason: 'Cashback Balance Cannot Be Transferred', memberCanTransfer: false };
+    }
+    return { reason: '', memberCanTransfer: true };
+  }, [customer.canTransferCashbackBalance, customer.cashbackBalanceTransferInitiatedOn, customer.membershipLevel]);
 
-    if (!silverOrGold.includes(customer.membershipLevel)) {
-      return {reason: "Only Activated Silver Or Gold Members Can Transfer Their Membership", memberCanTransfer: false}
-    }
-    if (customer.membershipTransferReceivedOn) {
-      return {reason: "Membership Can Only Be Transferred Once", memberCanTransfer: false}
-    }
-    if (daysSinceStartDate > 365) {
-      return {reason: "Membership Can Only Be Transferred Within The First Year", memberCanTransfer: false}
-    }
-    if (!customer.canTransferMembership) {
-      return {reason: "Membership Cannot Be Transferred", memberCanTransfer: false}
-    }
-    return {reason: '', memberCanTransfer: true}
-  }, [customer.canTransferMembership, customer.membershipLevel, customer.membershipTransferReceivedOn, daysSinceStartDate])
+  const headerTemplate = useMemo(() => {
+    return (
+      <div className='flex flex-col gap-6'>
+       <span>
+        Transfer Customer Cashback Balance
+      </span>
+        <span>
+          Current Balance: {Number(customer.cashbackBalance)}
+        </span>
+      </div>
 
+    );
+  }, [customer.cashbackBalance]);
   return (
 
-    <Panel header='Transfer Customer Membership'>
+    <Panel header={headerTemplate}>
 
       <div className='mt-4 flex w-full justify-between pb-20'>
         {memberCanTransfer ? (
@@ -147,7 +150,7 @@ export default function MembershipTransfer({ customer, refetchCustomer }: { cust
         )}
         <ConfirmPopup />
 
-        <Button loading={isSubmitting} disabled={isSubmitting || !memberCanTransfer} onClick={openConfirmPopup} label='Transfer Membership'
+        <Button loading={isSubmitting} disabled={isSubmitting || !memberCanTransfer} onClick={openConfirmPopup} label='Transfer Balance'
                 className='h-[48px]' />
       </div>
 

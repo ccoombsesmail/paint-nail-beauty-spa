@@ -9,16 +9,6 @@ import { membershipTypeEnumMap } from '../../types/enums';
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
 
-interface Employee {
-    id: string;
-    firstName: string;
-    lastName?: string | null;
-    phoneNumber: string,
-    dialCode: string,
-    cashbackBalance: Decimal,
-    email: string;
-    membershipLevel: $Enums.Membership
-}
 
 
 export async function GET(req: NextRequest){
