@@ -81,7 +81,7 @@ export default function BalanceTransfer({ customer, refetchCustomer }: { custome
       return { reason: 'Cashback Balance Cannot Be Transferred', memberCanTransfer: false };
     }
     return { reason: '', memberCanTransfer: true };
-  }, [customer.canTransferCashbackBalance, customer.cashbackBalanceTransferInitiatedOn, customer.membershipLevel]);
+  }, [customer.canTransferCashbackBalance, customer.cashbackBalance, customer.cashbackBalanceTransferInitiatedOn, customer.membershipLevel]);
 
   const headerTemplate = useMemo(() => {
     return (

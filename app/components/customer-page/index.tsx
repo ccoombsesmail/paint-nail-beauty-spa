@@ -17,6 +17,7 @@ import { getEnums } from '../../client-api/enums/enum-queries';
 import { AxiosError } from 'axios/index';
 import MembershipTransfer from './membership-transfer';
 import BalanceTransfer from './balance-transfer';
+import AddSubAccount from './add-sub-account';
 
 
 const validationSchema = Yup.object().shape({
@@ -119,6 +120,11 @@ export default function CustomerProfilePage() {
       <Divider className='my-12' />
 
       {/*  @ts-ignore */}
+      {customer && <AddSubAccount customer={customer} refetchCustomer={refetch} />}
+
+      <Divider className='my-12' />
+
+      {/*  @ts-ignore */}
       {customer && <MembershipUpdate customer={customer} refetchCustomer={refetch} />}
       <Divider className='my-12' />
 
@@ -129,6 +135,7 @@ export default function CustomerProfilePage() {
       {/*  @ts-ignore */}
       {customer && <BalanceTransfer customer={customer} refetchCustomer={refetch} />}
       <Toaster richColors position='top-right'/>
+
 
     </Card>
 

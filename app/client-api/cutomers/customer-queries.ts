@@ -30,6 +30,12 @@ export const transferMembership = async (membershipPatchData: {fromCustomerId: s
   return data;
 };
 
+export const addSubAccount = async (membershipPatchData: any) => {
+  const { customerId, values: patchDataPayload } = membershipPatchData
+  const { data } = await axiosClient.patch(`customers/${customerId}/add-sub-account`, patchDataPayload);
+  return data;
+};
+
 export const transferBalance = async (membershipPatchData: {fromCustomerId: string, toCustomerId: string}) => {
   const { data } = await axiosClient.patch('customers/balance-transfer', membershipPatchData);
   return data;
