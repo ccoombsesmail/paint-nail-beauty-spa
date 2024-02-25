@@ -25,6 +25,10 @@ export const editMembership = async (membershipPatchData: any) => {
   return data;
 };
 
+export const transferMembership = async (membershipPatchData: {fromCustomerId: string, toCustomerId: string}) => {
+  const { data } = await axiosClient.patch('customers/membership-transfer', membershipPatchData);
+  return data;
+};
 
 export const fetchCustomers = async (search: string | null, all: boolean = false) => {
   const { data } = await axiosClient.get(`/customers?search=${search}&all=${all}`);

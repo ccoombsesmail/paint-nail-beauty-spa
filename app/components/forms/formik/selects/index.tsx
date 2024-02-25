@@ -7,6 +7,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 import { toast } from 'sonner';
 import { fetchEmployees } from '../../../../client-api/employees/employee-queries';
 import { formatName } from '../../../../utils/format-name';
+import { Customer } from '@prisma/client';
 
 
 export const selectedMembershipTemplate = (option: { name: string, code: string }) => {
@@ -145,7 +146,6 @@ export const SearchableUserSelect = (props: any) => {
 
 
   const onChange = (e: any) => {
-    console.log(e.value);
     props.setFieldValue(props.name, e.value[0] ? e.value[0].id : null);
     setSelectedUser(e.value);
     props.setSelectedCustomer(e.value[0])
@@ -244,6 +244,63 @@ export const SearchableEmployeeSelect = (props: any) => {
         </span>
 
       {meta.error && meta.touched ? (<span className='text-red-500 ml-2 text-sm'>{meta.error}</span>) : null}
+    </div>
+
+  );
+};
+
+
+
+export const SearchableUserSelectNonFormik = (props: any) => {
+
+
+  const [selectedUser, setSelectedUser] = useState( props.initValue ? [props.initValue] : null);
+  const [search, setSearch] = useState<string[]>([]);
+  const { data: users, refetch } = useQuery(['customers', search], () => fetchCustomers(search[0], false), {
+    // onSuccess: (data) => console.log('Data fetched:', data),
+    onError: (error) => toast.error(`Error Searching For Customers: ${error}`,),
+  });
+
+
+
+  const onChange = (e: any) => {
+    setSelectedUser(e.value);
+    props.setSelectedCustomer(e.value[0])
+  };
+
+  const onFilter = useCallback(async (e: any) => {
+    setSearch([e.query])
+    await refetch(e.query)
+  }, [refetch])
+  return (
+    <div className={` ${props.width ? props.width : 'w-[14rem]'}`}>
+      <span className={`p-float-label ${props.className}  ${props.width ? props.width : 'w-[14rem]'}`}>
+        <AutoComplete
+          multiple
+          delay={100}
+          selectionLimit={1}
+          emptyMessage="No Results"
+          showEmptyMessage
+          value={selectedUser}
+          suggestions={props.fromCustomer ? users?.filter((u: Customer) => u.id !== props.fromCustomer.id) : users}
+          itemTemplate={userOptionTemplate}
+          selectedItemTemplate={selectedUserTemplate}
+          completeMethod={onFilter}
+          forceSelection
+          onChange={onChange}
+          className={`max-h-[50px] no-input-border  ${props.width ? props.width : 'w-[14rem]'}`}
+          disabled={props.disabled}
+          pt={{
+            input: {
+              className: `${props.width ? props.width : 'w-[14rem]'}`
+            }
+
+          }}
+        />
+
+           <label htmlFor={props.name}>{props.placeholder}</label>
+        </span>
+
     </div>
 
   );

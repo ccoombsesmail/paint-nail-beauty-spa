@@ -44,6 +44,9 @@ model Customer {
   createdAtFranchiseCode   String           @map("created_at_franchise_code")
   parentId                 String?          @unique @db.VarChar(300)
   serviceCategorySelection ServiceCategory? @map("service_category_selection")
+  canTransferMembership    Boolean          @default(true) @map("can_transfer_membership")
+  transferInitiatedOn      DateTime?        @map("transfer_initiated_on")
+  transferReceivedOn       DateTime?        @map("transfer_received_on")
   createdAt                DateTime         @default(now()) @map("created_at")
   updatedAt                DateTime         @updatedAt @map("updated_at")
 

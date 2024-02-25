@@ -140,6 +140,8 @@ const rowExpansionTemplate = (data: any) => {
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>
         <Column field="phoneNumber" header="Phone Number" ></Column>
+        <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance" ></Column>
+
       </DataTable>
     </div>
   );

@@ -125,7 +125,7 @@ export default function MembershipUpdate({ customer, refetchCustomer } : { custo
       }
     }
     return option
-  }), [enums.membershipTypes, customer.membershipLevel, daysSinceStartDate])
+  }), [enums.membershipTypes, customer.membershipLevel, customer.membershipPurchaseDate, daysSinceStartDate])
 
 
   const onConfirmClick = async () => {
