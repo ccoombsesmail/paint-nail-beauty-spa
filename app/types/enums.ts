@@ -6,6 +6,8 @@ export const nonActiveMembershipLevels = [$Enums.Membership.GoldNonActive.toStri
 export const bronzeOrHigher = [$Enums.Membership.Bronze.toString(), $Enums.Membership.Silver.toString(), $Enums.Membership.Gold.toString()]
 export const bronzeOrSilver = [$Enums.Membership.Bronze.toString(), $Enums.Membership.Silver.toString()]
 
+export const silverOrGold = [$Enums.Membership.Gold.toString(), $Enums.Membership.Silver.toString()]
+
 export const belowGold = [$Enums.Membership.Silver.toString(), $Enums.Membership.Bronze.toString(), $Enums.Membership.NonMember.toString(), ...nonActiveMembershipLevels]
 
 export const belowSilver = [$Enums.Membership.Bronze.toString(), $Enums.Membership.NonMember.toString(), ...nonActiveMembershipLevels]

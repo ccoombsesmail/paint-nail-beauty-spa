@@ -246,12 +246,11 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
         throw new Error('Customer not found');
       }
       let newCashbackBalance = Number(customer.cashbackBalance) + (.01 * difference);
-      console.log(newCashbackBalance)
       await tx.customer.update({
         where: { id: customerId },
         data: { cashbackBalance: newCashbackBalance },
       });
-      return await prisma.transaction.update({
+      return await tx.transaction.update({
         where: { id: body.id },
         data: {
           customerId,

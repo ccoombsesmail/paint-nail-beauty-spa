@@ -11,7 +11,7 @@ export default authMiddleware({
   async afterAuth(auth, req, evt) {
     // Handle users who aren't authenticated
 
-    const token = await auth.getToken({ template: 'franchise_code'}) || ''
+    const token = await auth.getToken({ template: 'franchise_code'})
 
     if (token) {
       const payload = decodeJwt(token)

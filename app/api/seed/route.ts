@@ -43,8 +43,6 @@ const deleteEmployees = async () => {
 
   const employees = await clerkClient.users.getUserList({limit: 500})
 
-  console.log(employees.length)
-  console.log(employees[0])
 
   for (const employee of employees) {
     await clerkClient.users.deleteUser(employee.id)
@@ -55,13 +53,24 @@ const deleteEmployees = async () => {
 export async function GET(req: NextRequest){
   const searchParams = req.nextUrl.searchParams
   const action = searchParams.get('action')
-  if (action === "create") {
-    await seedEmployees()
-  } else if (action === "delete") {
-    await deleteEmployees()
+  const pw = searchParams.get('pw')
+  if (pw !== 'seedme') {
+    return NextResponse.json({success: false, error: "Wrong Password"})
   }
-  console.log("Done Seeding")
-  return NextResponse.json({})
+  try {
+    if (action === "create") {
+      await seedEmployees()
+    } else if (action === "delete") {
+      await deleteEmployees()
+    }
+    console.log(`Done Seeding. Action = ${action}`)
+    return NextResponse.json({success: true})
+  } catch (e) {
+    console.log(`Failed Seeding. Action = ${action}`)
+    return NextResponse.json({success: false, error: e})
+
+  }
+
 }
 
 

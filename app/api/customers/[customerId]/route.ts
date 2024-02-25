@@ -16,6 +16,10 @@ export async function GET(req: NextRequest, { params }: { params: { customerId: 
     where: {
       id: customerId,
     },
+    include: {
+      subAccount: true,
+      parent: true
+    }
   });
 
   if (!customer) {

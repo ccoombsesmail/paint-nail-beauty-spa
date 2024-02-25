@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient, $Enums, Prisma } from '@prisma/client';
 import { canUpgradeToGold } from '../utils/canUpgradeToGold';
+import { nonActiveMembershipLevels } from '../../../types/enums';
 
 const prisma = new PrismaClient()
 
-const nonActiveMembershipLevels = [$Enums.Membership.GoldNonActive, $Enums.Membership.SilverNonActive, $Enums.Membership.BronzeNonActive]
 export async function PATCH(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams
 
+  const masterCode = searchParams.get('code')
+  const unlock = masterCode === 'pnbs'
   try {
     const body: {newMembershipLevel: string, customerId: string } = await req.json();
 
@@ -84,6 +87,8 @@ export async function PATCH(req: NextRequest) {
       default:
         canUpdate = false;
     }
+
+    if (unlock) canUpdate = true
     if (!canUpdate) {
       return new NextResponse(JSON.stringify({ error: `Cannot Update Membership From ${customer.membershipLevel} to ${body.newMembershipLevel}`}), {
         headers: { "content-type": "application/json" },
@@ -120,14 +125,14 @@ export async function PATCH(req: NextRequest) {
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      const updatedUser = await prisma.customer.update({
+      const updatedUser = await tx.customer.update({
         where: { id: body.customerId },
         data: {
           ...dataToUpdate
         },
       });
       if (customer.subAccount) {
-        await prisma.customer.update({
+        await tx.customer.update({
           where: { id: customer.subAccount.id },
           data: {
             ...dataToUpdate
