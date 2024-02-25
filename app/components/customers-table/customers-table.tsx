@@ -24,7 +24,6 @@ export default function CustomersTable() {
     onError: (error) => toast.error(`Error Searching For Customers: ${error}`,),
   });
 
-  console.log(customers)
 
 
 
