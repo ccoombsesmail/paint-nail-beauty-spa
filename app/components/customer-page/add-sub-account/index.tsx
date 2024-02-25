@@ -119,7 +119,7 @@ export default function AddSubAccount({ customer, refetchCustomer }: { customer:
                         optionLabel='dialCode'
                         readOnly={setReadOnly} disabled={setReadOnly}
                         optionValue='dialCode' />
-                      <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number' />
+                      <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number'    readOnly={setReadOnly} disabled={setReadOnly} />
                     </div>
                   </div>
                   <div className='flex w-full justify-end'>
