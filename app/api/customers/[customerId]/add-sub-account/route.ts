@@ -9,7 +9,9 @@ import { silverOrGold } from '../../../../types/enums';
 
 
 export async function PATCH(req: NextRequest, { params }: { params: { customerId: string } }) {
-
+  const searchParams = req.nextUrl.searchParams
+  const masterCode = searchParams.get('code')
+  const unlock = masterCode === 'pnbs'
   try {
     const body: { firstName: string, lastName: string, email: string, dialCode: string, phoneNumber: string } = await req.json()
     const user = await currentUser();
@@ -44,25 +46,27 @@ export async function PATCH(req: NextRequest, { params }: { params: { customerId
       })
     }
 
-    if (!silverOrGold.includes(customer.membershipLevel)) {
-      return new NextResponse(JSON.stringify({ error: "Only Activated Gold Or Silver Members Can Add Sub Accounts" }), {
-        headers: { "content-type": "application/json" },
-        status: 404,
-      })
-    }
+    if (!unlock) {
+      if (!silverOrGold.includes(customer.membershipLevel)) {
+        return new NextResponse(JSON.stringify({ error: "Only Activated Gold Or Silver Members Can Add Sub Accounts" }), {
+          headers: { "content-type": "application/json" },
+          status: 404,
+        })
+      }
 
-    if (customer.subAccount) {
-      return new NextResponse(JSON.stringify({ error: "Member Already Has A Linked Sub Account" }), {
-        headers: { "content-type": "application/json" },
-        status: 404,
-      })
-    }
+      if (customer.subAccount) {
+        return new NextResponse(JSON.stringify({ error: "Member Already Has A Linked Sub Account" }), {
+          headers: { "content-type": "application/json" },
+          status: 404,
+        })
+      }
 
-    if (customer.parent) {
-      return new NextResponse(JSON.stringify({ error: "Sub Accounts Cannot Have Sub Accounts" }), {
-        headers: { "content-type": "application/json" },
-        status: 404,
-      })
+      if (customer.parent) {
+        return new NextResponse(JSON.stringify({ error: "Sub Accounts Cannot Have Sub Accounts" }), {
+          headers: { "content-type": "application/json" },
+          status: 404,
+        })
+      }
     }
     const { franchise_code } = user.publicMetadata
 

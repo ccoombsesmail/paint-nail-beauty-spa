@@ -5,6 +5,10 @@ import { silverOrGold } from '../../../types/enums';
 const prisma = new PrismaClient()
 
 export async function PATCH(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams
+
+  const masterCode = searchParams.get('code')
+  const unlock = masterCode === 'pnbs'
 
   try {
     const body: {fromCustomerId: string, toCustomerId: string } = await req.json();
@@ -38,22 +42,36 @@ export async function PATCH(req: NextRequest) {
         status: 400,
       })
     }
-    if (fromCustomer.membershipLevel !== $Enums.Membership.Gold) {
-      return new NextResponse(JSON.stringify({ error: "Only Gold members can transfer their cashback balance"}), {
-        headers: { "content-type": "application/json" },
-        status: 400,
-      })
+    if (!unlock) {
+      if (fromCustomer.membershipLevel !== $Enums.Membership.Gold) {
+        return new NextResponse(JSON.stringify({ error: "Only Gold members can transfer their cashback balance" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
+      if (Number(fromCustomer.cashbackBalance) === 0) {
+        return new NextResponse(JSON.stringify({ error: "Member has no balance to transfer" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
+
+      if (!fromCustomer.canTransferCashbackBalance) {
+        return new NextResponse(JSON.stringify({ error: "Member cannot transfer balance. Ask support for assistance" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
+
+
+      if (fromCustomerId === toCustomerId) {
+        return new NextResponse(JSON.stringify({ error: "Customer cannot transfer balance to themselves" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
+
     }
-
-
-    if (fromCustomerId === toCustomerId) {
-      return new NextResponse(JSON.stringify({ error: "Customer cannot transfer balance to themselves"}), {
-        headers: { "content-type": "application/json" },
-        status: 400,
-      })
-    }
-
-
     console.log(`Attempting to transfer cashback balance from ${fromCustomerId} to ${toCustomerId}`)
 
 

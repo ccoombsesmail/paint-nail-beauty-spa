@@ -18,23 +18,16 @@ import { AxiosError } from 'axios/index';
 import MembershipTransfer from './membership-transfer';
 import BalanceTransfer from './balance-transfer';
 import AddSubAccount from './add-sub-account';
+import { TextInput } from '@tremor/react';
 
 
 const validationSchema = Yup.object().shape({
   phoneNumber: Yup.string().required('Phone Number is required'),
 });
-export default function CustomerProfilePage() {
+export default function CustomerProfilePage({ unlock, masterCode } : { unlock: boolean, masterCode: string}) {
 
   const params = useParams<{ customerId: string }>();
   const [isLoading, setIsLoading] = useState(true);
-
-  const { data: enums } = useQuery('enums', getEnums, {
-    initialData: {
-      membershipTypes: [],
-      serviceTypes: [],
-      paymentMethodTypes: []
-    }
-  });
 
   const { data: customer, isLoading: isCustomerLoading, refetch } = useQuery(['customer', params.customerId], () => fetchCustomer(params.customerId), {
     onSuccess: (data) => console.log('Data fetched:', data),
@@ -73,9 +66,9 @@ export default function CustomerProfilePage() {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const customerPayload = {
-              ...values
+              values,
+              masterCode
             }
-            console.log(customerPayload)
             toast.promise(mutateAsync(customerPayload), {
               loading: 'Updating Customer...',
               success: (data: any) => {
@@ -120,20 +113,20 @@ export default function CustomerProfilePage() {
       <Divider className='my-12' />
 
       {/*  @ts-ignore */}
-      {customer && <AddSubAccount customer={customer} refetchCustomer={refetch} />}
+      {customer && <AddSubAccount customer={customer} refetchCustomer={refetch} unlock={unlock} masterCode={masterCode} />}
 
       <Divider className='my-12' />
 
       {/*  @ts-ignore */}
-      {customer && <MembershipUpdate customer={customer} refetchCustomer={refetch} />}
+      {customer && <MembershipUpdate customer={customer} refetchCustomer={refetch} unlock={unlock}  masterCode={masterCode} />}
       <Divider className='my-12' />
 
       {/*  @ts-ignore */}
-      {customer && <MembershipTransfer customer={customer} refetchCustomer={refetch} />}
+      {customer && <MembershipTransfer customer={customer} refetchCustomer={refetch} unlock={unlock}  masterCode={masterCode} />}
       <Divider className='my-12' />
 
       {/*  @ts-ignore */}
-      {customer && <BalanceTransfer customer={customer} refetchCustomer={refetch} />}
+      {customer && <BalanceTransfer customer={customer} refetchCustomer={refetch} unlock={unlock}   masterCode={masterCode} />}
       <Toaster richColors position='top-right'/>
 
 

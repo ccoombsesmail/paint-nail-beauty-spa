@@ -21,23 +21,26 @@ export const editCustomer = async (customerData: any) => {
 };
 
 export const editMembership = async (membershipPatchData: any) => {
-  const { data } = await axiosClient.patch('customers/membership', membershipPatchData);
+  const { masterCode, ...rest } = membershipPatchData
+  const { data } = await axiosClient.patch(`customers/membership?code=${masterCode}`, rest);
   return data;
 };
 
-export const transferMembership = async (membershipPatchData: {fromCustomerId: string, toCustomerId: string}) => {
-  const { data } = await axiosClient.patch('customers/membership-transfer', membershipPatchData);
+export const transferMembership = async (membershipPatchData: {masterCode: string, fromCustomerId: string, toCustomerId: string}) => {
+  const {masterCode, ...rest} = membershipPatchData
+  const { data } = await axiosClient.patch(`customers/membership-transfer?code=${masterCode}`, rest);
   return data;
 };
 
 export const addSubAccount = async (membershipPatchData: any) => {
-  const { customerId, values: patchDataPayload } = membershipPatchData
-  const { data } = await axiosClient.patch(`customers/${customerId}/add-sub-account`, patchDataPayload);
+  const { masterCode, customerId, values: patchDataPayload } = membershipPatchData
+  const { data } = await axiosClient.patch(`customers/${customerId}/add-sub-account?code=${masterCode}`, patchDataPayload);
   return data;
 };
 
-export const transferBalance = async (membershipPatchData: {fromCustomerId: string, toCustomerId: string}) => {
-  const { data } = await axiosClient.patch('customers/balance-transfer', membershipPatchData);
+export const transferBalance = async (membershipPatchData: {masterCode: string, fromCustomerId: string, toCustomerId: string}) => {
+  const {masterCode, ...rest} = membershipPatchData
+  const { data } = await axiosClient.patch(`customers/balance-transfer?code=${masterCode}`, rest);
   return data;
 };
 

@@ -15,7 +15,8 @@ import { AxiosError } from 'axios';
 import { toast, Toaster } from 'sonner';
 
 
-export default function BalanceTransfer({ customer, refetchCustomer }: { customer: Customer, refetchCustomer: () => Promise<Customer> }) {
+export default function BalanceTransfer({ customer, refetchCustomer, unlock, masterCode }
+                                          : { customer: Customer, refetchCustomer: () => Promise<Customer>, unlock: boolean, masterCode:string }) {
   const [selectedFromCustomer, setSelectedFromCustomer] = useState<Customer | null>(customer);
   const [selectedToCustomer, setSelectedToCustomer] = useState<Customer | null>(null);
 
@@ -36,7 +37,7 @@ export default function BalanceTransfer({ customer, refetchCustomer }: { custome
         toast.error('Something Went Wrong');
         return;
       }
-      const payload = { fromCustomerId: selectedFromCustomer.id, toCustomerId: selectedToCustomer.id };
+      const payload = {masterCode, fromCustomerId: selectedFromCustomer.id, toCustomerId: selectedToCustomer.id };
       toast.promise(mutateAsync(payload), {
         loading: 'Transferring Balance...',
         success: async (data: any) => {
@@ -67,7 +68,7 @@ export default function BalanceTransfer({ customer, refetchCustomer }: { custome
 
 
   const { reason, memberCanTransfer } = useMemo(() => {
-
+    if (unlock) return { reason: '', memberCanTransfer: true };
     if (customer.membershipLevel !== $Enums.Membership.Gold) {
       return { reason: 'Only Activated Gold Members Can Transfer Their Cashback Balance', memberCanTransfer: false };
     }
@@ -81,7 +82,7 @@ export default function BalanceTransfer({ customer, refetchCustomer }: { custome
       return { reason: 'Cashback Balance Cannot Be Transferred', memberCanTransfer: false };
     }
     return { reason: '', memberCanTransfer: true };
-  }, [customer.canTransferCashbackBalance, customer.cashbackBalance, customer.cashbackBalanceTransferInitiatedOn, customer.membershipLevel]);
+  }, [unlock, customer.canTransferCashbackBalance, customer.cashbackBalance, customer.cashbackBalanceTransferInitiatedOn, customer.membershipLevel]);
 
   const headerTemplate = useMemo(() => {
     return (
@@ -142,16 +143,19 @@ export default function BalanceTransfer({ customer, refetchCustomer }: { custome
             </div>
           </div>
         ) : (
-          <span
-            className='flex justify-center p-button p-component p-button-raised p-button-text h-[48px] min-w-[200px] my-6'>
-         {reason}
-        </span>
-
+          <span className='flex justify-center p-button p-component p-button-raised p-button-text h-[48px] min-w-[200px] my-6'>
+            {reason}
+          </span>
         )}
         <ConfirmPopup />
 
-        <Button loading={isSubmitting} disabled={isSubmitting || !memberCanTransfer} onClick={openConfirmPopup} label='Transfer Balance'
-                className='h-[48px]' />
+        <Button
+          loading={isSubmitting}
+          disabled={isSubmitting || !memberCanTransfer}
+          onClick={openConfirmPopup}
+          label='Transfer Balance'
+          className='h-[48px]'
+        />
       </div>
 
       <Toaster richColors position='top-right' />

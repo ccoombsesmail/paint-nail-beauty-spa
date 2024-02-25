@@ -6,7 +6,10 @@ import { nonActiveMembershipLevels } from '../../../types/enums';
 const prisma = new PrismaClient()
 
 export async function PATCH(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams
 
+  const masterCode = searchParams.get('code')
+  const unlock = masterCode === 'pnbs'
   try {
     const body: {newMembershipLevel: string, customerId: string } = await req.json();
 
@@ -84,6 +87,8 @@ export async function PATCH(req: NextRequest) {
       default:
         canUpdate = false;
     }
+
+    if (unlock) canUpdate = true
     if (!canUpdate) {
       return new NextResponse(JSON.stringify({ error: `Cannot Update Membership From ${customer.membershipLevel} to ${body.newMembershipLevel}`}), {
         headers: { "content-type": "application/json" },

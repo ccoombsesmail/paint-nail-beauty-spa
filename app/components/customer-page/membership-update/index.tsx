@@ -23,7 +23,8 @@ import {
   reversedMembershipTypeEnumMap
 } from '../../../types/enums';
 
-export default function MembershipUpdate({ customer, refetchCustomer } : { customer: Customer, refetchCustomer: () => Promise<Customer>}) {
+export default function MembershipUpdate({ customer, refetchCustomer, unlock, masterCode }
+                                           : { customer: Customer, refetchCustomer: () => Promise<Customer>, unlock: boolean, masterCode: string}) {
   const [option, setOption] = useState({
     name: customer.membershipLevel,
     code: customer.membershipLevel.replaceAll(' ', '').replace('(', '').replace(')', '')
@@ -63,7 +64,7 @@ export default function MembershipUpdate({ customer, refetchCustomer } : { custo
     setOption(e.value)
   }
   const allowedOptions = useMemo(() => enums.membershipTypes.map((option: {name: string, code: string}) => {
-    // const membershipLevelCode = reversedMembershipTypeEnumMap.get()
+    if (unlock) return option
     const customerCurrentMembeshipCode = reversedMembershipTypeEnumMap.get(customer.membershipLevel)
     if (customerCurrentMembeshipCode === option.code) return option
     if (customerCurrentMembeshipCode === $Enums.Membership.Gold &&  belowGold.includes(option.code)) {
@@ -125,13 +126,13 @@ export default function MembershipUpdate({ customer, refetchCustomer } : { custo
       }
     }
     return option
-  }), [enums.membershipTypes, customer.membershipLevel, customer.membershipPurchaseDate, daysSinceStartDate])
+  }), [enums.membershipTypes, customer.membershipLevel, customer.membershipPurchaseDate, daysSinceStartDate, unlock])
 
 
   const onConfirmClick = async () => {
     try {
 
-      const payload = { customerId: customer.id, newMembershipLevel: option.code}
+      const payload = { masterCode, customerId: customer.id, newMembershipLevel: option.code}
       toast.promise(mutateAsync(payload), {
         loading: 'Updating Membership...',
         success: async (data: any) => {
@@ -162,6 +163,7 @@ export default function MembershipUpdate({ customer, refetchCustomer } : { custo
 
   const { text1, text2 } = useMemo(() => {
     let text1 = '', text2 = ''
+    if (unlock) return {text1: "In Unlocked Mode", text2: "Be Cautious"}
     const customerMembershipLevelCode = reversedMembershipTypeEnumMap.get(customer.membershipLevel) || ''
     if (customerMembershipLevelCode === $Enums.Membership.NonMember) {
       return { text1: 'Not A Member', text2: '' }
@@ -182,7 +184,7 @@ export default function MembershipUpdate({ customer, refetchCustomer } : { custo
       return { text1: `Full Membership`, text2: '' }
     }
     return { text1, text2 }
-  }, [daysSinceStartDate, customer])
+  }, [daysSinceStartDate, customer, unlock])
 
 
   return (
@@ -205,7 +207,8 @@ export default function MembershipUpdate({ customer, refetchCustomer } : { custo
            <Dropdown
              id="membership_select"
              valueTemplate={selectedMembershipTemplate}
-             value={option} onChange={onChange}
+             value={option}
+             onChange={onChange}
              options={allowedOptions}
              optionLabel="name"
              placeholder="Select Membership"

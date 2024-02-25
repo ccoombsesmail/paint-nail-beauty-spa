@@ -16,7 +16,8 @@ import { toast, Toaster } from 'sonner';
 import { belowSilver, silverOrGold } from '../../../types/enums';
 
 
-export default function MembershipTransfer({ customer, refetchCustomer }: { customer: Customer, refetchCustomer: () => Promise<Customer> }) {
+export default function MembershipTransfer({ customer, refetchCustomer, unlock, masterCode }:
+                                             { customer: Customer, refetchCustomer: () => Promise<Customer>, unlock: boolean, masterCode: string }) {
   const [selectedFromCustomer, setSelectedFromCustomer] = useState<Customer | null>(customer);
   const [selectedToCustomer, setSelectedToCustomer] = useState<Customer | null>(null);
 
@@ -31,12 +32,12 @@ export default function MembershipTransfer({ customer, refetchCustomer }: { cust
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const daysSinceStartDate = useMemo(() => {
-    if (!customer.membershipActivationDate) return Number.MIN_VALUE
+    if (!customer.membershipActivationDate) return Number.MIN_VALUE;
     const now = new Date();
     const membershipActivationDate = new Date(customer.membershipActivationDate);
     const diffTime = Math.abs(now.getTime() - membershipActivationDate.getTime() || 0);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }, [customer])
+  }, [customer]);
 
 
   const onConfirmClick = async () => {
@@ -45,7 +46,7 @@ export default function MembershipTransfer({ customer, refetchCustomer }: { cust
         toast.error('Something Went Wrong');
         return;
       }
-      const payload = { fromCustomerId: selectedFromCustomer.id, toCustomerId: selectedToCustomer.id };
+      const payload = { masterCode, fromCustomerId: selectedFromCustomer.id, toCustomerId: selectedToCustomer.id };
       toast.promise(mutateAsync(payload), {
         loading: 'Transferring Membership...',
         success: async (data: any) => {
@@ -75,23 +76,22 @@ export default function MembershipTransfer({ customer, refetchCustomer }: { cust
   };
 
 
-
-  const { reason, memberCanTransfer} = useMemo(() => {
-
+  const { reason, memberCanTransfer } = useMemo(() => {
+    if (unlock) return { reason: '', memberCanTransfer: true };
     if (!silverOrGold.includes(customer.membershipLevel)) {
-      return {reason: "Only Activated Silver Or Gold Members Can Transfer Their Membership", memberCanTransfer: false}
+      return { reason: 'Only Activated Silver Or Gold Members Can Transfer Their Membership', memberCanTransfer: false };
     }
     if (customer.membershipTransferReceivedOn) {
-      return {reason: "Membership Can Only Be Transferred Once", memberCanTransfer: false}
+      return { reason: 'Membership Can Only Be Transferred Once', memberCanTransfer: false };
     }
     if (daysSinceStartDate > 365) {
-      return {reason: "Membership Can Only Be Transferred Within The First Year", memberCanTransfer: false}
+      return { reason: 'Membership Can Only Be Transferred Within The First Year', memberCanTransfer: false };
     }
     if (!customer.canTransferMembership) {
-      return {reason: "Membership Cannot Be Transferred", memberCanTransfer: false}
+      return { reason: 'Membership Cannot Be Transferred', memberCanTransfer: false };
     }
-    return {reason: '', memberCanTransfer: true}
-  }, [customer.canTransferMembership, customer.membershipLevel, customer.membershipTransferReceivedOn, daysSinceStartDate])
+    return { reason: '', memberCanTransfer: true };
+  }, [unlock, customer.canTransferMembership, customer.membershipLevel, customer.membershipTransferReceivedOn, daysSinceStartDate]);
 
   return (
 
@@ -147,8 +147,13 @@ export default function MembershipTransfer({ customer, refetchCustomer }: { cust
         )}
         <ConfirmPopup />
 
-        <Button loading={isSubmitting} disabled={isSubmitting || !memberCanTransfer} onClick={openConfirmPopup} label='Transfer Membership'
-                className='h-[48px]' />
+        <Button
+          loading={isSubmitting}
+          disabled={isSubmitting || !memberCanTransfer}
+          onClick={openConfirmPopup}
+          label='Transfer Membership'
+          className='h-[48px]'
+        />
       </div>
 
       <Toaster richColors position='top-right' />

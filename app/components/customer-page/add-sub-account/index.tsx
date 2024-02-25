@@ -26,7 +26,15 @@ const validationSchema = Yup.object().shape({
   membershipLevel: Yup.string().required('Membership Level Is Required')
 });
 
-export default function AddSubAccount({ customer, refetchCustomer }: { customer: Customer & { subAccount: Customer, parent: Customer }, refetchCustomer: () => Promise<Customer> }) {
+export default function AddSubAccount(
+  { customer, refetchCustomer, unlock, masterCode }:
+    {
+      customer: Customer & { subAccount: Customer, parent: Customer },
+      refetchCustomer: () => Promise<Customer>,
+      unlock: boolean,
+      masterCode: string
+    }
+) {
   const { data: countryCodes } = useQuery('country-codes', fetchCountryCodes, {
     initialData: []
   });
@@ -39,6 +47,7 @@ export default function AddSubAccount({ customer, refetchCustomer }: { customer:
 
 
   const { reason, memberCanAddSubAccount, setReadOnly } = useMemo(() => {
+    if (unlock) return {reason: '', memberCanAddSubAccount: true}
     if (!silverOrGold.includes(customer.membershipLevel)) {
       return { reason: 'Only Activated Gold Or Silver Members Can Add Sub Accounts', memberCanAddSubAccount: false };
     }
@@ -49,11 +58,11 @@ export default function AddSubAccount({ customer, refetchCustomer }: { customer:
       return { reason: 'Sub account cannot add sub accounts', memberCanAddSubAccount: false };
     }
     return { reason: '', memberCanAddSubAccount: true };
-  }, [customer.membershipLevel, customer.parent, customer.subAccount]);
+  }, [customer.membershipLevel, customer.parent, customer.subAccount, unlock]);
 
   // @ts-ignore
   const onSubmit = async (values, { setSubmitting }) => {
-    toast.promise(mutateAsync({ customerId: customer.id, values }), {
+    toast.promise(mutateAsync({masterCode, customerId: customer.id, values }), {
       loading: 'Creating Sub Account...',
       success: (data: any) => {
         setSubmitting(false);
@@ -79,10 +88,9 @@ export default function AddSubAccount({ customer, refetchCustomer }: { customer:
           phoneNumber: '',
           dialCode: ''
         }}
-        validationSchema={validationSchema}
+        validationSchema={unlock ? null : validationSchema}
         onSubmit={async (values, { setSubmitting }) => {
-          console.log(values);
-          toast.promise(mutateAsync({ customerId: customer.id, values }), {
+          toast.promise(mutateAsync({ customerId: customer.id, values, unlock }), {
             loading: 'Creating Sub Account...',
             success: (data: any) => {
               setSubmitting(false);
@@ -117,14 +125,21 @@ export default function AddSubAccount({ customer, refetchCustomer }: { customer:
                         placeholder='Dial Code'
                         options={countryCodes}
                         optionLabel='dialCode'
-                        readOnly={setReadOnly} disabled={setReadOnly}
+                        readOnly={setReadOnly}
+                        disabled={setReadOnly}
                         optionValue='dialCode' />
-                      <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number'    readOnly={setReadOnly} disabled={setReadOnly} />
+                      <Field
+                        name='phoneNumber'
+                        as={PhoneInput}
+                        placeholder='Phone Number'
+                        readOnly={setReadOnly}
+                        disabled={setReadOnly}
+                      />
                     </div>
                   </div>
                   <div className='flex w-full justify-end'>
 
-                    {!customer.subAccount && (<Button
+                    {(!customer.subAccount || unlock) && (<Button
                       type='submit'
                       label='Add Sub Account'
                       icon='pi pi-check'

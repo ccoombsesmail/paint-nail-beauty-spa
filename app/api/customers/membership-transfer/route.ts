@@ -5,10 +5,14 @@ import { silverOrGold } from '../../../types/enums';
 const prisma = new PrismaClient()
 
 export async function PATCH(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams
 
+  const masterCode = searchParams.get('code')
+  const unlock = masterCode === 'pnbs'
   try {
     const body: {fromCustomerId: string, toCustomerId: string } = await req.json();
     const { fromCustomerId, toCustomerId } = body
+
 
     // Create a new user record in the database using the parsed data
     const fromCustomer = await prisma.customer.findUnique({
@@ -38,53 +42,54 @@ export async function PATCH(req: NextRequest) {
         status: 400,
       })
     }
-    if (fromCustomer.membershipLevel === $Enums.Membership.NonMember) {
-      return new NextResponse(JSON.stringify({ error: "Cannot transfer membership from a Non Member"}), {
-        headers: { "content-type": "application/json" },
-        status: 400,
-      })
-    }
+    if (!unlock) {
+      if (fromCustomer.membershipLevel === $Enums.Membership.NonMember) {
+        return new NextResponse(JSON.stringify({ error: "Cannot transfer membership from a Non Member" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
 
-    if (!silverOrGold.includes(fromCustomer.membershipLevel)) {
-      return new NextResponse(JSON.stringify({ error: "Only Gold and Silver members can transfer their membership"}), {
-        headers: { "content-type": "application/json" },
-        status: 400,
-      })
-    }
-    if (toCustomer.membershipLevel !== $Enums.Membership.NonMember) {
-      return new NextResponse(JSON.stringify({ error: "This customer already has a membership"}), {
-        headers: { "content-type": "application/json" },
-        status: 400,
-      })
-    }
+      if (!silverOrGold.includes(fromCustomer.membershipLevel)) {
+        return new NextResponse(JSON.stringify({ error: "Only Gold and Silver members can transfer their membership" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
+      if (toCustomer.membershipLevel !== $Enums.Membership.NonMember) {
+        return new NextResponse(JSON.stringify({ error: "This customer already has a membership" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
 
-    if (fromCustomerId === toCustomerId) {
-      return new NextResponse(JSON.stringify({ error: "Customer cannot transfer membership to themselves"}), {
-        headers: { "content-type": "application/json" },
-        status: 400,
-      })
-    }
+      if (fromCustomerId === toCustomerId) {
+        return new NextResponse(JSON.stringify({ error: "Customer cannot transfer membership to themselves" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
 
-    if (fromCustomer.subAccount && fromCustomer.subAccount.id === toCustomerId) {
-      return new NextResponse(JSON.stringify({ error: "Customer cannot transfer membership to their own sub account"}), {
-        headers: { "content-type": "application/json" },
-        status: 400,
-      })
-    }
-    if (toCustomer.parentId !== null) {
-      return new NextResponse(JSON.stringify({ error: "Cannot transfer membership to a sub account"}), {
-        headers: { "content-type": "application/json" },
-        status: 400,
-      })
-    }
-    if (fromCustomer.parentId !== null) {
-      return new NextResponse(JSON.stringify({ error: "Sub accounts cannot transfer membership"}), {
-        headers: { "content-type": "application/json" },
-        status: 400,
-      })
-    }
+      if (fromCustomer.subAccount && fromCustomer.subAccount.id === toCustomerId) {
+        return new NextResponse(JSON.stringify({ error: "Customer cannot transfer membership to their own sub account" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
+      if (toCustomer.parentId !== null) {
+        return new NextResponse(JSON.stringify({ error: "Cannot transfer membership to a sub account" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
+      if (fromCustomer.parentId !== null) {
+        return new NextResponse(JSON.stringify({ error: "Sub accounts cannot transfer membership" }), {
+          headers: { "content-type": "application/json" },
+          status: 400,
+        })
+      }
 
-
+    }
     console.log(`Attempting to transfer membership from ${fromCustomerId} to ${toCustomerId}`)
 
 
