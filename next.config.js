@@ -19,7 +19,7 @@ const nextConfig = {
         source: "/api/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
-          { key: "Access-Control-Allow-Origin", value: "portal.paintnailbeautyspa.net" }, // replace this your actual origin
+          { key: "Access-Control-Allow-Origin", value: "https://staging-pnbs.vercel.app, https://portal.paintnailbeautyspa.net, http://localhost:3000, https://www.staging-pnbs.vercel.app, https://www.portal.paintnailbeautyspa.net, http://www.localhost:3000" }, // Allow specific origins with and without 'www'
           { key: "Access-Control-Allow-Methods", value: "GET,DELETE,PATCH,POST,PUT,OPTION" },
           { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
         ]
