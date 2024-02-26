@@ -11,12 +11,17 @@ export default authMiddleware({
   async afterAuth(auth, req, evt) {
     // Handle users who aren't authenticated
 
+    if (req.nextUrl.pathname === '/not-authorized') {
+      return NextResponse.next();
+    }
+
     const token = await auth.getToken({ template: 'franchise_code'})
 
     if (token) {
       const payload = decodeJwt(token)
+      console.log(req.nextUrl.origin)
       if (!payload.franchise_code && req.nextUrl.href !== `${req.nextUrl.origin}/not-authorized`) {
-        return  NextResponse.redirect( `${req.nextUrl.origin}/not-authorized` );
+        return NextResponse.redirect( `${req.nextUrl.origin}/not-authorized` );
       }
 
     }
