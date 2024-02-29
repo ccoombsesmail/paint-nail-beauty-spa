@@ -147,6 +147,7 @@ enum PaymentMethod {
   Venmo
   Zelle
   PayPal
+  WeChat
   Cash
   CreditCard
 }

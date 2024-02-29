@@ -66,7 +66,7 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const customerPayload = {
-              values,
+              ...values,
               masterCode
             }
             toast.promise(mutateAsync(customerPayload), {

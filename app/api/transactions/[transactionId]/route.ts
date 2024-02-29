@@ -34,8 +34,3 @@ export async function GET(req: NextRequest, { params }: { params: { transactionI
 
   return NextResponse.json({ transaction: formattedTransaction })
 }
-
-export async function POST(req: NextRequest, res: NextResponse) {
-
-
-}

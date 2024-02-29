@@ -13,14 +13,34 @@ export default function CustomerPage({ params } : { params: { customerId: string
 
   const [masterCode, setMasterCode] = useState('')
   const [isSideVisible, setIsSideVisible] = useState(false);
+  const [timer, setTimer] = useState(600);
 
   useEffect(() => {
     const unlock = masterCode === 'pnbs'
     setIsSideVisible(unlock)
   }, [masterCode]);
+
+  useEffect(() => {
+    let interval: any;
+    if (isSideVisible && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      // Clear masterCode and hide sidebar
+      setMasterCode('');
+      setIsSideVisible(false);
+      setTimer(15); // Reset timer for next visibility
+    }
+    return () => clearInterval(interval); // Cleanup interval on component unmount or sidebar hide
+  }, [isSideVisible, timer]);
+
   const unlock = masterCode === 'pnbs'
 
   const header = useMemo(() => {
+    const minutes = Math.floor(timer / 60);
+    const seconds = timer % 60;
+    const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     return (
       <div className='w-full flex flex-col justify-center items-center'>
         <div className='w-full flex justify-center items-center'>
@@ -33,15 +53,17 @@ export default function CustomerPage({ params } : { params: { customerId: string
           carefully.
           Consider asking for assistance first
         </p>
+        <div className='text-lg text-gray-500 my-4'>Unlocked Mode Will Automatically Exit In: {formattedTime}</div>
+
       </div>
     )
-  }, [])
+  }, [timer])
 
   return (
     <>
       <main className="p-4 md:p-10 mx-auto max-w-7xl">
         <QueryClientProvider client={queryClient}>
-          <Sidebar dismissable={false} modal={false} header={header} className='h-[100px]' visible={isSideVisible} position="top" onHide={() => setIsSideVisible(false)} />
+          <Sidebar dismissable={false} modal={false} header={header} className='h-[140px]' visible={isSideVisible} position="top" onHide={() => setIsSideVisible(false)} />
 
 
           <div className="p-inputgroup flex-1 w-[10rem] fixed bottom-3 right-[60px]">

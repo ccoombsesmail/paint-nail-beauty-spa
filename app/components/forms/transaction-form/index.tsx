@@ -22,7 +22,7 @@ const validationSchema = Yup.object().shape({
   actualPaymentCollected: Yup.number().required('Actual Payment Collected is required'),
   discountedServicePrice: Yup.number().optional(),
   tip: Yup.number().required('Tip is required (enter 0 if none)'),
-  paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'PayPal', 'CreditCard']).required('Payment Method is required'),
+  paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'PayPal', 'WeChat', 'CreditCard']).required('Payment Method is required'),
   technicianEmployeeId: Yup.string().required('Technician is required'),
   userEnteredDate: Yup.date().required("Transaction DateTime is Required"),
   cashbackBalanceToUse: Yup.number()

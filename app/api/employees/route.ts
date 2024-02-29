@@ -25,7 +25,7 @@ export async function GET(req: NextRequest){
 
     const { franchise_code } = user.publicMetadata
 
-    let where: Prisma.EmployeeWhereInput = {
+    let where: Prisma.EmployeeWhereInput = franchise_code === 'admin' ? {} : {
         franchiseCode: franchise_code || undefined
     }
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Prisma, Transaction } from '@prisma/client';
+import { $Enums, Prisma, Transaction } from '@prisma/client';
 import prisma from '../../database/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';
 import { serviceTypeEnumMap } from '../../types/enums';
@@ -34,7 +34,8 @@ export async function POST(req: NextRequest) {
           id: customerId,
         },
         select: {
-          cashbackBalance: true, // Only select cashbackBalance to minimize data transfer
+          cashbackBalance: true,
+          membershipLevel: true
         },
       });
 
@@ -43,19 +44,23 @@ export async function POST(req: NextRequest) {
       }
       const newCashbackBalance = Number(customer.cashbackBalance) + (.01 * actualPaymentCollected) - (Number(balanceUsed) || 0);
 
-      console.log("Previous balance: ", customer.cashbackBalance )
-      console.log("Added Balance: ", (.01 * actualPaymentCollected) )
-      console.log("Used Balance: ", balanceUsed)
-      console.log("New Balance: ", newCashbackBalance)
+      let updatedCustomer
 
-      const updatedCustomer = await tx.customer.update({
-        where: {
-          id: customerId,
-        },
-        data: {
-          cashbackBalance: newCashbackBalance,
-        },
-      });
+      if (customer.membershipLevel === $Enums.Membership.Gold) {
+        console.log("Previous balance: ", customer.cashbackBalance )
+        console.log("Added Balance: ", (.01 * actualPaymentCollected) )
+        console.log("Used Balance: ", balanceUsed)
+        console.log("New Balance: ", newCashbackBalance)
+
+        updatedCustomer = await tx.customer.update({
+          where: {
+            id: customerId,
+          },
+          data: {
+            cashbackBalance: newCashbackBalance,
+          },
+        });
+      }
       const {cashbackBalanceToUse, ...transactionData} = body
       const newTransaction = await tx.transaction.create({
         data: {
@@ -204,8 +209,6 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
 
   try {
 
-
-
     const body: Transaction = await req.json();
     const {
       customerId,
@@ -234,7 +237,6 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
     const originalAmount = Number(originalTransaction.actualPaymentCollected);
     const difference = Number(actualPaymentCollected) - originalAmount;
 
-    console.log(difference)
     // Create a new customer record in the database using the parsed data
     const result = await prisma.$transaction(async (tx) => {
       const customer = await tx.customer.findUnique({
