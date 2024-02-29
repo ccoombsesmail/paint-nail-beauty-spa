@@ -122,6 +122,8 @@ export default function TransactionsTable({ transactions, isLoading }: { transac
         header={franchiseCode === 'admin' ? header : null}
         showGridlines
         resizableColumns
+        sortField="userEnteredDate"
+        sortOrder={-1}
         columnResizeMode="expand"
         paginator
         rows={5}
@@ -134,6 +136,7 @@ export default function TransactionsTable({ transactions, isLoading }: { transac
         <Column body={dateTemplate} field="userEnteredDate" header="Visit Date" style={{ width: '10%' }}></Column>
         <Column field="customerName" header="Customer Name" style={{ width: '10%' }}></Column>
         <Column field="customerEmail" header="Email"  style={{ width: '10%' }}></Column>
+        <Column field="customerDialCode" header="" hidden ></Column>
         <Column body={customerNumberTemplate} field="customerPhoneNumber" header="Number"  style={{ width: '10%' }}></Column>
         <Column field="serviceType" header="Service Type"  style={{ width: '10%' }}></Column>
         <Column field="serviceDuration" header="Duration (hrs)"  style={{ width: '10%' }}></Column>
@@ -145,6 +148,8 @@ export default function TransactionsTable({ transactions, isLoading }: { transac
 
         <Column field="paymentMethod" header="PaymentMethod"  style={{ width: '10%' }}></Column>
         <Column field="technicianName" header="Technician"  style={{ width: '10%' }}></Column>
+        <Column field="franchiseCode" header="" hidden ></Column>
+
       </DataTable>
     </div>
   );

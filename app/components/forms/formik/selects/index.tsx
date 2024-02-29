@@ -8,6 +8,9 @@ import { toast } from 'sonner';
 import { fetchEmployees } from '../../../../client-api/employees/employee-queries';
 import { formatName } from '../../../../utils/format-name';
 import { Customer } from '@prisma/client';
+import { Button } from 'primereact/button';
+import CustomerForm from '../../customer-form';
+import { Divider } from 'primereact/divider';
 
 
 export const selectedMembershipTemplate = (option: { name: string, code: string }) => {
@@ -272,6 +275,15 @@ export const SearchableUserSelectNonFormik = (props: any) => {
     setSearch([e.query])
     await refetch(e.query)
   }, [refetch])
+
+  const footerTemplate = () => {
+    return (
+      <div className='w-full flex flex-col justify-center' onClick={e => e.stopPropagation()}>
+        <Divider />
+        <CustomerForm refetchCustomers={refetch} />
+      </div>
+    )
+  }
   return (
     <div className={` ${props.width ? props.width : 'w-[14rem]'}`}>
       <span className={`p-float-label ${props.className}  ${props.width ? props.width : 'w-[14rem]'}`}>
@@ -279,12 +291,13 @@ export const SearchableUserSelectNonFormik = (props: any) => {
           multiple
           delay={100}
           selectionLimit={1}
-          emptyMessage="No Results"
+          emptyMessage="No Results (Click Below To Create Customer)"
           showEmptyMessage
           value={selectedUser}
           suggestions={props.fromCustomer ? users?.filter((u: Customer) => u.id !== props.fromCustomer.id) : users}
           itemTemplate={userOptionTemplate}
           selectedItemTemplate={selectedUserTemplate}
+          panelFooterTemplate={footerTemplate}
           completeMethod={onFilter}
           forceSelection
           onChange={onChange}
