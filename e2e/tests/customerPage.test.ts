@@ -1,0 +1,1 @@
+import { describe, it, expect } from '@jest/globals';\nimport { setup } from './support/setup';\n\ndescribe('Customer Page End-to-End Tests', () => {\n  it('Should display the customer page correctly', async () => {\n    const page = await setup();\n\n    // TODO: Write actual test case here\n\n    expect(true).toBeTruthy();\n  });\n});\n
