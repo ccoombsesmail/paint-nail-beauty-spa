@@ -109,7 +109,7 @@ export async function PATCH(req: NextRequest) {
         await tx.customer.update({
           where: { id: fromCustomer.subAccount.id },
           data: {
-            parentId: null,
+            parentId: body.toCustomerId,
             canTransferMembership: false,
             membershipTransferInitiatedOn: new Date()
           },

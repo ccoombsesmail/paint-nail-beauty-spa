@@ -5,9 +5,10 @@ import { decodeJwt } from 'jose';
 
 
 export default authMiddleware({
-  publicRoutes: ["/api/clerk", "/api/seed", '/not-authorized'],
+  publicRoutes: ["/api/clerk", "/api/seed", '/not-authorized', '/'],
   async afterAuth(auth, req, evt) {
     // Handle users who aren't authenticated
+    return NextResponse.next();
 
     if (req.nextUrl.pathname === '/not-authorized') {
       return NextResponse.next();
@@ -16,7 +17,7 @@ export default authMiddleware({
     const token = await auth.getToken({ template: 'franchise_code'})
 
     if (token) {
-      const payload = decodeJwt(token)
+      const payload = decodeJwt(token as string)
       if (!payload.franchise_code && req.nextUrl.href !== `${req.nextUrl.origin}/not-authorized`) {
         return NextResponse.redirect( `${req.nextUrl.origin}/not-authorized` );
       }

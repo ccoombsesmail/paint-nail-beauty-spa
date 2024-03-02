@@ -65,7 +65,7 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
     <>
       <Toaster richColors position='top-right' />
 
-      <Button style={{ backgroundColor: 'var(--pink-400)' }} label='Create Customer' icon='pi pi-plus'
+      <Button id='cy-create-customer-btn' style={{ backgroundColor: 'var(--pink-400)' }} label='Create Customer' icon='pi pi-plus'
               onClick={() => setShowDialog(true)} />
 
       <Dialog header='Create Customer' visible={showDialog} style={{ width: '50vw' }} modal
@@ -144,9 +144,11 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
                   (
                     <>
                       {!showSubAccountForm ? <Button
+                        id='cy-add-sub-account-btn'
                         label='Add Sub Account'
                         icon='pi pi-plus'
                         className=''
+                        type='button'
                         onClick={() => setShowSubAccountForm(true)}
                       /> : <div></div>
                       }

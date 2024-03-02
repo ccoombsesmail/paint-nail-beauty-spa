@@ -132,6 +132,7 @@ export default function BalanceTransfer({ customer, refetchCustomer, unlock, mas
               </div>
               <div className='flex-1 w-[32rem]'>
                 <SearchableUserSelectNonFormik
+                  id='cy-transfer-balance-to-input'
                   width='w-[22rem]'
                   name='customerId'
                   placeholder='To Customer'
@@ -155,6 +156,7 @@ export default function BalanceTransfer({ customer, refetchCustomer, unlock, mas
           onClick={openConfirmPopup}
           label='Transfer Balance'
           className='h-[48px]'
+          id='cy-balance-transfer-btn'
         />
       </div>
 

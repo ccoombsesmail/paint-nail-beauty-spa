@@ -70,7 +70,7 @@ export const PhoneInput = (props: any) => {
   return (
     <div>
       <span className='p-float-label'>
-        <InputMask id='phone_input' mask='(999) 999-9999' placeholder='(999) 999-9999'  {...props} />
+        <InputMask autocomplete="off" autoComplete='off' id='phone_input' mask='(999) 999-9999' placeholder='(999) 999-9999'  {...props} />
         <label htmlFor='phone_input'>Phone Number</label>
       </span>
       {meta.error && meta.touched ? (<span className='text-red-500 ml-2 text-sm'>{meta.error}</span>) : null}

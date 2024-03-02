@@ -70,7 +70,7 @@ export default function MembershipTransfer({ customer, refetchCustomer, unlock, 
       message: 'Are you sure you want to proceed? Membership can only be transferred once',
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'accept',
-      className: 'max-w-64',
+      className: 'max-w-64 transfer-membership-confirm-popup',
       accept: onConfirmClick
     });
   };
@@ -128,6 +128,7 @@ export default function MembershipTransfer({ customer, refetchCustomer, unlock, 
               </div>
               <div className='flex-1 w-[32rem]'>
                 <SearchableUserSelectNonFormik
+                  id='cy-transfer-membership-to-input'
                   width='w-[22rem]'
                   name='customerId'
                   placeholder='To Customer'
@@ -153,6 +154,8 @@ export default function MembershipTransfer({ customer, refetchCustomer, unlock, 
           onClick={openConfirmPopup}
           label='Transfer Membership'
           className='h-[48px]'
+          id='cy-membership-transfer-btn'
+
         />
       </div>
 
