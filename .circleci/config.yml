@@ -7,16 +7,21 @@ orbs:
 workflows:
   build:
     jobs:
-      - cypress/run:
+      - build_node_app:
           pre-steps:
             - checkout
-            - npm-run: build
+          npm-run: build
+      - cypress/run:
+          requires:
+            - build_node_app
+          pre-steps:
+            - checkout
           # Records in parallel to Cypress Cloud
           # https://docs.cypress.io/guides/guides/parallelization
           parallelism: 2 # Uses 2 parallel instances
           # Starts web server for E2E tests - replace with your own server invocation
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
-          start-command: npm start:cypress
+          start-command: npm start:cypress && npm run cypress:run
           cypress-command: 'npx cypress run --record --parallel'
           filters:
             branches:
