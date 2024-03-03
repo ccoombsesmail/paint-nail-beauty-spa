@@ -7,8 +7,6 @@ workflows:
   build:
     jobs:
       - cypress/run:
-          # For recording and parallelization to work you must set your CYPRESS_RECORD_KEY
-          # in CircleCI → Project Settings → Environment Variables
           # Records in parallel to Cypress Cloud
           # https://docs.cypress.io/guides/guides/parallelization
           parallelism: 2 # Uses 2 parallel instances
