@@ -7,13 +7,13 @@ orbs:
 workflows:
   build:
     jobs:
-      - build_node_app:
+      - node/run:
           pre-steps:
             - checkout
           npm-run: build
       - cypress/run:
           requires:
-            - build_node_app
+            - node/run
           pre-steps:
             - checkout
           # Records in parallel to Cypress Cloud
