@@ -14,19 +14,19 @@ describe('CustomerPage', () => {
 
 
 
-  it('Should create be able to Update a Silver Membership Gold Member', () => {
+  it('Should create be able to update a Bronze Membership to a Gold Membership', () => {
     cy.visit('http://localhost:3000', {
       failOnStatusCode: false
     })
 
-    cy.createGoldOrSilverWithSubCustomer('Silver', 'Member', 'silvermember@example.com', 'Silver')
-
+    cy.createBronzeMember('Bronze', 'Member', 'goldmember@example.com', 'Nail')
     cy.wait(1000)
+
     cy.get('.customer-edit-btn').eq(0).click({ force: true })
     cy.get('.p-panel-content').eq(1).within(() => {
       cy.get('.p-dropdown-trigger').first().click({ force: true });
     })
-    cy.get('.p-dropdown-items .p-dropdown-item').contains('Bronze').should('have.class', 'p-disabled');
+    cy.get('.p-dropdown-items .p-dropdown-item').contains('Silver').should('have.class', 'p-disabled');
     cy.get('.p-dropdown-items .p-dropdown-item').contains('Non Member').should('have.class', 'p-disabled');
     cy.get('.p-dropdown-items .p-dropdown-item').contains('Gold (Non Active)').should('have.class', 'p-disabled');
     cy.get('.p-dropdown-items .p-dropdown-item').contains('Silver (Non Active)').should('have.class', 'p-disabled');
@@ -57,7 +57,7 @@ describe('CustomerPage', () => {
 
 
 
-  it('After updating Silver Membership to Gold, Customers Table should reflect the update', () => {
+  it('After updating Bronze Membership to Gold, Customers Table should reflect the update', () => {
     cy.visit('http://localhost:3000', {
       failOnStatusCode: false
     })
@@ -65,18 +65,5 @@ describe('CustomerPage', () => {
 
   })
 
-  //
-  // it('Member who receives membership transfer should not be able to add a sub account, and existing sub account should be transferred under new member', () => {
-  //   cy.visit('http://localhost:3000', {
-  //     failOnStatusCode: false
-  //   })
-  //   cy.get('.customer-edit-btn').eq(1).click({force: true})
-  //
-  //   cy.get('.p-panel-content').eq(0).within(() => {
-  //     cy.get('[name="email"]').should('have.value', 'Silver.Member.SubAccount@example.com')
-  //     cy.get('button').should('not.exist')
-  //   })
-  //
-  // })
 
 })

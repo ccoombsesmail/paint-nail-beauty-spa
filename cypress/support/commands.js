@@ -88,10 +88,8 @@ Cypress.Commands.add('tests_cleanup', () => {
 })
 
 
-Cypress.Commands.add('createNonMemberCustomer', (firstName, lastName, email, membershipLevel) => {
-  cy.visit('http://localhost:3000', {
-    failOnStatusCode: false
-  });
+Cypress.Commands.add('createNonMemberCustomer', (firstName, lastName, email) => {
+
   cy.get('#cy-create-customer-btn').click();
 
   cy.get('[name="firstName"]').type(firstName);
@@ -109,12 +107,41 @@ Cypress.Commands.add('createNonMemberCustomer', (firstName, lastName, email, mem
   cy.get('.p-dialog').within(() => {
     cy.get('.p-dropdown-trigger').eq(1).click({ force: true });
   });
-  cy.get('.p-dropdown-items .p-dropdown-item').contains(membershipLevel).click({ force: true });
+  cy.get('.p-dropdown-items .p-dropdown-item').contains("Non Member").click({ force: true });
 
   cy.get('form').submit();
   cy.wait(1000);
 });
 
+
+Cypress.Commands.add('createBronzeMember', (firstName, lastName, email, serviceSelection) => {
+  cy.get('#cy-create-customer-btn').click();
+
+  cy.get('[name="firstName"]').type(firstName);
+  cy.get('[name="lastName"]').type(lastName);
+  cy.get('[name="email"]').type(email);
+  cy.get('[name="phoneNumber"]').type(genPhoneNumber());
+
+  // Select country code
+  cy.get('.p-dialog').within(() => {
+    cy.get('.p-dropdown-trigger').first().click({ force: true });
+  });
+  cy.get('.p-dropdown-items .p-dropdown-item').contains('United States').click({ force: true });
+
+  // Select Membership
+  cy.get('.p-dialog').within(() => {
+    cy.get('.p-dropdown-trigger').eq(1).click({ force: true });
+  });
+  cy.get('.p-dropdown-items .p-dropdown-item').contains("Bronze").click({ force: true });
+
+  cy.get('.p-dialog').within(() => {
+    cy.get('.p-dropdown-trigger').eq(2).click({ force: true });
+  });
+  cy.get('.p-dropdown-items .p-dropdown-item').contains(serviceSelection).click({ force: true });
+
+  cy.get('form').submit();
+  cy.wait(100);
+});
 
 Cypress.Commands.add('createGoldOrSilverWithSubCustomer', (firstName, lastName, email, membershipLevel) => {
   cy.get('#cy-create-customer-btn').click();
@@ -151,5 +178,76 @@ Cypress.Commands.add('createGoldOrSilverWithSubCustomer', (firstName, lastName, 
   cy.get('form').submit(); // Or cy.get('button').contains('Submit').click();
   cy.wait(1000)
 });
+
+Cypress.Commands.add('createTransaction',
+  (
+    customerSearch,
+    customer,
+    technician,
+    cashbackBalanceToUse = '0',
+    serviceType = 'Hand Care',
+    serviceDuration= '1.5',
+    paymentMethod = 'Venmo',
+    totalPrice = '400' ,
+    discountedPrice = '300',
+    actualCollected = '200',
+    tip = '10'
+  ) => {
+
+    cy.get('#cy-create-transaction-btn').click({force: true});
+
+
+    cy.get('[name="userEnteredDate"]').click({force: true});
+    cy.get('.p-datepicker-buttonbar').within(() => {
+      cy.get('button').first().click({force: true})
+    })
+    cy.get('.p-dialog').click({ force : true})
+    cy.get('#cy-customer-search-select').click({ force : true})
+    cy.get('#cy-customer-search-select').type(customerSearch)
+    cy.wait(2000)
+    cy.get('.p-autocomplete-item').contains(customer).click({ force: true })
+
+    cy.get('#cy-technician-search-select').type(technician)
+    cy.wait(2000)
+    cy.get('.p-autocomplete-item').contains(technician).click({ force: true })
+
+    cy.get('.p-dialog').within(() => {
+      cy.get('.p-dropdown-trigger').first().click({ force: true });
+    })
+    cy.get('.p-dropdown-items .p-dropdown-item').contains(serviceType).click({ force: true });
+
+
+    cy.get('[name="serviceDuration"]').type(serviceDuration);
+
+    cy.get('.p-dialog').within(() => {
+      cy.get('.p-dropdown-trigger').eq(1).click({ force: true });
+    })
+    cy.get('.p-dropdown-items .p-dropdown-item').contains(paymentMethod).click({ force: true });
+
+    cy.get('[name="totalServicePrice"]').type(totalPrice);
+    cy.get('[name="discountedServicePrice"]').type(discountedPrice);
+    cy.get('[name="actualPaymentCollected"]').type(actualCollected);
+    cy.get('[name="tip"]').type(tip);
+    cy.get('[name="cashbackBalanceToUse"]').type(cashbackBalanceToUse);
+    cy.get('form').submit()
+});
+
+Cypress.Commands.add('checkCashbackBalanceToUse',
+  (
+    customerSearch,
+    customer,
+    expectedCashbackBalanceToUse,
+  ) => {
+
+    cy.get('#cy-create-transaction-btn').click({force: true});
+
+    cy.get('#cy-customer-search-select').type(customerSearch)
+    cy.wait(2000)
+    cy.get('.p-autocomplete-item').contains(customer).click({ force: true })
+
+    cy.get('.p-dialog').within(() => {
+      cy.get('#cy-available-cashback-balance').contains(`Available Balance: ${expectedCashbackBalanceToUse}`)
+    })
+  });
 
 export {};
