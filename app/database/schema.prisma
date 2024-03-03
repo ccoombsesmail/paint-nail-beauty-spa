@@ -103,6 +103,7 @@ enum Membership {
 }
 
 enum ServiceType {
+  Package
   NailRemoval
   HandCare
   FootCare
