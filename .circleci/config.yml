@@ -7,7 +7,7 @@ workflows:
   build:
     jobs:
       - cypress/run:
-          steps:
+          pre-steps:
             - checkout
             - run: npx prisma generate
             - run: npm run build
