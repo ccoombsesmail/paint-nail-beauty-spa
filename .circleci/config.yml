@@ -5,7 +5,7 @@ orbs:
 workflows:
   build:
     jobs:
-      - node/test:
+      - node/run:
           name: build_application
           pre-steps:
             - checkout
