@@ -9,7 +9,6 @@ workflows:
       - cypress/run:
           pre-steps:
             - checkout
-            - run: npx prisma generate
           # Records in parallel to Cypress Cloud
           # https://docs.cypress.io/guides/guides/parallelization
           parallelism: 2 # Uses 2 parallel instances
