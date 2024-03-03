@@ -7,13 +7,10 @@ orbs:
 workflows:
   build:
     jobs:
-      - node/run:
-          pre-steps:
-            - checkout
-          npm-run: build
       - cypress/run:
           pre-steps:
             - checkout
+            - npm-run: build
           # Records in parallel to Cypress Cloud
           # https://docs.cypress.io/guides/guides/parallelization
           parallelism: 2 # Uses 2 parallel instances
