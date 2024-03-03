@@ -2,10 +2,15 @@
 # Stacks detected: deps:node:.
 version: 2.1
 orbs:
+  node: circleci/node@5.2.0
   cypress: cypress-io/cypress@3
 workflows:
   build:
     jobs:
+      - node/run:
+          pre-steps:
+            - checkout
+          npm-run: build
       - cypress/run:
           pre-steps:
             - checkout
@@ -14,7 +19,8 @@ workflows:
           parallelism: 2 # Uses 2 parallel instances
           # Starts web server for E2E tests - replace with your own server invocation
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
-          start-command: npm run build && npm start:cypress && npm run cypress:run
+          start-command: npm start:cypress && npm run cypress:run
+          cypress-command: 'npx cypress run --record --parallel'
           filters:
             branches:
               only:
