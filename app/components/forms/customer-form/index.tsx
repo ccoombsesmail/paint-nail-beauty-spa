@@ -53,7 +53,6 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
   console.log(countryCodes)
   const { mutateAsync } = useMutation(createCustomer, {
     onSuccess: () => {
-      // Refetch customers list to reflect the new customer
       refetchCustomers();
       setShowDialog(false);
     }
@@ -65,11 +64,20 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
     <>
       <Toaster richColors position='top-right' />
 
-      <Button id='cy-create-customer-btn' style={{ backgroundColor: 'var(--pink-400)' }} label='Create Customer' icon='pi pi-plus'
-              onClick={() => setShowDialog(true)} />
+      <Button
+        id='cy-create-customer-btn'
+        style={{ backgroundColor: 'var(--pink-400)' }}
+        label='Create Customer'
+        icon='pi pi-plus'
+        onClick={() => setShowDialog(true)}
+      />
 
-      <Dialog header='Create Customer' visible={showDialog} style={{ width: '50vw' }} modal
-              onHide={() => setShowDialog(false)}>
+      <Dialog
+        header='Create Customer'
+        visible={showDialog}
+        className='w-[90vw] lg:w-[75vw] xl:w-[75vw]'
+        modal
+        onHide={() => setShowDialog(false)}>
         <Formik
           initialValues={{
             firstName: '',
