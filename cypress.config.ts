@@ -3,6 +3,7 @@ import prismaClient from './app/database/prismaClient';
 
 export default defineConfig({
   projectId: "au998x",
+  video: true,
   e2e: {
     baseUrl: "http://localhost:3000",
     supportFile: "cypress/support/e2e.ts",
