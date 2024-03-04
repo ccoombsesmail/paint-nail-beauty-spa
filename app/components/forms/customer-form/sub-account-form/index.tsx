@@ -22,8 +22,6 @@ const validationSchema = Yup.object().shape({
 
 // @ts-ignore
 const SubAccountForm = ({ setFieldValue, countryCodes }) => {
-  const [selectedCountryCode, setSelectedCountryCode] = useState();
-
 
   return (
     <div className='flex flex-col'>

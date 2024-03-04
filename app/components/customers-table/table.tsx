@@ -106,7 +106,7 @@ const editTemplate = (customer: { membershipLevel: string, id: string }, router:
     router.push(`customers/${customer.id}`)
   }
   return (
-    <button type='button' onClick={onClick} className="flex items-center justify-between hover:opacity-50 cursor-pointer">
+    <button type='button' onClick={onClick} className="flex items-center justify-between hover:opacity-50 cursor-pointer customer-edit-btn">
       <i className="pi pi-user-edit text-xl"></i>
     </button>
   )

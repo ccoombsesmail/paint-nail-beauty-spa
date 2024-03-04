@@ -3,11 +3,30 @@ import { NextResponse } from 'next/server';
 import { decodeJwt } from 'jose';
 
 
+const publicRoutesDev = ["/api/clerk", "/api/seed", '/not-authorized']
+const publicRoutesCypress = ["/api/clerk", "/api/seed", '/not-authorized', '/', '/transactions']
+const publicRoutesProd = ["/api/clerk", '/not-authorized',]
 
+let pubRoutes
+
+switch (process.env.PUBLIC_ROUTES) {
+  case "development":
+    pubRoutes = publicRoutesDev
+    break
+  case "cypress":
+    pubRoutes = publicRoutesCypress
+    break
+  case "production":
+    pubRoutes = publicRoutesProd
+    break
+  default:
+    pubRoutes = publicRoutesProd
+}
+
+console.log(pubRoutes)
 export default authMiddleware({
-  publicRoutes: ["/api/clerk", "/api/seed", '/not-authorized'],
+  publicRoutes: pubRoutes,
   async afterAuth(auth, req, evt) {
-    // Handle users who aren't authenticated
 
     if (req.nextUrl.pathname === '/not-authorized') {
       return NextResponse.next();
@@ -16,7 +35,8 @@ export default authMiddleware({
     const token = await auth.getToken({ template: 'franchise_code'})
 
     if (token) {
-      const payload = decodeJwt(token)
+      const payload = decodeJwt(token as string)
+
       if (!payload.franchise_code && req.nextUrl.href !== `${req.nextUrl.origin}/not-authorized`) {
         return NextResponse.redirect( `${req.nextUrl.origin}/not-authorized` );
       }

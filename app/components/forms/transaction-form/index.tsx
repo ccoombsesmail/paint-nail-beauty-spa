@@ -54,7 +54,6 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
 
   const { mutateAsync } = useMutation(createTransaction, {
     onSuccess: () => {
-      // Refetch customers list to reflect the new customer
       refetchTransactions()
       setShowDialog(false);
     },
@@ -65,20 +64,20 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
     <>
       <Button
         style={{ backgroundColor: 'var(--pink-400)' }}
-        label='Create Transaction' icon='pi pi-plus'
+        label='Create Transaction'
+        icon='pi pi-plus'
         onClick={() => setShowDialog(true)}
+        id='cy-create-transaction-btn'
       />
       <Toaster richColors position='top-right' />
 
       <Dialog
         header='Create Transaction'
         visible={showDialog}
-        // style={{ width: '80vw' }}
         className='md:w-[90vw] w-[80vw]'
         modal
         onHide={() => setShowDialog(false)}
       >
-        {/*<Search placeholder="Search for User" />*/}
         <Formik
           initialValues={{
             userEnteredDate: null,
@@ -151,6 +150,7 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
 
               />
               <Field
+                id='cy-customer-search-select'
                 width='w-[22rem]'
                 name='customerId'
                 as={SearchableUserSelect}
@@ -159,6 +159,7 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
                 setSelectedCustomer={setSelectedCustomer}
               />
               <Field
+                id='cy-technician-search-select'
                 width='w-[22rem]'
                 name='technicianEmployeeId'
                 as={SearchableEmployeeSelect}
@@ -230,12 +231,19 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
                   placeholder='Cashback Balance To Use'
                   type='number'
                   className='w-[22rem]' />
-                  {/*<Field name='cashbackBalance' value={selectedCustomer.cashbackBalance} hidden={true} />*/}
-                  <Button type='button' text raised onClick={() => console.log()} className='ml-5 mb-6'>Available Balance: {(Number(selectedCustomer?.cashbackBalance) - values.cashbackBalanceToUse) || 0}</Button>
+                  <Button
+                    id='cy-available-cashback-balance'
+                    type='button'
+                    text
+                    raised
+                    onClick={() => console.log()}
+                    className='ml-5 mb-6'>Available Balance: {(Number(selectedCustomer?.cashbackBalance) - values.cashbackBalanceToUse) || 0}
+                  </Button>
                   </div>
                 )
 
-                : null}
+                : null
+              }
 
               <Divider />
               <div className='flex w-full justify-end'>

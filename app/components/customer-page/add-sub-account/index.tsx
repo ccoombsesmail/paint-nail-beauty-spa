@@ -49,7 +49,7 @@ export default function AddSubAccount(
   const { reason, memberCanAddSubAccount, setReadOnly } = useMemo(() => {
     if (unlock) return {reason: '', memberCanAddSubAccount: true}
     if (!silverOrGold.includes(customer.membershipLevel)) {
-      return { reason: 'Only Activated Gold Or Silver Members Can Add Sub Accounts', memberCanAddSubAccount: false };
+      return { reason: 'Only Activated Silver Or Gold Members Can Add Sub Accounts', memberCanAddSubAccount: false };
     }
     if (customer.subAccount) {
       return { reason: 'Member already has a linked sub account', memberCanAddSubAccount: false, setReadOnly: true };

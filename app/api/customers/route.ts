@@ -17,12 +17,12 @@ export async function GET(req: NextRequest){
         parentId:  null
     }
     const user = await currentUser()
-    if (!user){
-        return new NextResponse(JSON.stringify({ error: "User Not Authorized"}), {
-            headers: { "content-type": "application/json" },
-            status: 401,
-        })
-    }
+    // if (!user){
+    //     return new NextResponse(JSON.stringify({ error: "User Not Authorized"}), {
+    //         headers: { "content-type": "application/json" },
+    //         status: 401,
+    //     })
+    // }
 
     if (search) {
         where = {
@@ -261,7 +261,6 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
     try {
         // Accumulate the request body content from the ReadableStream
         const {masterCode, ...payload} = await req.json();
-        console.log(payload)
         // Create a new customer record in the database using the parsed data
         const customer = await prisma.customer.update({
             where: { id: payload.id },

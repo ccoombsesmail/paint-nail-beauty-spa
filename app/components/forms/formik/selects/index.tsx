@@ -288,6 +288,7 @@ export const SearchableUserSelectNonFormik = (props: any) => {
     <div className={` ${props.width ? props.width : 'w-[14rem]'}`}>
       <span className={`p-float-label ${props.className}  ${props.width ? props.width : 'w-[14rem]'}`}>
         <AutoComplete
+          id={props.id}
           multiple
           delay={100}
           selectionLimit={1}

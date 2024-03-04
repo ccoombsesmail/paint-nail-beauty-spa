@@ -13,12 +13,10 @@ import { Divider } from 'primereact/divider';
 import { useMutation, useQuery } from 'react-query';
 import { toast, Toaster } from 'sonner';
 import { editCustomer, fetchCustomer } from '../../client-api/cutomers/customer-queries';
-import { getEnums } from '../../client-api/enums/enum-queries';
 import { AxiosError } from 'axios/index';
 import MembershipTransfer from './membership-transfer';
 import BalanceTransfer from './balance-transfer';
 import AddSubAccount from './add-sub-account';
-import { TextInput } from '@tremor/react';
 
 
 const validationSchema = Yup.object().shape({
@@ -53,7 +51,7 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
 
   return (
 
-    <Card title='Edit Customer Profile'>
+    <Card title='Edit Customer Profile' id='edit-customer-card'>
       <Formik
         initialValues={{
           id: customer.id,

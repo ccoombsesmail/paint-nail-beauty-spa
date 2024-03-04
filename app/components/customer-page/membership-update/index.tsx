@@ -156,7 +156,7 @@ export default function MembershipUpdate({ customer, refetchCustomer, unlock, ma
       message: 'Are you sure you want to proceed? Membership upgrade attempts are limited',
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'accept',
-      className: 'max-w-64',
+      className: 'max-w-64 cy-membership-update-confirm-popup',
       accept: onConfirmClick
     });
   };
@@ -205,7 +205,7 @@ export default function MembershipUpdate({ customer, refetchCustomer, unlock, ma
         </div>
         <span className="p-float-label ">
            <Dropdown
-             id="membership_select"
+             id="cy-membership-select"
              valueTemplate={selectedMembershipTemplate}
              value={option}
              onChange={onChange}
@@ -214,12 +214,19 @@ export default function MembershipUpdate({ customer, refetchCustomer, unlock, ma
              placeholder="Select Membership"
              className="w-[24rem]"
            />
-               <label htmlFor="membership_select">Select Membership</label>
+               <label htmlFor="cy-membership-select">Select Membership</label>
             </span>
         </div>
         <ConfirmPopup />
 
-        <Button loading={isSubmitting} disabled={isSubmitting} onClick={openConfirmPopup} label="Update Membership" className='h-[48px]' />
+        <Button
+          loading={isSubmitting}
+          disabled={isSubmitting}
+          onClick={openConfirmPopup}
+          label="Update Membership"
+          className='h-[48px]'
+          id='cy-membership-update-btn'
+        />
       </div>
       <Toaster richColors position='top-right'/>
 

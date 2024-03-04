@@ -5,14 +5,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "start:cypress": "cross-env PUBLIC_ROUTES=cypress next start",
     "lint": "next lint",
     "seeder": "ts-node app/database/seeder/index.mjs",
     "seed-employees": "ts-node app/clerk/index.mjs",
     "generate": "npx prisma generate --schema ./app/database/schema.prisma",
     "migrate": "npx prisma migrate dev --schema ./app/database/schema.prisma",
     "reset": "npx prisma migrate reset  --schema ./app/database/schema.prisma",
-    "vercel-build": "pnpm i && prisma generate --schema ./app/database/schema.prisma && prisma migrate deploy --schema ./app/database/schema.prisma && npm run seeder && next build",
-    "postinstall": "prisma generate"
+    "vercel-build": "npm i && prisma generate --schema ./app/database/schema.prisma && prisma migrate deploy --schema ./app/database/schema.prisma && npm run seeder && next build",
+    "postinstall": "prisma generate --schema ./app/database/schema.prisma",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run --record --parallel"
   },
   "dependencies": {
     "@auth/core": "^0.26.3",
@@ -58,7 +61,11 @@
     "ts-node": "^10.9.2",
     "typescript": "5.2.2",
     "xlsx": "^0.18.5",
-    "yup": "^1.3.3"
+    "yup": "^1.3.3",
+    "cypress": "^13.6.6"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   },
   "prettier": {
     "arrowParens": "always",

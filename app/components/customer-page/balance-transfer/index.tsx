@@ -61,7 +61,7 @@ export default function BalanceTransfer({ customer, refetchCustomer, unlock, mas
       message: 'Are you sure you want to proceed? Cashback Balance can only be transferred once',
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'accept',
-      className: 'max-w-64',
+      className: 'max-w-64 transfer-balance-confirm-popup',
       accept: onConfirmClick
     });
   };
@@ -72,11 +72,11 @@ export default function BalanceTransfer({ customer, refetchCustomer, unlock, mas
     if (customer.membershipLevel !== $Enums.Membership.Gold) {
       return { reason: 'Only Activated Gold Members Can Transfer Their Cashback Balance', memberCanTransfer: false };
     }
-    if (Number(customer.cashbackBalance) === 0) {
-      return { reason: 'No Balance To Transfer', memberCanTransfer: false };
-    }
     if (customer.cashbackBalanceTransferInitiatedOn) {
       return { reason: 'Cashback Balance Can Only Be Transferred Once', memberCanTransfer: false };
+    }
+    if (Number(customer.cashbackBalance) === 0) {
+      return { reason: 'No Balance To Transfer', memberCanTransfer: false };
     }
     if (!customer.canTransferCashbackBalance) {
       return { reason: 'Cashback Balance Cannot Be Transferred', memberCanTransfer: false };
@@ -132,6 +132,7 @@ export default function BalanceTransfer({ customer, refetchCustomer, unlock, mas
               </div>
               <div className='flex-1 w-[32rem]'>
                 <SearchableUserSelectNonFormik
+                  id='cy-transfer-balance-to-input'
                   width='w-[22rem]'
                   name='customerId'
                   placeholder='To Customer'
@@ -155,6 +156,7 @@ export default function BalanceTransfer({ customer, refetchCustomer, unlock, mas
           onClick={openConfirmPopup}
           label='Transfer Balance'
           className='h-[48px]'
+          id='cy-balance-transfer-btn'
         />
       </div>
 
