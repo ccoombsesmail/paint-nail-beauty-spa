@@ -11,6 +11,7 @@ workflows:
             - run: npm ci
             - run: npm run build
           start-command:  npm start
+          browser: chrome
           cypress-command: 'npx cypress run --record'
           parallelism: 2
           filters:
