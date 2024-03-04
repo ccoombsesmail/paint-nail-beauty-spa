@@ -16,7 +16,6 @@ export default defineConfig({
       })
 
     },
-    baseUrl: 'http://localhost:3000',
     experimentalRunAllSpecs: true,
     defaultCommandTimeout: 10000
   },
