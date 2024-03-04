@@ -8,7 +8,7 @@ workflows:
       - cypress/run:
           pre-steps:
             - checkout
-            - npm run build
+            - run: npm run build
           start-command: npm start
           cypress-command: 'npx cypress run --record --parallel'
           parallelism: 2
