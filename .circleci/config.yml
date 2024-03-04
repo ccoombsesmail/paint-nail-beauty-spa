@@ -10,8 +10,8 @@ workflows:
             - checkout
             - run: npm ci
             - run: npm run build
-          start-command:  npm start
-          cypress-command: 'npx cypress run --record  --browser chrome baseUrl=https://staging-pnbs.vercel.app'
+            - run: npm start:cypress
+          cypress-command: 'npx cypress run --record'
           parallelism: 2
           filters:
             branches:

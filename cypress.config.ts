@@ -4,7 +4,7 @@ import prismaClient from './app/database/prismaClient';
 export default defineConfig({
   projectId: "au998x",
   e2e: {
-    baseUrl: "https://staging-pnbs.vercel.app",
+    baseUrl: "http://localhost:3000",
     supportFile: "cypress/support/e2e.ts",
     setupNodeEvents(on, config) {
       on("task", {
