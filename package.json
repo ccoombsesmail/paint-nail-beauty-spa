@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "cross-env PUBLIC_ROUTES=cypress next start",
     "start:cypress": "cross-env PUBLIC_ROUTES=cypress next start",
     "lint": "next lint",
     "seeder": "ts-node app/database/seeder/index.mjs",
