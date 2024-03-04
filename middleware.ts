@@ -36,6 +36,7 @@ export default authMiddleware({
 
     if (token) {
       const payload = decodeJwt(token as string)
+
       if (!payload.franchise_code && req.nextUrl.href !== `${req.nextUrl.origin}/not-authorized`) {
         return NextResponse.redirect( `${req.nextUrl.origin}/not-authorized` );
       }
