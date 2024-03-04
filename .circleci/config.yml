@@ -10,7 +10,7 @@ workflows:
             - checkout
             - run: npm ci
             - run: npm run build
-            - run: npm run start:cypress
+          start-command: npm run start:cypress
           cypress-command: 'npx cypress run --record'
           parallelism: 2
           filters:
