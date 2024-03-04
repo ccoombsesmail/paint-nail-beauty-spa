@@ -12,7 +12,7 @@
     "generate": "npx prisma generate --schema ./app/database/schema.prisma",
     "migrate": "npx prisma migrate dev --schema ./app/database/schema.prisma",
     "reset": "npx prisma migrate reset  --schema ./app/database/schema.prisma",
-    "vercel-build": "npm i && prisma generate --schema ./app/database/schema.prisma && prisma migrate deploy --schema ./app/database/schema.prisma && npm run seeder && next build",
+    "vercel-build": "cross-env PUBLIC_ROUTES=cypress npm i && prisma generate --schema ./app/database/schema.prisma && prisma migrate deploy --schema ./app/database/schema.prisma && npm run seeder && next build",
     "postinstall": "prisma generate --schema ./app/database/schema.prisma",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --record --parallel"
