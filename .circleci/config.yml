@@ -11,7 +11,7 @@ workflows:
             - run: npm ci
             - run: npm run build
           start-command:  npm start
-          cypress-command: 'npx cypress run --record  --browser chrome'
+          cypress-command: 'npx cypress run --record  --browser chrome baseUrl=https://staging-pnbs.vercel.app'
           parallelism: 2
           filters:
             branches:
