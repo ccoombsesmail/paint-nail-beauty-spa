@@ -5,21 +5,13 @@ orbs:
 workflows:
   build:
     jobs:
-      - node/run:
-          name: build_application
-          pre-steps:
-            - checkout
-          post-steps:
-            - run:
-                name: Build Application
-                command: npm run build
       - cypress/run:
-          requires:
-            - build_application
           pre-steps:
             - checkout
-          start-command: npm start
-          cypress-command: 'npx cypress run --record --parallel'
+            - run: npm ci
+            - run: npm run build
+          start-command: npm run start:cypress
+          cypress-command: 'npx cypress run --record'
           parallelism: 2
           filters:
             branches:

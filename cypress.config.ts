@@ -3,7 +3,10 @@ import prismaClient from './app/database/prismaClient';
 
 export default defineConfig({
   projectId: "au998x",
+  video: true,
   e2e: {
+    baseUrl: "http://localhost:3000",
+    supportFile: "cypress/support/e2e.ts",
     setupNodeEvents(on, config) {
       on("task", {
         async clearDB() {
@@ -16,7 +19,6 @@ export default defineConfig({
       })
 
     },
-    baseUrl: 'http://localhost:3000',
     experimentalRunAllSpecs: true,
     defaultCommandTimeout: 10000
   },
