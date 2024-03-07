@@ -42,14 +42,13 @@ export const FloatingSelect = (props: any) => {
   const [option, setOption] = useState(props.initValue || null);
 
   const onChange = (e: any) => {
-    console.log(e.value.code)
     props.setFieldValue(props.name, e.value.code);
     setOption(e.value);
   };
 
   return (
     <div>
-      <span className={`p-float-label ${props.className}`}>
+      <span className={`p-float-label`}>
        <Dropdown {...props} valueTemplate={props.valueTemplate} value={option} onChange={onChange}
                  options={props.options} optionLabel='name'
                  placeholder={props.placeholder} className={props.width ? props.width : `w-[14rem]`} />
@@ -92,7 +91,7 @@ export const CountryCodeDropdown = ({ options, setFieldValue, ...rest }) => {
     );
   };
   return (
-    <div className='flex flex-col'>
+    <div className={`flex flex-col ${rest.className}`}>
       <Dropdown
         style={{ maxHeight: '50px' }}
         {...rest}
@@ -106,6 +105,7 @@ export const CountryCodeDropdown = ({ options, setFieldValue, ...rest }) => {
         placeholder='Country Code'
         itemTemplate={countryOptionTemplate}
         valueTemplate={selectedCountryTemplate}
+        className={rest.width ? rest.width : `w-[14rem]`}
       />
       {meta.error && meta.touched ? (<span className='text-red-500 ml-2 text-sm'>{meta.error}</span>) : null}
     </div>

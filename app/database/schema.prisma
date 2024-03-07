@@ -50,6 +50,7 @@ model Customer {
   cashbackBalanceTransferReceivedOn  DateTime?        @map("cashback_balance_transfer_received_on")
   membershipTransferInitiatedOn      DateTime?        @map("membership_transfer_initiated_on")
   membershipTransferReceivedOn       DateTime?        @map("membership_transfer_received_on")
+  notes                              String?          @map("notes") @db.VarChar(10000)
   createdAt                          DateTime         @default(now()) @map("created_at")
   updatedAt                          DateTime         @updatedAt @map("updated_at")
 
@@ -73,6 +74,7 @@ model Transaction {
   technicianEmployeeId   String        @map("technician_employee_id") @db.VarChar(100)
   customerId             String        @map("customer_id") @db.VarChar(100)
   franchiseCode          String        @map("franchise_code")
+  notes                  String?       @map("notes") @db.VarChar(10000)
   createdAt              DateTime      @default(now()) @map("created_at")
   updatedAt              DateTime      @updatedAt @map("updated_at")
   // Relation to User model

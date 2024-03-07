@@ -9,9 +9,12 @@ export const FloatingLabelInput = (props: any) => {
   const [field, meta, helpers] = useField(props);
 
   return (
-    <div className='relative pb-6'>
+    <div className={`relative pb-6 ${props.className}`}>
       <span className='p-float-label'>
-      <InputText id={props.name} {...props} />
+      <InputText
+        id={props.name}
+        {...props}
+      />
          <label htmlFor={props.name}>{props.placeholder}</label>
       </span>
 
@@ -68,9 +71,17 @@ export const PhoneInput = (props: any) => {
   const [field, meta, helpers] = useField(props);
 
   return (
-    <div>
-      <span className='p-float-label'>
-        <InputMask autocomplete="off" autoComplete='off' id='phone_input' mask='(999) 999-9999' placeholder='(999) 999-9999'  {...props} />
+    <div className={`${props.className}`}>
+      <span className={`p-float-label ${props.className}`}>
+        <InputMask
+          {...props}
+          autocomplete="off"
+          autoComplete='off'
+          id='phone_input'
+          mask='(999) 999-9999'
+          placeholder='(999) 999-9999'
+
+        />
         <label htmlFor='phone_input'>Phone Number</label>
       </span>
       {meta.error && meta.touched ? (<span className='text-red-500 ml-2 text-sm'>{meta.error}</span>) : null}

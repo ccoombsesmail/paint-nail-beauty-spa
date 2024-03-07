@@ -13,6 +13,7 @@ import { createTransaction } from '../../../client-api/employees/employee-querie
 import { toast, Toaster } from 'sonner';
 import { AxiosError } from 'axios';
 import { Customer } from '@prisma/client';
+import { TextBoxInput } from '../formik/textbox/input';
 
 const validationSchema = Yup.object().shape({
   customerId: Yup.string().required('Customer is required'),
@@ -244,6 +245,14 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
 
                 : null
               }
+              <Field
+                // className='col-span-3'
+                setFieldValue={setFieldValue}
+                name='notes'
+                as={TextBoxInput}
+                placeholder='Additional Notes'
+                width='w-full'
+              />
 
               <Divider />
               <div className='flex w-full justify-end'>
