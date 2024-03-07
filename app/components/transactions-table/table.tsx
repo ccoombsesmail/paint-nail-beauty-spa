@@ -4,8 +4,7 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { useRouter } from 'next/navigation';
 import { useCallback, useRef } from 'react';
 import { Button } from 'primereact/button';
-import { currentUser, useUser } from '@clerk/nextjs';
-import { useAuth } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 
 
 const tipTemplate = (rowData: any) => {
@@ -148,6 +147,7 @@ export default function TransactionsTable({ transactions, isLoading }: { transac
 
         <Column field="paymentMethod" header="PaymentMethod"  style={{ width: '10%' }}></Column>
         <Column field="technicianName" header="Technician"  style={{ width: '10%' }}></Column>
+        <Column field="notes" header="Notes" ></Column>
         <Column field="franchiseCode" header="" hidden ></Column>
 
       </DataTable>

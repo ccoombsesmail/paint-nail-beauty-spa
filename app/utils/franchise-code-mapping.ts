@@ -1,8 +1,12 @@
 
 export const franchiseCodeToDisplayNameMap = new Map<string, string>([
-    ['la', "Los Altos"],
+    ['los_altos', "Los Altos"],
     ['cupertino', "Cupertino"],
-    ['wsj', "West San Jose"],
+    ['west_san_jose', "West San Jose"],
     ['fremont', "Fremont"],
+    ['south_san_jose', "South San Jose"],
+    ['pleasanton', "Pleasanton"],
+    ['berkeley', "Berkeley"],
+
   ]
 )

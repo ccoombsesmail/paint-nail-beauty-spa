@@ -17,6 +17,7 @@ import { AxiosError } from 'axios';
 import { fetchCountryCodes, getEnums } from '../../../client-api/enums/enum-queries';
 import { Toaster, toast } from 'sonner';
 import SubAccountForm from './sub-account-form';
+import { TextBoxInput } from '../formik/textbox/input';
 
 
 const validationSchema = Yup.object().shape({
@@ -109,11 +110,12 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
           }}
         >
           {({ isSubmitting, setFieldValue, values }) => (
-            <Form className='flex flex-wrap gap-x-2 my-7 gap-y-8 '>
-              <Field name='firstName' as={FloatingLabelInput} placeholder='First Name' type='text' />
-              <Field name='lastName' as={FloatingLabelInput} placeholder='Last Name' type='text' />
-              <Field name='email' as={FloatingLabelInput} placeholder='Email' type='email' />
-              <div className='flex gap-x-2'>
+            <Form className='flex flex-wrap my-7  justify-center'>
+              <div className='grid grid-rows-2 grid-cols-3 xl:grid-cols-4 gap-y-4 gap-x-2'>
+
+              <Field name='firstName' as={FloatingLabelInput} placeholder='First Name' type='text'                 className='w-[14rem]' />
+              <Field name='lastName' as={FloatingLabelInput} placeholder='Last Name' type='text'   className='w-[14rem]' />
+              <Field name='email' as={FloatingLabelInput} placeholder='Email' type='email'    className='w-[14rem]' />
                 <Field
                   setFieldValue={setFieldValue}
                   name='dialCode'
@@ -123,9 +125,9 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
                   optionLabel='dialCode'
                   optionValue='dialCode'
                 />
-                <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number' />
-              </div>
-              <Field
+              <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number' className='col-span-2 xl:col-span-1 w-[14rem]' />
+
+                <Field
                 setFieldValue={setFieldValue}
                 name='membershipLevel'
                 as={FloatingSelect}
@@ -145,43 +147,68 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
                   disabled={values.membershipLevel !== 'Bronze' && values.membershipLevel !== 'BronzeNonActive'}
                 /> : null
               }
-              <Divider />
 
-              <div className='flex justify-between w-full'>
-                {(values.membershipLevel === 'Silver' || values.membershipLevel === 'Gold') ?
-                  (
-                    <>
-                      {!showSubAccountForm ? <Button
-                        id='cy-add-sub-account-btn'
-                        label='Add Sub Account'
-                        icon='pi pi-plus'
-                        className=''
-                        type='button'
-                        onClick={() => setShowSubAccountForm(true)}
-                      /> : <div></div>
-                      }
-                      {showSubAccountForm && <Button
-                        label='X'
-                        text
-                        raised
-                        className=''
-                        onClick={() => setShowSubAccountForm(false)}
-                      />
-                      }
-                    </>
-                  ) : null
+                <div className='flex justify-between w-full col-span-3 xl:col-span-4'>
+                  {(values.membershipLevel === 'Silver' || values.membershipLevel === 'Gold') ?
+                    (
+                      <>
+                        {!showSubAccountForm ? <Button
+                          id='cy-add-sub-account-btn'
+                          label='Add Sub Account'
+                          icon='pi pi-plus'
+                          className=''
+                          type='button'
+                          onClick={() => setShowSubAccountForm(true)}
+                        /> : <div></div>
+                        }
+                        {showSubAccountForm && <Button
+                          label='X'
+                          text
+                          raised
+                          className=''
+                          onClick={() => setShowSubAccountForm(false)}
+                        />
+                        }
+                      </>
+                    ) : null
+                  }
+                </div>
+
+                <div className='col-span-3'>
+
+                {
+                  (showSubAccountForm && (values.membershipLevel === 'Silver' || values.membershipLevel === 'Gold')) && <SubAccountForm countryCodes={countryCodes} setFieldValue={setFieldValue} />
+
                 }
+                </div>
+
+
+                <Field
+                className='col-span-3'
+                setFieldValue={setFieldValue}
+                name='notes'
+                as={TextBoxInput}
+                placeholder='Additional Notes'
+                width='w-full'
+              />
               </div>
 
-              {(showSubAccountForm && (values.membershipLevel === 'Silver' || values.membershipLevel === 'Gold')) && <SubAccountForm countryCodes={countryCodes} setFieldValue={setFieldValue} />
-
-              }
               <Divider />
+
               <div className='flex w-full justify-end'>
-                <Button label='Cancel' icon='pi pi-times' className='p-button-text'
-                        onClick={() => setShowDialog(false)} />
-                <Button type='submit' label='Submit' icon='pi pi-check' disabled={isSubmitting}
-                        loading={isSubmitting} />
+                <Button
+                  label='Cancel'
+                  icon='pi pi-times'
+                  className='p-button-text'
+                  onClick={() => setShowDialog(false)}
+                />
+                <Button
+                  type='submit'
+                  label='Submit'
+                  icon='pi pi-check'
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                />
               </div>
             </Form>
           )}

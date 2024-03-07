@@ -116,7 +116,7 @@ const cashbackBalanceTemplate = (rowData: any) => {
   return (
     <div className='flex justify-around items-center'>
       <span>${rowData.cashbackBalance}</span>
-      <Link href='customers/transactions' className='flex justify-around items-center p-button p-component p-button-raised p-button-text py-1'>
+      <Link href='customers/transactions' className='flex justify-around items-center p-button p-component  p-button-text py-1'>
         <span className='mr-2 underline'>Details</span>
         <i className='pi pi-external-link' />
       </Link>
@@ -244,6 +244,8 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
         <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance" ></Column>
         <Column className='min-w-[150px]' field="membershipLevel" header="Membership"  body={membershipColTemplate}></Column>
         <Column field="serviceCategorySelection" header="Category" body={serviceTypeColTemplate} ></Column>
+        <Column field="notes" header="Notes" ></Column>
+
         <Column field="createdAtFranchiseCode" header="" hidden ></Column>
 
       </DataTable>
