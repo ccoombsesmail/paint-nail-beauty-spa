@@ -114,11 +114,11 @@ export const CountryCodeDropdown = ({ options, setFieldValue, ...rest }) => {
 };
 
 
-const userOptionTemplate = (option: { firstName: string | null, lastName: string | null, phoneNumber: string }) => {
+const userOptionTemplate = (option: { firstName: string | null, lastName: string | null, phoneNumber: string | null }) => {
   return (
     <div className='flex items-center justify-between w-full'>
       <div className='font-bold truncate w-36'>{formatName(option)}</div>
-      <div>{option.phoneNumber}</div>
+      <div>{option.phoneNumber || ''}</div>
     </div>
   );
 };
@@ -128,7 +128,7 @@ const selectedUserTemplate = (option: { firstName: string, phoneNumber: string }
     return (
       <div className='flex items-center justify-between'>
         <div className='font-bold mr-4'>{option.firstName}</div>
-        <div>{option.phoneNumber}</div>
+        <div>{option.phoneNumber || ''}</div>
       </div>
     );
   }

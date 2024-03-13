@@ -160,4 +160,5 @@ enum ServiceCategory {
   Eyelash
   Facial
   BodySpa
+  HairRemoval
 }
