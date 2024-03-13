@@ -116,7 +116,6 @@ export async function GET(req: NextRequest) {
 
 
   if (search) {
-    // @ts-ignore
     where.OR = [
       {
         customer: {

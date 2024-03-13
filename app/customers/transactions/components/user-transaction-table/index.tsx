@@ -9,15 +9,16 @@ import { franchiseCodeToDisplayNameMap } from '../../../../utils/franchise-code-
 
 const tipTemplate = (rowData: any) => {
   return (
-    <span>${rowData.tip}</span>
+    <span>{rowData.tip  ? `$${rowData.tip}` : null}</span>
   )
 }
 
 const totalPriceTemplate = (rowData: any) => {
   return (
-    <span>${rowData.totalServicePrice}</span>
+    <span>{rowData.totalServicePrice  ? `$${rowData.totalServicePrice}` : null}</span>
   )
 }
+
 
 const amountCollectedTemplate = (rowData: any) => {
   return (
@@ -47,13 +48,14 @@ const franchiseTemplate = (rowData: any) => {
 
 const discountedServicePrice = (rowData: any) => {
   return (
-    <span>${rowData.discountedServicePrice}</span>
+    <span>{rowData.discountedServicePrice  ? `$${rowData.discountedServicePrice}` : null}</span>
   )
 }
 
+
 const calculatedCashback = (rowData: any) => {
   return (
-    <span>${rowData.actualPaymentCollected * .01}</span>
+    <span>${(rowData.actualPaymentCollected * .01).toFixed(2)}</span>
   )
 }
 
