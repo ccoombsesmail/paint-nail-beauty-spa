@@ -115,7 +115,7 @@ const editTemplate = (customer: { membershipLevel: string, id: string }, router:
 const cashbackBalanceTemplate = (rowData: any) => {
   return (
     <div className='flex justify-around items-center'>
-      <span>${rowData.cashbackBalance}</span>
+      <span>${Number(rowData.cashbackBalance).toFixed(2)}</span>
       <Link href='customers/transactions' className='flex justify-around items-center p-button p-component  p-button-text py-1'>
         <span className='mr-2 underline'>Details</span>
         <i className='pi pi-external-link' />

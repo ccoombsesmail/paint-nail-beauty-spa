@@ -15,7 +15,6 @@ export async function POST(req: NextRequest) {
     };
     const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET as string);
     const payload = wh.verify(JSON.stringify(body), svixHeaders) as WebhookEvent;
-    console.log(payload);
     switch (payload.type) {
       case 'user.created':
         await createEmployee(payload.data);
@@ -75,7 +74,7 @@ async function updateEmployee(userData: any) {
       firstName: first_name,
       lastName: last_name,
       profileImage: image_url,
-      phoneNumber: phone_number,
+      phoneNumber: phone_number ? phone_number.toString() : null,
       franchiseCode: franchise_code,
       lastSignIn: last_sign_in_at ? new Date(last_sign_in_at) : null
     }

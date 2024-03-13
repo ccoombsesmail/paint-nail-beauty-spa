@@ -9,19 +9,19 @@ import { useUser } from '@clerk/nextjs';
 
 const tipTemplate = (rowData: any) => {
   return (
-    <span>${rowData.tip}</span>
+    <span>{rowData.tip  ? `$${rowData.tip}` : null}</span>
   )
 }
 
 const totalPriceTemplate = (rowData: any) => {
   return (
-    <span>${rowData.totalServicePrice}</span>
+    <span>{rowData.totalServicePrice  ? `$${rowData.totalServicePrice}` : null}</span>
   )
 }
 
 const discountedServicePrice = (rowData: any) => {
   return (
-    <span>${rowData.discountedServicePrice}</span>
+    <span>{rowData.discountedServicePrice  ? `$${rowData.discountedServicePrice}` : null}</span>
   )
 }
 const amountCollectedTemplate = (rowData: any) => {
