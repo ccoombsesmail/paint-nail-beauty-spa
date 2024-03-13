@@ -44,7 +44,7 @@ export async function GET(req: NextRequest, { params }: { params: { customerId: 
   const formattedTransactions = transactions.map(transaction => {
     return {
       ...transaction,
-      serviceType: serviceTypeEnumMap.get(transaction.serviceType),
+      serviceType: serviceTypeEnumMap.get(transaction.serviceType || ''),
       customerName: transaction.customer ? `${transaction.customer.firstName} ${transaction.customer.lastName || ''}` : null,
       customerEmail: transaction.customer ? transaction.customer.email : null,
       customerPhoneNumber: transaction.customer ? transaction.customer.phoneNumber : null,
