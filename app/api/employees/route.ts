@@ -45,18 +45,19 @@ export async function GET(req: NextRequest){
                         mode: 'insensitive',
                     },
                 },
-                {
-                    phoneNumber: {
-                        contains: search,
-                        mode: 'insensitive',
-                    },
-                },
-                {
-                    email: {
-                        contains: search,
-                        mode: 'insensitive',
-                    }
-                }
+                // As of now, employee phone number and email are not entered
+                // {
+                //     phoneNumber: {
+                //         contains: search,
+                //         mode: 'insensitive',
+                //     },
+                // },
+                // {
+                //     email: {
+                //         contains: search,
+                //         mode: 'insensitive',
+                //     }
+                // }
             ]
         }
 
@@ -70,7 +71,7 @@ export async function GET(req: NextRequest){
             ...u,
             // @ts-ignore
             membershipLevel: membershipTypeEnumMap.get(u.membershipLevel),
-            phoneNumber: `${u.phoneNumber}`,
+            phoneNumber: u.phoneNumber ? `${u.phoneNumber}` : null,
         }
     })
 

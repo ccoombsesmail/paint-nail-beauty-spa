@@ -17,20 +17,24 @@ const seedEmployees = async () => {
     employees,
   } = JSON.parse(data);
 
-
   for (const employee of employees) {
-    employee.password = employee.password.toString()
-    employee.skipPasswordChecks = true
-    employee.phoneNumber = null
-    const user: User = await clerkClient.users.createUser(employee)
-    await wait(2000)
-    const metaData = user.publicMetadata
-    await clerkClient.users.updateUser(user.id, {
-      publicMetadata: {
-        ...metaData,
-        phone_number: metaData.phone_number
-      }
-    })
+    try {
+      employee.password = employee.password.toString()
+      employee.skipPasswordChecks = true
+      // employee.phoneNumber = ''
+      const user: User = await clerkClient.users.createUser(employee)
+      await wait(2000)
+      const metaData = user.publicMetadata
+      await clerkClient.users.updateUser(user.id, {
+        publicMetadata: {
+          ...metaData,
+          phone_number: metaData.phone_number
+        }
+      })
+    } catch (e) {
+      console.log(employee)
+      console.log(e)
+    }
 
   }
 
@@ -51,6 +55,7 @@ const deleteEmployees = async () => {
 
 }
 export async function GET(req: NextRequest){
+
   const searchParams = req.nextUrl.searchParams
   const action = searchParams.get('action')
   const pw = searchParams.get('pw')
