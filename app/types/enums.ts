@@ -107,6 +107,7 @@ export const serviceCategoryTypeEnumMap = new Map<string, string>([
     [$Enums.ServiceCategory.Eyelash, "Eyelash"],
     [$Enums.ServiceCategory.Facial, "Facial"],
     [$Enums.ServiceCategory.BodySpa, "Body Spa"],
+    [$Enums.ServiceCategory.HairRemoval, "Hair Removal"]
   ]
 )
 
