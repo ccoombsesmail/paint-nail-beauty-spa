@@ -1,19 +1,455 @@
 {
-  "employees": [{"emailAddress":["tdurran0@howstuffworks.com"],"username":"tdurran0","password":12345678,"firstName":"Theo","lastName":"Durran","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"826-228-7586"}},
-    {"emailAddress":["ibalogh1@webeden.co.uk"],"username":"ibalogh1","password":12345678,"firstName":"Iris","lastName":"Balogh","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"la","phone_number":"889-494-0049"}},
-    {"emailAddress":["cproschke2@cargocollective.com"],"username":"cproschke2","password":12345678,"firstName":"Carolee","lastName":"Proschke","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"wsj","phone_number":"436-776-4273"}},
-    {"emailAddress":["krenzini3@ted.com"],"username":"krenzini3","password":12345678,"firstName":"Karylin","lastName":"Renzini","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"cupertino","phone_number":"386-260-7706"}},
-    {"emailAddress":["mitzkov4@elegantthemes.com"],"username":"mitzkov4","password":12345678,"firstName":"Maribel","lastName":"Itzkov","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"wsj","phone_number":"719-329-0422"}},
-    {"emailAddress":["iewings5@google.co.uk"],"username":"iewings5","password":12345678,"firstName":"Iormina","lastName":"Ewings","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"842-959-8635"}},
-    {"emailAddress":["sbolgar6@wunderground.com"],"username":"sbolgar6","password":12345678,"firstName":"Sinclair","lastName":"Bolgar","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"cupertino","phone_number":"816-305-4252"}},
-    {"emailAddress":["gstapforth7@nytimes.com"],"username":"gstapforth7","password":12345678,"firstName":"Ginevra","lastName":"Stapforth","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"la","phone_number":"142-359-9025"}},
-    {"emailAddress":["jdemeza8@state.gov"],"username":"jdemeza8","password":12345678,"firstName":"Janaye","lastName":"Demeza","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"wsj","phone_number":"995-729-9147"}},
-    {"emailAddress":["bsivill9@instagram.com"],"username":"bsivill9","password":12345678,"firstName":"Blithe","lastName":"Sivill","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"926-837-5163"}},
-    {"emailAddress":["hhawkyensa@hhs.gov"],"username":"hhawkyensa","password":12345678,"firstName":"Haroun","lastName":"Hawkyens","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"wsj","phone_number":"546-489-7428"}},
-    {"emailAddress":["feliazb@1688.com"],"username":"feliazb","password":12345678,"firstName":"Fidelio","lastName":"Eliaz","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"584-281-7736"}},
-    {"emailAddress":["ldousec@msu.edu"],"username":"ldousec","password":12345678,"firstName":"Lorelle","lastName":"Douse","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"cupertino","phone_number":"136-486-5398"}},
-    {"emailAddress":["rfannd@ox.ac.uk"],"username":"rfannd","password":12345678,"firstName":"Rafferty","lastName":"Fann","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"935-707-8834"}},
-    {"emailAddress":["dgueinne@dot.gov"],"username":"dgueinne","password":12345678,"firstName":"Doti","lastName":"Gueinn","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"fremont","phone_number":"826-515-7423"}},
-    {"emailAddress":["nbaldingf@sun.com"],"username":"nbaldingf","password":12345678,"firstName":"Ninnetta","lastName":"Balding","skipPasswordChecks":"true","publicMetadata":{"franchise_code":"la","phone_number":"125-876-4491"}}
-    ]
+
+"employees": [
+  {
+    "emailAddress": [
+      "jayzhang@paintnailbeautyspa.net"
+    ],
+    "password": "pnbs-jay",
+    "firstName": "Jay",
+    "lastName": "Zhang",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": "6692121970"
+    }
+  },
+  {
+    "emailAddress": [
+      "jenniferyip@paintnailbeautyspa.net"
+    ],
+    "password": "pnbs-jennifer",
+    "firstName": "Jennifer",
+    "lastName": "yip",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": "4087076961"
+    }
+  },
+  {
+    "emailAddress": [
+      "paintnailcollection@gmail.com"
+    ],
+    "password": "pnbs-lily",
+    "firstName": "Lily",
+    "lastName": "Zhou",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": "6692251416"
+    }
+  },
+  {
+    "emailAddress": [
+      "solli@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Ada",
+    "lastName": "Xiong",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "svetlankakiss@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Aling",
+    "lastName": null,
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "operationpatchwork@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "annie",
+    "lastName": "Jin",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "djamshoot@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "bonnie",
+    "lastName": "Chen",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "marick@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "GuoGuo",
+    "lastName": "YouYue",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "abc@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Leena",
+    "lastName": "Wang",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "abcd@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "lulu",
+    "lastName": null,
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "abcde@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "panpan",
+    "lastName": "Liu",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "abcdef@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "weiwei",
+    "lastName": "Wang",
+    "publicMetadata": {
+      "franchise_code": "cupertino",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": ["paintnailspafremont@gmail.com"],
+    "password": "pnbs-joanna",
+    "firstName": "Joanna",
+    "lastName": "Shi",
+    "publicMetadata": {
+      "franchise_code": "fremont",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "abcdefg@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "JingJing",
+    "lastName": "Tang",
+    "publicMetadata": {
+      "franchise_code": "fremont",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "abcdefgh@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Ellen",
+    "lastName": "Chen",
+    "publicMetadata": {
+      "franchise_code": "fremont",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "abcdefghi@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Rachel",
+    "lastName": "Yuen",
+    "publicMetadata": {
+      "franchise_code": "fremont",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "bcdefghi@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Yuki",
+    "lastName": "Zhang",
+    "publicMetadata": {
+      "franchise_code": "fremont",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "cdefghi@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Reika",
+    "lastName": "Lu",
+    "publicMetadata": {
+      "franchise_code": "fremont",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "defghi@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Joan",
+    "lastName": "Lu",
+    "publicMetadata": {
+      "franchise_code": "fremont",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "efghi@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Xin",
+    "lastName": "Liu",
+    "publicMetadata": {
+      "franchise_code": "fremont",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": ["paintnaillosaltos@gmail.com"],
+    "password": "pnbs-kate",
+    "firstName": "Jiawen",
+    "lastName": "Feng",
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "fghi@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Sunnie",
+    "lastName": "Jiang",
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "ghi@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Gina",
+    "lastName": "He",
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "hi@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Melanie",
+    "lastName": "Angelima",
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "ijfgh@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Sandra",
+    "lastName": "Chen",
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "ia@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Dandan",
+    "lastName": null,
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "iab@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Jessie",
+    "lastName": null,
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "iabc@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Crystal",
+    "lastName": "Wang",
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "iabcd@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Faye",
+    "lastName": "Duan",
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "iabcde@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Chenning",
+    "lastName": "Zhao",
+    "publicMetadata": {
+      "franchise_code": "los_altos",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": ["qingzou369@gmail.com"],
+    "password": "pnbs-3969",
+    "firstName": "Sunny",
+    "lastName": "Zou",
+    "publicMetadata": {
+      "franchise_code": "west_san_jose",
+      "phone_number": "6787562993"
+    }
+  },
+  {
+    "emailAddress": [
+      "iabcdef@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Teresa",
+    "lastName": "Chen",
+    "publicMetadata": {
+      "franchise_code": "west_san_jose",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "iabcdefg@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Tina",
+    "lastName": "Wang",
+    "publicMetadata": {
+      "franchise_code": "west_san_jose",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "iabcdefgh@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Nancy",
+    "lastName": "Liang",
+    "publicMetadata": {
+      "franchise_code": "west_san_jose",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "idabcdefgh@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Fiona",
+    "lastName": "Liu",
+    "publicMetadata": {
+      "franchise_code": "west_san_jose",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "idabcdcefgh@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Ashley",
+    "lastName": "Qiu",
+    "publicMetadata": {
+      "franchise_code": "west_san_jose",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "idabcdcefghc@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Carol",
+    "lastName": "Luo",
+    "publicMetadata": {
+      "franchise_code": "west_san_jose",
+      "phone_number": null
+    }
+  },
+  {
+    "emailAddress": [
+      "idabcdcebbfghc@gmail.com"
+    ],
+    "password": "80}B7ZK$s.s[k$_KjW~5w>Bo",
+    "firstName": "Angela",
+    "lastName": "Ko",
+    "publicMetadata": {
+      "franchise_code": "west_san_jose",
+      "phone_number": null
+    }
+  }
+]
 }
