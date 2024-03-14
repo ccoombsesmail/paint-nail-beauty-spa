@@ -6,6 +6,7 @@ import prisma from '../../database/prismaClient';
 import { $Enums, Customer, Prisma } from '@prisma/client';
 import { bronzeOrNonActiveBronze, membershipTypeEnumMap, silverOrGold } from '../../types/enums';
 import { currentUser } from '@clerk/nextjs/server';
+import { normalizePhoneNumber } from './utils/ normalizePhoneNumber';
 
 
 
@@ -16,14 +17,7 @@ export async function GET(req: NextRequest){
     let where: Prisma.CustomerWhereInput = all === 'true' ? {} : {
         parentId:  null
     }
-    const user = await currentUser()
-    // if (!user){
-    //     return new NextResponse(JSON.stringify({ error: "User Not Authorized"}), {
-    //         headers: { "content-type": "application/json" },
-    //         status: 401,
-    //     })
-    // }
-
+    const phoneSearch = normalizePhoneNumber(search)
     if (search) {
         where = {
             ...where,
@@ -42,7 +36,7 @@ export async function GET(req: NextRequest){
                 },
                 {
                     phoneNumber: {
-                        contains: search,
+                        contains: phoneSearch,
                         mode: 'insensitive',
                     },
                 },
@@ -69,7 +63,7 @@ export async function GET(req: NextRequest){
                             },
                             {
                                 phoneNumber: {
-                                    contains: search,
+                                    contains: phoneSearch,
                                     mode: 'insensitive',
                                 },
                             },
@@ -119,12 +113,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 status: 401,
             })
         }
-        // Accumulate the request body content from the ReadableStream
         const createCustomerPayload = await req.json();
+
+        const normalizedPhoneNumber = normalizePhoneNumber(createCustomerPayload.phoneNumber)
 
         const customer = await prisma.customer.findUnique({
             where: {
-                phoneNumber: createCustomerPayload.phoneNumber
+                phoneNumber: normalizedPhoneNumber
             },
         });
 
@@ -219,7 +214,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
                     serviceCategorySelection: mainUserInfo.serviceCategorySelection || null,
                     createdAtFranchiseCode: franchise_code,
                     ...membershipDates,
-                      ...canTransferValues
+                    ...canTransferValues,
+                    phoneNumber: normalizedPhoneNumber
                 },
             });
 
@@ -231,7 +227,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
                         serviceCategorySelection: createdCustomer.serviceCategorySelection || null,
                         parentId: createdCustomer.id,
                         ...membershipDates,
-                        createdAtFranchiseCode: franchise_code
+                        createdAtFranchiseCode: franchise_code,
+                        phoneNumber: normalizePhoneNumber(subAccountInfo.phoneNumber)
                     },
                 });
             }

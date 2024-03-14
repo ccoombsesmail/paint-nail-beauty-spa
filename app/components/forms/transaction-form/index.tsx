@@ -8,12 +8,12 @@ import * as Yup from 'yup';
 import { FloatingSelect, SearchableEmployeeSelect, SearchableUserSelect } from '../formik/selects';
 import { useMutation, useQuery } from 'react-query';
 import { getEnums } from '../../../client-api/enums/enum-queries';
-import { Calendar } from 'primereact/calendar';
 import { createTransaction } from '../../../client-api/employees/employee-queries';
 import { toast, Toaster } from 'sonner';
 import { AxiosError } from 'axios';
 import { Customer } from '@prisma/client';
 import { TextBoxInput } from '../formik/textbox/input';
+import { CalanderInput } from '../formik/date-pickers';
 
 const validationSchema = Yup.object().shape({
   customerId: Yup.string().required('Customer is required'),
@@ -25,7 +25,7 @@ const validationSchema = Yup.object().shape({
   tip: Yup.number().required('Tip is required (enter 0 if none)'),
   paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'PayPal', 'WeChat', 'CreditCard']).required('Payment Method is required'),
   technicianEmployeeId: Yup.string().required('Technician is required'),
-  userEnteredDate: Yup.date().required("Transaction DateTime is Required"),
+  userEnteredDate: Yup.date().required('Transaction DateTime is Required'),
   cashbackBalanceToUse: Yup.number()
     .min(0, 'Value must be greater than or equal to 0')
     .test(
@@ -36,7 +36,7 @@ const validationSchema = Yup.object().shape({
         return value === undefined || value <= this.options.context.cashbackBalance;
       }
     )
-    .optional(),
+    .optional()
 
 });
 
@@ -44,7 +44,7 @@ const validationSchema = Yup.object().shape({
 
 const CreateTransactionDialog = ({ refetchTransactions }) => {
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const { data: enums } = useQuery('enums', getEnums, {
     initialData: {
       membershipTypes: [],
@@ -55,11 +55,13 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
 
   const { mutateAsync } = useMutation(createTransaction, {
     onSuccess: () => {
-      refetchTransactions()
+      refetchTransactions();
       setShowDialog(false);
-    },
+    }
 
   });
+
+
 
   return (
     <>
@@ -95,35 +97,31 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
           }}
           validate={(values) => {
             try {
-              validateYupSchema(values, validationSchema, true, {cashbackBalance: selectedCustomer?.cashbackBalance || 0});
+              validateYupSchema(values, validationSchema, true, { cashbackBalance: selectedCustomer?.cashbackBalance || 0 });
             } catch (err) {
               return yupToFormErrors(err);
             }
             return {};
           }}
-          context={{ maxValue: selectedCustomer?.cashbackBalance || 0 } }
+          context={{ maxValue: selectedCustomer?.cashbackBalance || 0 }}
           // validationSchema={() => validationSchema.default({ context: { maxValue: selectedCustomer?.cashbackBalance || 0 } })} // Add the validation schema to Formik
           onSubmit={async (values, { setSubmitting }) => {
             try {
-              console.log(values)
               const transactionPayload = {
                 ...values,
                 serviceDuration: Number(values.serviceDuration)
-              }
-              console.log(transactionPayload)
-
-
+              };
               toast.promise(mutateAsync(transactionPayload), {
                 loading: 'Creating Transaction...',
                 success: (data: any) => {
                   setSubmitting(false);
-                  setSelectedCustomer(null)
+                  setSelectedCustomer(null);
                   return `Transaction has been created`;
                 },
                 error: (data: AxiosError<{ error: string }>) => {
                   setSubmitting(false);
                   return `${data.response?.data.error}`;
-                },
+                }
               });
 
             } catch (error) {
@@ -139,7 +137,7 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
             <Form className='flex flex-wrap gap-x-2 my-7 gap-y-8'>
               <Field
                 name='userEnteredDate'
-                as={Calendar}
+                as={CalanderInput}
                 placeholder='Date'
                 type='text'
                 className='max-h-[50px] w-[22rem]'
@@ -148,7 +146,6 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
                 showTime
                 iconPos='left'
                 setFieldValue={setFieldValue}
-
               />
               <Field
                 id='cy-customer-search-select'
@@ -226,20 +223,21 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
                 className='w-[22rem]'
               />
 
-              {selectedCustomer ?  (<div className='flex items-center relative'><Field
-                  name='cashbackBalanceToUse'
-                  as={FloatingLabelInput}
-                  placeholder='Cashback Balance To Use'
-                  type='number'
-                  className='w-[22rem]' />
-                  <Button
-                    id='cy-available-cashback-balance'
-                    type='button'
-                    text
-                    raised
-                    onClick={() => console.log()}
-                    className='ml-5 mb-6'>Available Balance: {(Number(selectedCustomer?.cashbackBalance) - values.cashbackBalanceToUse) || 0}
-                  </Button>
+              {selectedCustomer ? (<div className='flex items-center relative'><Field
+                    name='cashbackBalanceToUse'
+                    as={FloatingLabelInput}
+                    placeholder='Cashback Balance To Use'
+                    type='number'
+                    className='w-[22rem]' />
+                    <Button
+                      id='cy-available-cashback-balance'
+                      type='button'
+                      text
+                      raised
+                      onClick={() => console.log()}
+                      className='ml-5 mb-6'>Available
+                      Balance: {(Number(selectedCustomer?.cashbackBalance) - values.cashbackBalanceToUse) || 0}
+                    </Button>
                   </div>
                 )
 

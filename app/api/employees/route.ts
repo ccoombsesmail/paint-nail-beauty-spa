@@ -2,11 +2,9 @@
 
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Decimal } from '@prisma/client/runtime/library';
 import prisma from '../../database/prismaClient';
-import { $Enums, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { membershipTypeEnumMap } from '../../types/enums';
-import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
 
 

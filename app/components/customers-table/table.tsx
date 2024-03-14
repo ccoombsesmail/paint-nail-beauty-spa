@@ -14,11 +14,11 @@ import eyelash from '../../eyelash.png'
 
 import { useCallback, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { NextRouter } from 'next/router';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import Link from 'next/link';
 import { Button } from 'primereact/button';
 import { useUser } from '@clerk/nextjs';
+import { phoneNumberTemplate } from '../../utils/format-phone-number';
 
 interface Customer {
   id: string;
@@ -29,7 +29,6 @@ interface Customer {
 
 const membershipColTemplate = (customer: { membershipLevel: string }) => {
   let badge = null
-  console.log(customer.membershipLevel)
   switch (customer.membershipLevel) {
     case "Gold":
       badge = goldBadge
@@ -140,6 +139,7 @@ const allowExpansion = (rowData: any) => {
   return rowData.subAccount !== null;
 };
 
+
 const rowExpansionTemplate = (data: any, router: any) => {
 
   return (
@@ -150,7 +150,7 @@ const rowExpansionTemplate = (data: any, router: any) => {
         <Column field="firstName" header="First" ></Column>
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>
-        <Column field="phoneNumber" header="Phone Number" ></Column>
+        <Column body={phoneNumberTemplate} field="phoneNumber" header="Phone Number" ></Column>
         <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance" ></Column>
 
       </DataTable>
@@ -212,7 +212,6 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
   if (!isLoaded) return null
 
   const franchiseCode = user?.publicMetadata.franchise_code
-  console.log(customers)
   return (
     <div className="card">
       <DataTable
@@ -240,7 +239,7 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>
         <Column field="dialCode" header="" hidden ></Column>
-        <Column field="phoneNumber" header="Phone Number" ></Column>
+        <Column body={phoneNumberTemplate} field="phoneNumber" header="Phone Number" ></Column>
         <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance" ></Column>
         <Column className='min-w-[150px]' field="membershipLevel" header="Membership"  body={membershipColTemplate}></Column>
         <Column field="serviceCategorySelection" header="Category" body={serviceTypeColTemplate} ></Column>
