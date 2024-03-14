@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient, $Enums, Prisma } from '@prisma/client';
 import { canUpgradeToGold } from '../utils/canUpgradeToGold';
-import { nonActiveMembershipLevels } from '../../../types/enums';
+import { nonActiveMembershipLevels, silverOrGold } from '../../../types/enums';
 
 const prisma = new PrismaClient()
 
@@ -76,10 +76,10 @@ export async function PATCH(req: NextRequest) {
         canUpdate = true;
         break;
       case `${$Enums.Membership.BronzeNonActive}_${$Enums.Membership.GoldNonActive}`:
-        canUpdate = true;
+        canUpdate = false;
         break;
       case `${$Enums.Membership.SilverNonActive}_${$Enums.Membership.GoldNonActive}`:
-        canUpdate = true;
+        canUpdate = false;
         break;
       case `${$Enums.Membership.BronzeNonActive}_${$Enums.Membership.SilverNonActive}`:
         canUpdate = false;
@@ -100,27 +100,36 @@ export async function PATCH(req: NextRequest) {
     console.log(`Attempting to update membership for user ${customer.id} from ${customer.membershipLevel} to ${body.newMembershipLevel}. canUpdate: ${canUpdate}`)
 
     let dataToUpdate: Prisma.CustomerUpdateInput
-    // @ts-ignore
     if (nonActiveMembershipLevels.includes(customer.membershipLevel)) {
       dataToUpdate = {
         membershipLevel: body.newMembershipLevel as $Enums.Membership,
         membershipActivationDate: new Date()
       }
-      // @ts-ignore
     } else if (customer.membershipLevel === $Enums.Membership.NonMember && nonActiveMembershipLevels.includes(body.newMembershipLevel)) {
       dataToUpdate = {
         membershipLevel: body.newMembershipLevel as $Enums.Membership,
         membershipPurchaseDate: new Date()
       }
-    } else if (customer.membershipLevel === $Enums.Membership.NonMember) {
+    } else if (body.newMembershipLevel === $Enums.Membership.Gold ) {
       dataToUpdate = {
         membershipLevel: body.newMembershipLevel as $Enums.Membership,
         membershipPurchaseDate: new Date(),
-        membershipActivationDate: new Date()
+        membershipActivationDate: new Date(),
+        canTransferCashbackBalance: true,
+        canTransferMembership: true
+      }
+    } else if (silverOrGold.includes(body.newMembershipLevel)) {
+      dataToUpdate = {
+        membershipLevel: body.newMembershipLevel as $Enums.Membership,
+        membershipPurchaseDate: new Date(),
+        membershipActivationDate: new Date(),
+        canTransferMembership: true
       }
     } else {
       dataToUpdate = {
         membershipLevel: body.newMembershipLevel as $Enums.Membership,
+        membershipPurchaseDate: new Date(),
+        membershipActivationDate: new Date(),
       }
     }
 

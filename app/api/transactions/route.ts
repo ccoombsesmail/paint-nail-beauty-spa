@@ -3,6 +3,7 @@ import { $Enums, Prisma, Transaction } from '@prisma/client';
 import prisma from '../../database/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';
 import { serviceTypeEnumMap } from '../../types/enums';
+import { normalizePhoneNumber } from '../customers/utils/ normalizePhoneNumber';
 
 
 export async function POST(req: NextRequest) {
@@ -91,6 +92,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const search = searchParams.get('search');
+  const normalizedPhoneNumber = normalizePhoneNumber(search)
 
   const user = await currentUser();
   if (!user) {
@@ -134,7 +136,7 @@ export async function GET(req: NextRequest) {
             },
             {
               phoneNumber: {
-                contains: search,
+                contains: normalizedPhoneNumber,
                 mode: 'insensitive',
               },
             },
@@ -164,7 +166,7 @@ export async function GET(req: NextRequest) {
             },
             {
               phoneNumber: {
-                contains: search,
+                contains: normalizedPhoneNumber,
                 mode: 'insensitive',
               },
             },

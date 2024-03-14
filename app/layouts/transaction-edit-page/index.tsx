@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState } from 'react';
 import { LoadingSpinner } from '../../components/loading-screen';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Field, Form, Formik } from 'formik';
 import { FloatingLabelInput, ServiceDurationInput } from '../../components/forms/formik/inputs';
 import {
@@ -26,6 +26,7 @@ import {
   reversedServiceTypeEnumMap,
   serviceTypeEnumMap
 } from '../../types/enums';
+import { CalanderInput } from '../../components/forms/formik/date-pickers';
 
 
 
@@ -43,6 +44,7 @@ const validationSchema = Yup.object().shape({
 export default function TransactionEditPage() {
 
   const params = useParams<{transactionId: string}>()
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const { data: enums } = useQuery('enums', getEnums, {
     initialData: {
@@ -58,8 +60,7 @@ export default function TransactionEditPage() {
 
   const { mutateAsync } = useMutation(editTransaction, {
     onSuccess: () => {
-      // Refetch customers list to reflect the new customer
-      refetch()
+      router.push('/transactions')
     },
 
   });
@@ -91,9 +92,6 @@ export default function TransactionEditPage() {
               serviceDuration: Number(values.serviceDuration),
             }
 
-            console.log(transactionPayload)
-
-
             toast.promise(mutateAsync(transactionPayload), {
               loading: 'Updating Transaction...',
               success: (data: any) => {
@@ -116,7 +114,7 @@ export default function TransactionEditPage() {
           <Form className='flex flex-wrap gap-x-2 my-7 gap-y-8'>
             <Field
               name='userEnteredDate'
-              as={Calendar}
+              as={CalanderInput}
               placeholder='Date'
               type='text'
               className='max-h-[50px] w-[22rem]'
@@ -124,8 +122,8 @@ export default function TransactionEditPage() {
               showButtonBar
               showTime
               iconPos='left'
-              value={new Date(values.userEnteredDate)}
               setFieldValue={setFieldValue}
+              value={new Date(values.userEnteredDate)}
 
             />
             <Field

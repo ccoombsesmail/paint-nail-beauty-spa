@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useRef } from 'react';
 import { Button } from 'primereact/button';
 import { useUser } from '@clerk/nextjs';
+import { formatPhoneNumber } from '../../utils/format-phone-number';
 
 
 const tipTemplate = (rowData: any) => {
@@ -42,9 +43,8 @@ const editTemplate = (transaction: { id: string }, router: AppRouterInstance) =>
 }
 
 const customerNumberTemplate = (rowData: any) => {
-  const number = rowData.customerDialCode ? `${rowData.customerDialCode}-${rowData.customerPhoneNumber}` : `${rowData.customerPhoneNumber}`
   return (
-    <span>{number}</span>
+    <span>{formatPhoneNumber(rowData.customerPhoneNumber)}</span>
   )
 }
 const dateTemplate = (rowData: any) => {

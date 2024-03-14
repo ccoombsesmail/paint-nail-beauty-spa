@@ -11,10 +11,10 @@ import facial from '../../facial.png'
 import bodySpa from '../../body-spa.png'
 import eyelash from '../../eyelash.png'
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { NextRouter } from 'next/router';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { phoneNumberTemplate } from '../../utils/format-phone-number';
 
 interface Customer {
   id: string;
@@ -116,7 +116,7 @@ const rowExpansionTemplate = (data: any) => {
         <Column field="firstName" header="First" ></Column>
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>
-        <Column field="phoneNumber" header="Phone Number" ></Column>
+        <Column body={phoneNumberTemplate} field="phoneNumber" header="Phone Number" ></Column>
       </DataTable>
     </div>
   );
@@ -157,7 +157,7 @@ export default function CustomersTransactionSearchTable({ customers, setSelected
         <Column field="firstName" header="First" ></Column>
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>
-        <Column field="phoneNumber" header="Phone Number" ></Column>
+        <Column body={phoneNumberTemplate} field="phoneNumber" header="Phone Number" ></Column>
         <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance" ></Column>
         <Column field="membershipLevel" header="Membership"  body={membershipColTemplate}></Column>
         <Column field="serviceCategorySelection" header="Category" body={serviceTypeColTemplate} ></Column>
