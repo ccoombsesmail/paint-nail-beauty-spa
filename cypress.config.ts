@@ -11,8 +11,10 @@ export default defineConfig({
       on("task", {
         async clearDB() {
           try {
-          await prismaClient.transaction.deleteMany({})
-          await prismaClient.customer.deleteMany({})
+            if (process.env.PUBLIC_ROUTES === 'cypress') {
+              await prismaClient.transaction.deleteMany({})
+              await prismaClient.customer.deleteMany({})
+            }
           } catch (e) {
             console.log(e)
           }
