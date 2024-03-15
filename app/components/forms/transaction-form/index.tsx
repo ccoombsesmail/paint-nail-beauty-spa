@@ -21,11 +21,16 @@ const validationSchema = Yup.object().shape({
   serviceDuration: Yup.number().required('Service Duration is Required'),
   totalServicePrice: Yup.number().required('Total Service Price is required'),
   actualPaymentCollected: Yup.number().required('Actual Payment Collected is required'),
-  discountedServicePrice: Yup.number().optional(),
-  tip: Yup.number().required('Tip is required (enter 0 if none)'),
+  discountedServicePrice: Yup.number().required('Discounted Service Price is required'),
+  tip: Yup.number()
+    .when('serviceType', {
+      is: (serviceType: string) => serviceType !== 'Package',
+      then: (schema) => schema.required('Tip is required (enter 0 if none)'),
+      otherwise: (schema) => schema.optional(),
+    }),
   paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'PayPal', 'WeChat', 'CreditCard']).required('Payment Method is required'),
   technicianEmployeeId: Yup.string().required('Technician is required'),
-  userEnteredDate: Yup.date().required('Transaction DateTime is Required'),
+  userEnteredDate: Yup.date().required('Transaction Date is Required'),
   cashbackBalanceToUse: Yup.number()
     .min(0, 'Value must be greater than or equal to 0')
     .test(
@@ -83,16 +88,16 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
       >
         <Formik
           initialValues={{
-            userEnteredDate: null,
+            userEnteredDate: undefined,
             serviceType: undefined,
-            serviceDuration: null,
-            totalServicePrice: null,
-            actualPaymentCollected: null,
-            discountedServicePrice: null,
-            tip: null,
+            serviceDuration: undefined,
+            totalServicePrice: undefined,
+            actualPaymentCollected: undefined,
+            discountedServicePrice: undefined,
+            tip: undefined,
             paymentMethod: undefined,
-            technicianEmployeeId: null,
-            customerId: null,
+            technicianEmployeeId: undefined,
+            customerId: undefined,
             cashbackBalanceToUse: 0
           }}
           validate={(values) => {
@@ -109,7 +114,8 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
             try {
               const transactionPayload = {
                 ...values,
-                serviceDuration: Number(values.serviceDuration)
+                serviceDuration: Number(values.serviceDuration),
+                tip: values.tip || 0
               };
               toast.promise(mutateAsync(transactionPayload), {
                 loading: 'Creating Transaction...',
@@ -143,7 +149,6 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
                 className='max-h-[50px] w-[22rem]'
                 showIcon
                 showButtonBar
-                showTime
                 iconPos='left'
                 setFieldValue={setFieldValue}
               />
@@ -171,6 +176,7 @@ const CreateTransactionDialog = ({ refetchTransactions }) => {
                 as={FloatingSelect}
                 setFieldValue={setFieldValue}
                 placeholder='Service Type'
+                filter
                 type='text'
                 options={enums.serviceTypes}
                 className='w-[22rem]'
