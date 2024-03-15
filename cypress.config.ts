@@ -10,9 +10,12 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       on("task", {
         async clearDB() {
+          try {
           await prismaClient.transaction.deleteMany({})
           await prismaClient.customer.deleteMany({})
-
+          } catch (e) {
+            console.log(e)
+          }
           return null
         }
 

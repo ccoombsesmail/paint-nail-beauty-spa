@@ -51,7 +51,6 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
     initialData: []
   });
 
-  console.log(countryCodes)
   const { mutateAsync } = useMutation(createCustomer, {
     onSuccess: () => {
       refetchCustomers();
