@@ -173,6 +173,7 @@ export const SearchableUserSelect = (props: any) => {
           selectionLimit={1}
           emptyMessage="No Results"
           showEmptyMessage
+          virtualScrollerOptions={{ itemSize: 48, showLoader: true }}
           value={selectedUser}
           suggestions={users}
           itemTemplate={userOptionTemplate}
@@ -307,6 +308,7 @@ export const SearchableUserSelectNonFormik = (props: any) => {
           multiple
           delay={300}
           selectionLimit={1}
+          virtualScrollerOptions={{ itemSize: 48, showLoader: true }}
           emptyMessage="No Results (Click Below To Create Customer)"
           showEmptyMessage
           value={selectedUser}
