@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { Button } from 'primereact/button';
 import { useUser } from '@clerk/nextjs';
 import { phoneNumberTemplate } from '../../utils/format-phone-number';
+import { franchiseCodeToDisplayNameMap } from '../../utils/franchise-code-mapping';
 
 interface Customer {
   id: string;
@@ -125,7 +126,7 @@ const cashbackBalanceTemplate = (rowData: any) => {
 }
 
 const dateTemplate = (rowData: any) => {
-  const date = new Date(rowData.createdAt)
+  const date = new Date(rowData.membershipPurchaseDate || rowData.createdAt)
   const formattedDate = date.toLocaleString('en-US', {
     month: 'long', // "February"
     day: '2-digit', // "19"
@@ -133,6 +134,12 @@ const dateTemplate = (rowData: any) => {
   });
   return (
     <span>{formattedDate}</span>
+  )
+}
+
+const franchiseTemplate = (rowData: any) => {
+  return (
+    <span>{franchiseCodeToDisplayNameMap.get(rowData.createdAtFranchiseCode)}</span>
   )
 }
 const allowExpansion = (rowData: any) => {
@@ -144,9 +151,10 @@ const rowExpansionTemplate = (data: any, router: any) => {
 
   return (
     <div className="p-3 flex justify-center items-center flex-col w-full" >
-      <h1 className='mb-3 text-xl'>Sub Account For {data.firstName}</h1>
-      <DataTable showGridlines className='w-4/6 ' value={[data.subAccount]}>
+      <h1 className='mb-3 text-xl'>Sub Account For {data.firstName} {data.lastName}</h1>
+      <DataTable showGridlines className='w-5/6 ' value={[data.subAccount]}>
         <Column field="" header="" body={(customer) => editTemplate(customer, router)} />
+        <Column body={franchiseTemplate}  field="createdAtFranchiseCode" header="Purchase Location"></Column>
         <Column field="firstName" header="First" ></Column>
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>
@@ -222,19 +230,20 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
         expandedRows={expandedRows}
         onRowToggle={(e) => setExpandedRows(e.data)}
         rowExpansionTemplate={(data) => rowExpansionTemplate(data, router)}
-        sortField="createdAt"
+        sortField="membershipPurchaseDate"
         sortOrder={-1}
         resizableColumns
         columnResizeMode="fit"
         paginator
-        rows={10}
-        rowsPerPageOptions={[10, 25, 50]}
+        rows={5}
+        rowsPerPageOptions={[5, 10, 25, 50]}
         value={customers}
         loading={isCustomersLoading}
         tableStyle={{ minWidth: '50rem' }}>
         <Column field="" header="" body={(customer) => editTemplate(customer, router)} />
         <Column expander={allowExpansion} style={{ width: '5rem' }} />
-        <Column field="createdAt" header="Joined" body={dateTemplate}  />
+        <Column field="membershipPurchaseDate" header="Joined" body={dateTemplate}  />
+        <Column body={franchiseTemplate}  field="createdAtFranchiseCode" header="Purchase Location"></Column>
         <Column field="firstName" header="First" ></Column>
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>

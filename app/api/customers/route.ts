@@ -85,6 +85,9 @@ export async function GET(req: NextRequest){
         include: {
             subAccount: true,
             parent: true
+        },
+        orderBy: {
+            membershipPurchaseDate: 'desc'
         }
     });
 

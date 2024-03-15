@@ -93,7 +93,7 @@ const cashbackBalanceTemplate = (rowData: any) => {
 }
 
 const dateTemplate = (rowData: any) => {
-  const date = new Date(rowData.createdAt)
+  const date = new Date(rowData.membershipPurchaseDate || rowData.createdAt)
   const formattedDate = date.toLocaleString('en-US', {
     month: 'long', // "February"
     day: '2-digit', // "19"
@@ -137,7 +137,7 @@ export default function CustomersTransactionSearchTable({ customers, setSelected
         expandedRows={expandedRows}
         onRowToggle={(e) => setExpandedRows(e.data)}
         rowExpansionTemplate={rowExpansionTemplate}
-        sortField="createdAt"
+        sortField="membershipPurchaseDate"
         sortOrder={-1}
         resizableColumns
         columnResizeMode="expand"
@@ -153,7 +153,7 @@ export default function CustomersTransactionSearchTable({ customers, setSelected
       >
         <Column selectionMode="single" headerStyle={{ width: '3rem' }}></Column>
         <Column expander={allowExpansion} style={{ width: '5rem' }} />
-        <Column field="createdAt" header="Joined" body={dateTemplate}  />
+        <Column field="membershipPurchaseDate" header="Joined" body={dateTemplate}  />
         <Column field="firstName" header="First" ></Column>
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>

@@ -92,7 +92,8 @@ export default function UserTransactionsTable({ selectedUser } : { selectedUser:
         resizableColumns
         columnResizeMode="fit"
         paginator
-
+        sortField={"userEnteredDate"}
+        sortOrder={-1}
         rows={5}
         rowsPerPageOptions={[1, 5, 10, 25, 50]}
         value={transactions}
@@ -102,8 +103,6 @@ export default function UserTransactionsTable({ selectedUser } : { selectedUser:
       >
         <Column body={dateTemplate} field="userEnteredDate" header="Visit Date" style={{ width: '10%' }}></Column>
         <Column body={franchiseTemplate}  field="franchiseCode" header="Visit Location" style={{ width: '10%' }}></Column>
-        {/*<Column field="customerEmail" header="Email"  style={{ width: '10%' }}></Column>*/}
-        {/*<Column field="customerPhoneNumber" header="Number"  style={{ width: '10%' }}></Column>*/}
         <Column field="serviceType" header="Service Type"  style={{ width: '10%' }}></Column>
         {/*<Column field="serviceDuration" header="Duration (hrs)"  style={{ width: '10%' }}></Column>*/}
         <Column body={totalPriceTemplate} field="totalServicePrice" header="Total Service Price"  style={{ width: '10%' }}></Column>
