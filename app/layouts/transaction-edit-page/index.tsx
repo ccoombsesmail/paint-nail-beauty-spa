@@ -15,18 +15,15 @@ import { Card } from 'primereact/card';
 import { useMutation, useQuery } from 'react-query';
 import { editTransaction, fetchTransaction } from '../../client-api/transactions/transaction-queries';
 import { toast, Toaster } from 'sonner';
-import { Calendar } from 'primereact/calendar';
 import { Divider } from '@tremor/react';
 import { getEnums } from '../../client-api/enums/enum-queries';
-import { createTransaction } from '../../client-api/employees/employee-queries';
 import { AxiosError } from 'axios';
 import {
   paymentMethodTypeEnumMap,
-  reversedPaymentMethodTypeEnumMap,
-  reversedServiceTypeEnumMap,
   serviceTypeEnumMap
 } from '../../types/enums';
 import { CalanderInput } from '../../components/forms/formik/date-pickers';
+import { TextBoxInput } from '../../components/forms/formik/textbox/input';
 
 
 
@@ -120,7 +117,6 @@ export default function TransactionEditPage() {
               className='max-h-[50px] w-[22rem]'
               showIcon
               showButtonBar
-              showTime
               iconPos='left'
               setFieldValue={setFieldValue}
               value={new Date(values.userEnteredDate)}
@@ -212,6 +208,14 @@ export default function TransactionEditPage() {
               type='number'
               className='w-[22rem]'
 
+            />
+            <Field
+              // className='col-span-3'
+              setFieldValue={setFieldValue}
+              name='notes'
+              as={TextBoxInput}
+              placeholder='Additional Notes'
+              width='w-full'
             />
 
             <Divider />

@@ -4,6 +4,7 @@ import prisma from '../../database/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';
 import { serviceTypeEnumMap } from '../../types/enums';
 import { normalizePhoneNumber } from '../customers/utils/ normalizePhoneNumber';
+import QueryMode = Prisma.QueryMode;
 
 
 export async function POST(req: NextRequest) {
@@ -92,7 +93,6 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const search = searchParams.get('search');
-  const normalizedPhoneNumber = normalizePhoneNumber(search)
 
   const user = await currentUser();
   if (!user) {
@@ -116,8 +116,15 @@ export async function GET(req: NextRequest) {
     where.franchiseCode = franchise_code;
   }
 
+  const phoneSearchString = normalizePhoneNumber(search)
 
   if (search) {
+    const phoneCondition = phoneSearchString ? [{
+      phoneNumber: {
+        contains: phoneSearchString,
+        mode: 'insensitive' as QueryMode,
+      },
+    }] : [];
     where.OR = [
       {
         customer: {
@@ -134,12 +141,7 @@ export async function GET(req: NextRequest) {
                 mode: 'insensitive',
               },
             },
-            {
-              phoneNumber: {
-                contains: normalizedPhoneNumber,
-                mode: 'insensitive',
-              },
-            },
+            ...phoneCondition,
             {
               email: {
                 contains: search,
@@ -164,12 +166,7 @@ export async function GET(req: NextRequest) {
                 mode: 'insensitive',
               },
             },
-            {
-              phoneNumber: {
-                contains: normalizedPhoneNumber,
-                mode: 'insensitive',
-              },
-            },
+            ...phoneCondition,
             {
               email: {
                 contains: search,
@@ -221,7 +218,8 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
       actualPaymentCollected,
       tip,
       paymentMethod,
-      technicianEmployeeId
+      technicianEmployeeId,
+      notes
     } = body
 
     const originalTransaction = await prisma.transaction.findUnique({
@@ -265,7 +263,8 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
           actualPaymentCollected,
           tip,
           paymentMethod,
-          technicianEmployeeId
+          technicianEmployeeId,
+          notes
         }
       })
     })

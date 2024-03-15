@@ -7,6 +7,7 @@ import { $Enums, Customer, Prisma } from '@prisma/client';
 import { bronzeOrNonActiveBronze, membershipTypeEnumMap, silverOrGold } from '../../types/enums';
 import { currentUser } from '@clerk/nextjs/server';
 import { normalizePhoneNumber } from './utils/ normalizePhoneNumber';
+import QueryMode = Prisma.QueryMode;
 
 
 
@@ -17,8 +18,16 @@ export async function GET(req: NextRequest){
     let where: Prisma.CustomerWhereInput = all === 'true' ? {} : {
         parentId:  null
     }
-    const phoneSearch = normalizePhoneNumber(search)
+
+    const phoneSearchString = normalizePhoneNumber(search)
+
     if (search) {
+        const phoneCondition = phoneSearchString ? [{
+            phoneNumber: {
+                contains: phoneSearchString,
+                mode: 'insensitive' as QueryMode,
+            },
+        }] : [];
         where = {
             ...where,
             OR: [
@@ -34,12 +43,7 @@ export async function GET(req: NextRequest){
                         mode: 'insensitive',
                     },
                 },
-                {
-                    phoneNumber: {
-                        contains: phoneSearch,
-                        mode: 'insensitive',
-                    },
-                },
+                ...phoneCondition,
                 {
                     email: {
                         contains: search,
@@ -61,12 +65,7 @@ export async function GET(req: NextRequest){
                                     mode: 'insensitive',
                                 },
                             },
-                            {
-                                phoneNumber: {
-                                    contains: phoneSearch,
-                                    mode: 'insensitive',
-                                },
-                            },
+                            ...phoneCondition,
                             {
                                 email: {
                                     contains: search,

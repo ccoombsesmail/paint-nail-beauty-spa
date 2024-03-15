@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { LoadingSpinner } from '../loading-screen';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Field, Form, Formik } from 'formik';
 import { FloatingLabelInput, PhoneInput } from '../forms/formik/inputs';
 import { Button } from 'primereact/button';
@@ -13,29 +13,29 @@ import { Divider } from 'primereact/divider';
 import { useMutation, useQuery } from 'react-query';
 import { toast, Toaster } from 'sonner';
 import { editCustomer, fetchCustomer } from '../../client-api/cutomers/customer-queries';
-import { AxiosError } from 'axios/index';
+import { AxiosError } from 'axios';
 import MembershipTransfer from './membership-transfer';
 import BalanceTransfer from './balance-transfer';
 import AddSubAccount from './add-sub-account';
+import { TextBoxInput } from '../forms/formik/textbox/input';
 
 
 const validationSchema = Yup.object().shape({
   phoneNumber: Yup.string().required('Phone Number is required'),
 });
 export default function CustomerProfilePage({ unlock, masterCode } : { unlock: boolean, masterCode: string}) {
-
+  const router = useRouter()
   const params = useParams<{ customerId: string }>();
   const [isLoading, setIsLoading] = useState(true);
 
   const { data: customer, isLoading: isCustomerLoading, refetch } = useQuery(['customer', params.customerId], () => fetchCustomer(params.customerId), {
-    onSuccess: (data) => console.log('Data fetched:', data),
     onError: (error) => toast.error(`Error Searching For Transactions: ${error}`)
   });
 
   const { mutateAsync } = useMutation(editCustomer, {
-    onSuccess: () => {
-      // Refetch customers list to reflect the new customer
-      refetch()
+    onSuccess: async () => {
+      await refetch()
+      router.push('/')
     },
   });
   useEffect(() => {
@@ -58,7 +58,8 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
           firstName: customer.firstName,
           lastName: customer.lastName,
           email: customer.email,
-          phoneNumber: customer.phoneNumber
+          phoneNumber: customer.phoneNumber,
+          notes: customer.notes
         }}
         validationSchema={validationSchema} // Add the validation schema to Formik
         onSubmit={async (values, { setSubmitting }) => {
@@ -94,7 +95,14 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
             <div className='flex gap-x-2'>
               <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number' />
             </div>
-
+            <Field
+              className='col-span-3'
+              setFieldValue={setFieldValue}
+              name='notes'
+              as={TextBoxInput}
+              placeholder='Additional Notes'
+              width='w-full'
+            />
             <div className='flex w-full justify-end'>
               <Button
                 type='submit'

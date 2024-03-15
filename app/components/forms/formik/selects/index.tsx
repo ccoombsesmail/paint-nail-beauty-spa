@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { fetchEmployees } from '../../../../client-api/employees/employee-queries';
 import { formatName } from '../../../../utils/format-name';
 import { Customer } from '@prisma/client';
-import { Button } from 'primereact/button';
 import CustomerForm from '../../customer-form';
 import { Divider } from 'primereact/divider';
 
@@ -137,12 +136,13 @@ const selectedUserTemplate = (option: { firstName: string, phoneNumber: string }
 };
 
 export const SearchableUserSelect = (props: any) => {
+  const [searchAttempt, setSearchAttempt] = useState(0);
 
   const [field, meta, helpers] = useField(props);
 
   const [selectedUser, setSelectedUser] = useState(props.initValue ? [props.initValue] : null);
   const [search, setSearch] = useState<string[]>([]);
-  const { data: users, refetch } = useQuery(['customers', search], () => fetchCustomers(search[0], true), {
+  const { data: users, refetch } = useQuery(['customers', search, searchAttempt], () => fetchCustomers(search[0], true), {
     // onSuccess: (data) => console.log('Data fetched:', data),
     onError: (error) => toast.error(`Error Searching For Customers: ${error}`,),
   });
@@ -155,9 +155,14 @@ export const SearchableUserSelect = (props: any) => {
   };
 
   const onFilter = useCallback(async (e: any) => {
-    setSearch([e.query])
-    await refetch(e.query)
-  }, [refetch])
+    if (e.query) {
+      setSearch([e.query])
+    } else {
+      props.setFieldValue(props.name, null)
+    }
+    setSearchAttempt(prevAttempt => prevAttempt + 1);
+  }, [props])
+
   return (
     <div className={` ${props.width ? props.width : 'w-[14rem]'}`}>
       <span className={`p-float-label ${props.className}  ${props.width ? props.width : 'w-[14rem]'}`}>
@@ -168,6 +173,7 @@ export const SearchableUserSelect = (props: any) => {
           selectionLimit={1}
           emptyMessage="No Results"
           showEmptyMessage
+          virtualScrollerOptions={{ itemSize: 48, showLoader: true }}
           value={selectedUser}
           suggestions={users}
           itemTemplate={userOptionTemplate}
@@ -195,27 +201,32 @@ export const SearchableUserSelect = (props: any) => {
 
 
 export const SearchableEmployeeSelect = (props: any) => {
+  const [searchAttempt, setSearchAttempt] = useState(0);
 
   const [field, meta, helpers] = useField(props);
 
   const [selectedUser, setSelectedUser] = useState(props.initValue ? [props.initValue] : null);
   const [search, setSearch] = useState<string[]>([]);
-  const { data: users, refetch } = useQuery(['employees', search], () => fetchEmployees(search[0]), {
+  const { data: users, refetch } = useQuery(['employees', search, searchAttempt], () => fetchEmployees(search[0]), {
     // onSuccess: (data) => console.log('Data fetched:', data),
     onError: (error) => toast.error(`Error Searching For Employees: ${error}`,),
+    staleTime: 1000
   });
 
 
   const onChange = (e: any) => {
-    console.log(e.value);
     props.setFieldValue(props.name, e.value[0] ? e.value[0].id : null);
     setSelectedUser(e.value);
   };
 
   const onFilter = useCallback(async (e: any) => {
-    setSearch([e.query])
-    await refetch(e.query)
-  }, [refetch])
+    if (e.query) {
+      setSearch([e.query])
+    } else {
+      props.setFieldValue(props.name, null)
+    }
+    setSearchAttempt(prevAttempt => prevAttempt + 1);
+  }, [props])
 
   return (
     <div className={` ${props.width ? props.width : 'w-[14rem]'}`}>
@@ -223,7 +234,7 @@ export const SearchableEmployeeSelect = (props: any) => {
         <AutoComplete
           {...props}
           multiple
-          delay={100}
+          delay={300}
           selectionLimit={1}
           emptyMessage="No Results"
           showEmptyMessage
@@ -255,11 +266,12 @@ export const SearchableEmployeeSelect = (props: any) => {
 
 
 export const SearchableUserSelectNonFormik = (props: any) => {
+  const [searchAttempt, setSearchAttempt] = useState(0);
 
 
   const [selectedUser, setSelectedUser] = useState( props.initValue ? [props.initValue] : null);
   const [search, setSearch] = useState<string[]>([]);
-  const { data: users, refetch } = useQuery(['customers', search], () => fetchCustomers(search[0], false), {
+  const { data: users, refetch } = useQuery(['customers', search, searchAttempt], () => fetchCustomers(search[0], false), {
     // onSuccess: (data) => console.log('Data fetched:', data),
     onError: (error) => toast.error(`Error Searching For Customers: ${error}`,),
   });
@@ -272,9 +284,13 @@ export const SearchableUserSelectNonFormik = (props: any) => {
   };
 
   const onFilter = useCallback(async (e: any) => {
-    setSearch([e.query])
-    await refetch(e.query)
-  }, [refetch])
+    if (e.query) {
+      setSearch([e.query])
+    } else {
+      props.setFieldValue(props.name, null)
+    }
+    setSearchAttempt(prevAttempt => prevAttempt + 1);
+  }, [props])
 
   const footerTemplate = () => {
     return (
@@ -290,8 +306,9 @@ export const SearchableUserSelectNonFormik = (props: any) => {
         <AutoComplete
           id={props.id}
           multiple
-          delay={100}
+          delay={300}
           selectionLimit={1}
+          virtualScrollerOptions={{ itemSize: 48, showLoader: true }}
           emptyMessage="No Results (Click Below To Create Customer)"
           showEmptyMessage
           value={selectedUser}

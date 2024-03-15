@@ -11,11 +11,9 @@ export function CalanderInput(props: any) {
     calRef?.current?.hide();
   }, [calRef]);
 
-  const footerTemplate = useCallback((e: any, setFieldValue: (key: string, value: Date) => void) => {
-    // console.log(e)
-    // console.log(calRef?.current)
+  const footerTemplate = useCallback((e: any, setFieldValue: (key: string, value: Date | null) => void) => {
     const handleOKClick = () => {
-      setFieldValue(e.name, e.value || new Date());
+      setFieldValue(e.name, null);
       handleClose();
     };
     const handleNowClick = () => {
@@ -32,7 +30,7 @@ export function CalanderInput(props: any) {
         <button onClick={handleOKClick} aria-label='Clear'
                 className='p-button-secondary p-button-text p-button p-component' type='button' data-pc-name='button'
                 data-pc-section='root'>
-          <span className='p-button-label p-c' data-pc-section='label'>OK</span>
+          <span className='p-button-label p-c' data-pc-section='label'>Clear</span>
         </button>
       </div>
     );
@@ -50,7 +48,6 @@ export function CalanderInput(props: any) {
             placeholder='Date'
             className={`max-h-[50px] w-[22rem] ${isFormFieldInvalid() ? 'p-invalid' : ''}`}
             showIcon
-            showTime
             iconPos='left'
             onChange={(e) => {
               props.setFieldValue(props.name, e.target.value);
