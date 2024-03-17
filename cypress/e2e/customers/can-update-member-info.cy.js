@@ -35,6 +35,9 @@ describe('CustomerPage', () => {
 
       cy.get('[name="phoneNumber"]').clear();
       cy.get('[name="phoneNumber"]').type("0000000000");
+
+      cy.get('[name="notes"]').clear();
+      cy.get('[name="notes"]').type("some notes");
     })
     cy.get('form').first().submit();
 
@@ -44,6 +47,8 @@ describe('CustomerPage', () => {
       cy.get('[name="lastName"]').should('have.value', "new lastName");
       cy.get('[name="email"]').should('have.value', "newemail@example.com");
       cy.get('[name="phoneNumber"]').should('have.value', "(000) 000-0000");
+      cy.get('[name="notes"]').should('have.value', "some notes");
+
     })
 
   })
