@@ -1,6 +1,6 @@
 import "../../support/commands";
 
-describe('CustomerPage', () => {
+describe('Can Update Bronze Member To Gold', () => {
   before(() => {
     cy.tests_cleanup()
   });

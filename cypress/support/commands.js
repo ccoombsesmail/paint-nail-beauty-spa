@@ -201,7 +201,6 @@ Cypress.Commands.add('createTransaction',
     cy.get('.p-datepicker-buttonbar').within(() => {
       cy.get('button').first().click({force: true})
     })
-    cy.get('.p-dialog').click({ force : true})
     cy.get('#cy-customer-search-select').click({ force : true})
     cy.get('#cy-customer-search-select').type(customerSearch)
     cy.wait(2000)

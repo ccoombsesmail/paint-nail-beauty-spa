@@ -1,4 +1,4 @@
-describe('CashBack', () => {
+describe('Gold Member CashBack', () => {
 
   before(() => {
     cy.tests_cleanup();

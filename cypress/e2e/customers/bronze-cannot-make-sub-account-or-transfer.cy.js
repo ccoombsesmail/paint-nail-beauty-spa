@@ -1,7 +1,7 @@
 import "../../support/commands";
 import { genPhoneNumber } from '../../support/commands';
 
-describe('CustomerPage', () => {
+describe('Bronze Cannot Make Sub Account Or Transfer', () => {
   before(() => {
     cy.tests_cleanup()
   });

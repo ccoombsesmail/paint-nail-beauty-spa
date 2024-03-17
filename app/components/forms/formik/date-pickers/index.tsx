@@ -44,6 +44,7 @@ export function CalanderInput(props: any) {
           <Calendar
             ref={calRef}
             id={props.name}
+            name={props.name}
             value={props.value}
             placeholder='Date'
             className={`max-h-[50px] w-[22rem] ${isFormFieldInvalid() ? 'p-invalid' : ''}`}

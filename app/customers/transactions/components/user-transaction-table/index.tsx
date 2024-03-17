@@ -3,7 +3,6 @@ import { Column } from 'primereact/column';
 import { useQuery } from 'react-query';
 import { fetchUserTransactions } from '../../../../client-api/transactions/transaction-queries';
 import { toast } from 'sonner';
-import { Divider } from 'primereact/divider';
 import { franchiseCodeToDisplayNameMap } from '../../../../utils/franchise-code-mapping';
 
 
@@ -97,12 +96,12 @@ export default function UserTransactionsTable({ selectedUser } : { selectedUser:
         rows={5}
         rowsPerPageOptions={[1, 5, 10, 25, 50]}
         value={transactions}
-        // tableStyle={{ minWidth: '50rem' }}
-        className='mt-10 max-w-[90%]'
+        className='mt-10 max-w-[95%]'
 
       >
         <Column body={dateTemplate} field="userEnteredDate" header="Visit Date" style={{ width: '10%' }}></Column>
         <Column body={franchiseTemplate}  field="franchiseCode" header="Visit Location" style={{ width: '10%' }}></Column>
+        <Column field="technicianName" header="Technician"  style={{ width: '10%' }}></Column>
         <Column field="serviceType" header="Service Type"  style={{ width: '10%' }}></Column>
         {/*<Column field="serviceDuration" header="Duration (hrs)"  style={{ width: '10%' }}></Column>*/}
         <Column body={totalPriceTemplate} field="totalServicePrice" header="Total Service Price"  style={{ width: '10%' }}></Column>
@@ -111,10 +110,9 @@ export default function UserTransactionsTable({ selectedUser } : { selectedUser:
         <Column body={amountCollectedTemplate} field="actualPaymentCollected" header="Payment Collected"  style={{ width: '10%' }}></Column>
         <Column body={calculatedCashback} field="" header="Cashback" style={{ width: '10%' }}></Column>
 
-        <Column body={tipTemplate} field="tip" header="Tip"  ></Column>
+        {/*<Column body={tipTemplate} field="tip" header="Tip"  ></Column>*/}
 
         <Column field="paymentMethod" header="PaymentMethod"  style={{ width: '10%' }}></Column>
-        <Column field="technicianName" header="Technician"  style={{ width: '10%' }}></Column>
       </DataTable>
     </div>
   );
