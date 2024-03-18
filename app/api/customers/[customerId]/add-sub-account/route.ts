@@ -3,6 +3,7 @@ import { Customer } from '@prisma/client';
 import prisma from '../../../../database/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';
 import { silverOrGold } from '../../../../types/enums';
+import { normalizePhoneNumber } from '../../utils/ normalizePhoneNumber';
 
 
 
@@ -74,6 +75,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { customerId
     const createdCustomer = await prisma.customer.create({
       data: {
         ...body,
+        phoneNumber: normalizePhoneNumber(body.phoneNumber),
         createdAtFranchiseCode: franchise_code as string,
         membershipLevel: customer.membershipLevel,
         membershipPurchaseDate: customer.membershipPurchaseDate,
