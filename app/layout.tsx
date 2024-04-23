@@ -39,7 +39,7 @@ export default function RootLayout({
       <body className="h-full">
       <ClerkProvider>
           <Suspense>
-              <Nav />
+               <Nav />
           </Suspense>
 
             {children}
