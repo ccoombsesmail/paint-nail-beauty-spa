@@ -5,6 +5,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { serviceTypeEnumMap } from '../../types/enums';
 import { normalizePhoneNumber } from '../customers/utils/ normalizePhoneNumber';
 import QueryMode = Prisma.QueryMode;
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 
 export async function POST(req: NextRequest) {
@@ -280,6 +281,36 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
       headers: { "content-type": "application/json" },
       status: 500,
     })
+  }
+
+}
+
+
+export async function DELETE(req: NextRequest, res: NextResponse) {
+  const params = req.nextUrl.searchParams;
+  const id = params.get('transactionId');
+  try {
+    if (id) {
+
+      await prisma.transaction.delete({
+        where: { id }
+      });
+
+      // Send the created customer as a response
+      return new NextResponse(JSON.stringify({ success: true }), {
+        headers: { 'content-type': 'application/json' },
+        status: 200
+      });
+    } else {
+      throw Error('No Id Provided To Delete');
+    }
+  } catch (error: unknown) {
+    console.error('Failed to delete transaction:', error);
+    // @ts-ignore
+    return new NextResponse(JSON.stringify({ error: `Failed To Update Customer: ${error.message}` }), {
+      headers: { 'content-type': 'application/json' },
+      status: 500
+    });
   }
 
 }

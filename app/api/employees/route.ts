@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../database/prismaClient';
 import { Prisma } from '@prisma/client';
 import { membershipTypeEnumMap } from '../../types/enums';
-import { currentUser } from '@clerk/nextjs/server';
+import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 
 
 
@@ -14,6 +14,7 @@ export async function GET(req: NextRequest){
     const search = searchParams.get('search')
 
     const user = await currentUser()
+
     if (!user){
         return new NextResponse(JSON.stringify({ error: "User Not Authorized"}), {
             headers: { "content-type": "application/json" },
@@ -21,10 +22,12 @@ export async function GET(req: NextRequest){
         })
     }
 
+    const { sessionClaims } = auth();
+    
     const { franchise_code } = user.publicMetadata
 
     let where: Prisma.EmployeeWhereInput = franchise_code === 'admin' ? {} : {
-        franchiseCode: franchise_code || undefined
+        organizationId: sessionClaims?.org_id
     }
 
     if (search) {

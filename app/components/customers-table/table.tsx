@@ -171,6 +171,7 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
   const dt = useRef(null);
   const { user, isLoaded } = useUser()
 
+  console.log(user)
 
   const exportCSV = useCallback( (selectionOnly: boolean) => {
     if (dt.current) { // @ts-ignore
@@ -243,6 +244,8 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
         <Column field="" header="" body={(customer) => editTemplate(customer, router)} />
         <Column expander={allowExpansion} style={{ width: '5rem' }} />
         <Column field="membershipPurchaseDate" header="Joined" body={dateTemplate}  />
+        <Column field="membershipActivationDate" header="Activated" body={dateTemplate}  />
+
         <Column body={franchiseTemplate}  field="createdAtFranchiseCode" header="Purchase Location"></Column>
         <Column field="firstName" header="First" ></Column>
         <Column field="lastName" header="Last" ></Column>
@@ -250,8 +253,8 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
         <Column field="dialCode" header="" hidden ></Column>
         <Column body={phoneNumberTemplate} field="phoneNumber" header="Phone Number" ></Column>
         <Column body={cashbackBalanceTemplate} field="cashbackBalance" header="Cashback Balance" ></Column>
-        <Column className='min-w-[150px]' field="membershipLevel" header="Membership"  body={membershipColTemplate}></Column>
-        <Column field="serviceCategorySelection" header="Category" body={serviceTypeColTemplate} ></Column>
+        <Column className='min-w-[250px]' field="membershipLevel" header="Membership"  body={membershipColTemplate}></Column>
+        <Column  className='min-w-[150px]' field="serviceCategorySelection" header="Category" body={serviceTypeColTemplate} ></Column>
         <Column field="notes" header="Notes" ></Column>
 
         <Column field="createdAtFranchiseCode" header="" hidden ></Column>

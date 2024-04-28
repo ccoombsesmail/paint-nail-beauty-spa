@@ -2,6 +2,7 @@
 
 import CustomersTable from './components/customers-table/customers-table';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { OrganizationProfile } from '@clerk/nextjs';
 
 const queryClient = new QueryClient();
 

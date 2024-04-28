@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { WebhookEvent } from '@clerk/backend';
 import { Webhook } from 'svix';
 import prisma from '../../database/prismaClient';
+import { OrganizationJSON } from '@clerk/types';
 
 
 export async function POST(req: NextRequest) {
@@ -16,14 +17,18 @@ export async function POST(req: NextRequest) {
     const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET as string);
     const payload = wh.verify(JSON.stringify(body), svixHeaders) as WebhookEvent;
     switch (payload.type) {
-      case 'user.created':
-        await createEmployee(payload.data);
-        break;
-      case 'user.deleted':
-        await deleteEmployee(payload.data.id || '');
-        break;
-      case 'user.updated':
-        await updateEmployee(payload.data)
+      // case 'user.created':
+      //   await createEmployee(payload.data);
+      //   break;
+      // case 'user.deleted':
+      //   await deleteEmployee(payload.data.id || '');
+      //   break;
+      // case 'user.updated':
+      //   await updateEmployee(payload.data)
+      //   break;
+      case 'organization.created':
+        // @ts-ignore
+        await createOrganization(payload.data);
         break;
       default:
         console.log(`Unhandled event type: ${payload.type}`);
@@ -41,6 +46,16 @@ export async function POST(req: NextRequest) {
 
 }
 
+async function createOrganization(orgData: OrganizationJSON) {
+  const { id, name, slug } = orgData;
+  await prisma.organization.create({
+    data: {
+      id,
+      name,
+      slug
+    }
+  });
+}
 
 async function createEmployee(userData: any) {
   const { id, email_addresses, first_name, last_name, image_url, last_sign_in_at } = userData;
@@ -63,7 +78,6 @@ async function updateEmployee(userData: any) {
   const { id, email_addresses, first_name, last_name, image_url, last_sign_in_at, public_metadata } = userData;
   const { phone_number, franchise_code } = public_metadata;
   const email = email_addresses.length > 0 ? email_addresses[0].email_address : null;
-
   await prisma.employee.update({
     where: {
       userId: id

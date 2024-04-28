@@ -11,21 +11,36 @@ datasource db {
   directUrl = env("POSTGRES_PRISMA_URL_NON_POOLING") // uses direct connection
 }
 
-model Employee {
-  id              String    @id @default(uuid())
-  userId          String    @unique @map("user_id") @db.VarChar(100)
-  email           String    @unique @map("email") @db.VarChar(200)
-  firstName       String?   @map("first_name") @db.VarChar(100)
-  lastName        String?   @map("last_name") @db.VarChar(100)
-  phoneNumber     String?   @unique @map("phone_number") @db.VarChar(100)
-  profileImage    String?   @map("profile_image") @db.VarChar(1000)
-  isEmailVerified Boolean   @default(false) @map("is_email_verified")
-  franchiseCode   String    @map("franchise_code")
-  lastSignIn      DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+model Organization {
+  id        String   @id
+  name      String   @unique @map("name") @db.VarChar(300)
+  slug      String   @unique @map("slug") @db.VarChar(300)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  transactions Transaction[]
+  @@map("organizations")
+}
+
+model Employee {
+  id               String           @id @default(uuid())
+  userId           String           @unique @map("user_id") @db.VarChar(100)
+  email            String           @unique @map("email") @db.VarChar(200)
+  firstName        String?          @map("first_name") @db.VarChar(100)
+  lastName         String?          @map("last_name") @db.VarChar(100)
+  phoneNumber      String?          @unique @map("phone_number") @db.VarChar(100)
+  profileImage     String?          @map("profile_image") @db.VarChar(1000)
+  isEmailVerified  Boolean          @default(false) @map("is_email_verified")
+  franchiseCode    String?          @map("franchise_code")
+  lastSignIn       DateTime?
+  address          String?
+  employmentStatus EmploymentStatus @default(FullTime) @map("role_type")
+  organizationRole OrganizationRole @default(Employee) @map("organization_role")
+  notes            String?          @db.VarChar(5000)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  transactions   Transaction[]
+  organizationId String?
 
   @@map("employees")
 }
@@ -161,4 +176,16 @@ enum ServiceCategory {
   Facial
   BodySpa
   HairRemoval
+}
+
+enum EmploymentStatus {
+  FullTime
+  PartTime
+}
+
+enum OrganizationRole {
+  Employee
+  Member
+  Admin
+  Franchisor
 }

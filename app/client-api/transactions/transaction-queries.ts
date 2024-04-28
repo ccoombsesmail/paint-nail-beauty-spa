@@ -27,6 +27,11 @@ export const fetchUserTransactions = async (customerId: string | null) => {
 
 
 export const editTransaction = async (transactionData: any) => {
-  const { data } = await axiosClient.patch('transactions', transactionData);
+  const { data } = await axiosClient.patch('/transactions', transactionData);
+  return data;
+};
+
+export const deleteTransaction = async (transactionId: any) => {
+  const { data } = await axiosClient.delete(`/transactions?transactionId=${transactionId}`);
   return data;
 };

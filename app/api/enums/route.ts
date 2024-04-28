@@ -3,7 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  membershipTypeEnumMap,
+  employmentStatusTypeEnumMap,
+  membershipTypeEnumMap, organizationRoleTypeEnumMap,
   paymentMethodTypeEnumMap,
   serviceCategoryTypeEnumMap,
   serviceTypeEnumMap
@@ -33,11 +34,24 @@ export async function GET(req: NextRequest){
     code: $Enums.ServiceCategory[key as keyof typeof $Enums.ServiceCategory],
   }));
 
+  const employmentStatusTypes = Object.keys($Enums.EmploymentStatus).map(key => ({
+    name: employmentStatusTypeEnumMap.get(key),
+    code: $Enums.EmploymentStatus[key as keyof typeof $Enums.EmploymentStatus],
+  }));
+
+  const organizationRoleTypes = Object.keys($Enums.OrganizationRole).map(key => ({
+    name: $Enums.OrganizationRole[key as keyof typeof $Enums.OrganizationRole],
+    code: organizationRoleTypeEnumMap.get(key),
+
+  }));
+
   return NextResponse.json({ enums: {
       serviceTypes,
       membershipTypes,
       paymentMethodTypes,
-      serviceCategoryTypes
+      serviceCategoryTypes,
+      employmentStatusTypes,
+      organizationRoleTypes
     }
   })
 }

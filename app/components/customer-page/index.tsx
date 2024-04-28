@@ -18,6 +18,8 @@ import MembershipTransfer from './membership-transfer';
 import BalanceTransfer from './balance-transfer';
 import AddSubAccount from './add-sub-account';
 import { TextBoxInput } from '../forms/formik/textbox/input';
+import MembershipDelete from './membership-delete';
+import { useUser } from '@clerk/nextjs';
 
 
 const validationSchema = Yup.object().shape({
@@ -27,7 +29,9 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
   const router = useRouter()
   const params = useParams<{ customerId: string }>();
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useUser()
 
+  const { is_admin } = user ? user.publicMetadata : { is_admin: false}
   const { data: customer, isLoading: isCustomerLoading, refetch } = useQuery(['customer', params.customerId], () => fetchCustomer(params.customerId), {
     onError: (error) => toast.error(`Error Searching For Transactions: ${error}`)
   });
@@ -51,7 +55,7 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
 
   return (
 
-    <Card title='Edit Customer Profile' id='edit-customer-card'>
+    <Card title='Edit Customer Profile' id='edit-customer-card' className='pb-10'>
       <Formik
         initialValues={{
           id: customer.id,
@@ -133,6 +137,10 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
 
       {/*  @ts-ignore */}
       {customer && <BalanceTransfer customer={customer} refetchCustomer={refetch} unlock={unlock}   masterCode={masterCode} />}
+      <Divider className='my-12' />
+
+      {(customer && is_admin) && <MembershipDelete customer={customer} unlock={unlock}  masterCode={masterCode} />}
+
       <Toaster richColors position='top-right'/>
 
 
