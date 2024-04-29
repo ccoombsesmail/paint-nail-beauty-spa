@@ -18,7 +18,7 @@ export default function TransactionsTable() {
 
   const [search, setSearch] = useState("")
 
-  const { data: transactions, isLoading, refetch } = useQuery(['transactions', search], () => fetchTransactions(search), {
+  const { data: visits, isLoading, refetch } = useQuery(['transactions', search], () => fetchTransactions(search), {
     // onSuccess: (data) => console.log('Data fetched:', data),
     onError: (error) => toast.error(`Error Searching For Transactions: ${error}`,),
   });
@@ -39,7 +39,7 @@ export default function TransactionsTable() {
         <Divider />
         <Search setSearch={setSearch} />
         <Card className="mt-6">
-          <Table transactions={transactions} isLoading={isLoading}/>
+          <Table visits={visits} isLoading={isLoading}/>
         </Card>
 
     </div>

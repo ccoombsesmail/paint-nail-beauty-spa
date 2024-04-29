@@ -1,5 +1,5 @@
 import { useField } from 'formik';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { useQuery } from 'react-query';
 import { fetchCustomers } from '../../../../client-api/cutomers/customer-queries';
@@ -61,7 +61,6 @@ export const selectedServiceCategoryTemplate = (option: { name: string, code: st
 };
 
 export const FloatingSelect = (props: any) => {
-  console.log(props.initValue)
   const [field, meta, helpers] = useField(props);
   const [option, setOption] = useState(props.initValue || null);
 
@@ -231,6 +230,15 @@ export const SearchableEmployeeSelect = (props: any) => {
   const [field, meta, helpers] = useField(props);
 
   const [selectedUser, setSelectedUser] = useState(props.initValue ? [props.initValue] : null);
+
+  useEffect(() => {
+    console.log(field.value)
+    if (field.value === 'clear') {
+      console.log("herhaahsdahsdhas")
+      props.clear(field.name, () => setSelectedUser(null))
+    }
+  }, [field.name, field.value])
+
   const [search, setSearch] = useState<string[]>([]);
   const { data: users, refetch } = useQuery(['employees', search, searchAttempt], () => fetchEmployees(search[0]), {
     // onSuccess: (data) => console.log('Data fetched:', data),

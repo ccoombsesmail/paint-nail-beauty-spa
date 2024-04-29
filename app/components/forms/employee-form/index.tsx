@@ -36,7 +36,10 @@ const CreateEmployeeForm = ({ fetchedRoles, isEdit, selectedEmployee }: any) => 
       membershipTypes: [],
       serviceType: [],
       serviceCategoryTypes: [],
-      employmentStatusTypes: []
+      employmentStatusTypes: [],
+      organizationRoleTypes: [],
+
+
     }
   });
 
@@ -150,7 +153,7 @@ const CreateEmployeeForm = ({ fetchedRoles, isEdit, selectedEmployee }: any) => 
                   initValue={initRole}
                   as={FloatingSelect}
                   placeholder='Role'
-                  options={fetchedRoles}
+                  options={enums.organizationRoleTypes}
                   valueTemplate={selectedRoleTemplate}
                 />
 
