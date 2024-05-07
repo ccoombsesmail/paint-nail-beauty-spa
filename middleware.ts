@@ -5,9 +5,9 @@ import prisma from './app/database/prismaClient';
 import { router } from 'next/client';
 
 
-const publicRoutesDev = ["/api/clerk", "/api/seed", '/not-authorized', 'organization-profile']
-const publicRoutesCypress = ["/api/clerk", "/api/seed", '/not-authorized', '/', '/transactions']
-const publicRoutesProd = ["/api/clerk", '/not-authorized',]
+const publicRoutesDev = ["/api/clerk", 'api/enums', "/api/seed", '/not-authorized', 'organization-profile']
+const publicRoutesCypress = ["/api/clerk", 'api/enums', "/api/seed", '/not-authorized', '/', '/transactions']
+const publicRoutesProd = ["/api/clerk", 'api/enums', '/not-authorized',]
 
 let pubRoutes: string[]
 
