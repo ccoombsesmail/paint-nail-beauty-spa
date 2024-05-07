@@ -128,7 +128,6 @@ const CreateTransactionDialog = ({ refetchTransactions }: any) => {
           context={{ maxValue: selectedCustomer?.cashbackBalance || 0 }}
           onSubmit={async (values, { setSubmitting }) => {
             try {
-              console.log(values)
 
               toast.promise(mutateAsync(values), {
                 loading: 'Creating Visit...',

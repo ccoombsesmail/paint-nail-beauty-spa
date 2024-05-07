@@ -4,7 +4,8 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 // @ts-ignore
 import logo from './icon.jpg';
-import { OrganizationList, OrganizationSwitcher, useOrganization, UserButton } from '@clerk/nextjs';
+import { OrganizationList, OrganizationSwitcher, useOrganization, UserButton, useUser } from '@clerk/nextjs';
+import { useEffect } from 'react';
 
 
 
@@ -16,11 +17,13 @@ function classNames(...classes: string[]) {
 export default function Navbar() {
   const pathname = usePathname();
   const isOnNotAuthorizedPage = pathname.includes('not-authorized')
+  const isOnOrgDisabledPage =   pathname.includes('organization-disabled')
   const {isLoaded, organization } = useOrganization()
+
   const navigation = organization ? [
     { name: 'User Dashboard', href: '/' },
     { name: 'Transactions', href: '/transactions' },
-   { name: 'Manage Organization', href: '/organization-profile' }] :
+    { name: 'Manage Organization', href: '/organization-profile' }] :
     [
       { name: 'User Dashboard', href: '/' },
       { name: 'Transactions', href: '/transactions' },
@@ -37,10 +40,10 @@ export default function Navbar() {
       {/*</div>*/}
       <div className='flex h-16 justify-between'>
         <div className='flex items-center'>
-          <OrganizationSwitcher organizationProfileMode='navigation' organizationProfileUrl='/organization-profile' />
+          { (!isOnNotAuthorizedPage && !isOnOrgDisabledPage) && <OrganizationSwitcher organizationProfileMode='navigation' organizationProfileUrl='/organization-profile' /> }
 
 
-        { !isOnNotAuthorizedPage  ? <div className='flex ml-14'>
+        { (!isOnNotAuthorizedPage && !isOnOrgDisabledPage)  ? <div className='flex ml-14'>
           <div className='flex flex-shrink-0 items-center'>
             <Image alt='PNBS' src={logo} width={50} height={50} />
           </div>

@@ -234,7 +234,6 @@ export const SearchableEmployeeSelect = (props: any) => {
   useEffect(() => {
     console.log(field.value)
     if (field.value === 'clear') {
-      console.log("herhaahsdahsdhas")
       props.clear(field.name, () => setSelectedUser(null))
     }
   }, [field.name, field.value])

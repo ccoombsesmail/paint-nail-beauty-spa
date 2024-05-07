@@ -13,11 +13,20 @@ export type EmployeePostData = {
   employmentStatus: string
 }
 
+export type OrgPatchData = {
+  shouldDisabled: boolean;
+}
+
 export const createOrgMember = async (employeeData: EmployeePostData) => {
   const { data } = await axiosClient.post('organizations/members', employeeData);
   return data;
 };
 
+
+export const updateOrg = async (orgPatchData: OrgPatchData) => {
+  const { data } = await axiosClient.patch('organizations', orgPatchData);
+  return data;
+};
 
 export const updateOrgMember = async (employeeData: EmployeePostData) => {
   const { data } = await axiosClient.patch('organizations/members', employeeData);

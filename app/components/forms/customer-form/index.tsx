@@ -32,7 +32,7 @@ const validationSchema = Yup.object().shape({
     otherwise: (schema) => schema.email('Invalid email').required('Email is required'), // Required and format validation
   }),
   serviceCategorySelection: Yup.string().when('membershipLevel', {
-    is: (membershipLevel: string) => membershipLevel === 'Bronze' || membershipLevel === "BronzeNonActive",
+    is: (membershipLevel: string) => membershipLevel === 'Bronze',
     then: (schema) => schema.required('Service Category Is Required'),
     otherwise: (schema) => schema.optional()
   }),
@@ -97,7 +97,6 @@ const CreateCustomerDialog = ({ refetchCustomers }: { refetchCustomers: () => Pr
           }}
           validationSchema={validationSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            console.log(values);
             toast.promise(mutateAsync(values), {
               loading: 'Creating Customer...',
               success: (data: any) => {

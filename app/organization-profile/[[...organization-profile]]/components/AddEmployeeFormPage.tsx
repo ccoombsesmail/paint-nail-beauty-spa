@@ -8,7 +8,7 @@ const AddEmployeeFormPage = ({ fetchedRoles }: { fetchedRoles: any[] }) => {
       <h1 className='cl-headerTitle font-bold'>Create Employee</h1>
 
       <Divider className='mb-10' />
-      <CreateEmployeeForm fetchedRoles={fetchedRoles} />
+      <CreateEmployeeForm />
     </div>
   );
 };

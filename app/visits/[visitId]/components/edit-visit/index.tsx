@@ -115,8 +115,6 @@ export default function EditVisit() {
         onSubmit={async (values, { setSubmitting }) => {
           try {
 
-            console.log(values)
-
             const visitPayload = {
               ...values,
               visitId: params.visitId

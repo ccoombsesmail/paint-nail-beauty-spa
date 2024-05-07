@@ -2,15 +2,17 @@
 
 "use client";
 
-import { OrganizationProfile, useOrganization } from '@clerk/nextjs';
-import { memo, useEffect, useRef, useState } from 'react';
+import { OrganizationProfile, useOrganization, useUser } from '@clerk/nextjs';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { OrganizationCustomRoleKey } from '@clerk/types';
 import AddEmployeeFormPage from './components/AddEmployeeFormPage';
 import EditEmployeeFormPage from './components/EditEmployeeFormPage';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import { MembersPage } from './components/MembersPage';
+import * as ReactDOM from 'react-dom/client';
+import { updateOrg } from '../../client-api/organizations/organization-queries';
 
 
 
@@ -22,9 +24,47 @@ const AddIcon = () => {
   )
 }
 
-const PencilIcon = () => {
+const EnabledOrDisabledOrg = ({ updateOrgOnClick, isOrgEnabled }: { updateOrgOnClick: () => void, isOrgEnabled: boolean}) => {
+
+
   return (
-    <i className='pi pi-pencil'></i>
+    <div
+      className="cl-profileSection cl-profileSection__organizationDanger 🔒️ cl-internal-1q1j6io">
+
+      <div className="cl-profileSectionContent cl-profileSectionContent__organizationDanger 🔒️ cl-internal-1c4a89c">
+        <div style={{position: 'relative'}}>
+          <div className="cl-profileSectionItem cl-profileSectionItem__organizationDanger 🔒️ cl-internal-q1qgc">
+            <button
+              className="cl-profileSectionPrimaryButton cl-button cl-profileSectionPrimaryButton__organizationDanger cl-button__organizationDanger 🔒️ cl-internal-156ribv"
+              data-localization-key="organizationProfile.profilePage.dangerSection.leaveOrganization.title"
+              data-variant="ghost"
+              data-color="danger"
+              onClick={updateOrgOnClick}
+            >
+              { isOrgEnabled ? 'Disable This Organization' : 'Enable This Organization'}
+            </button>
+            <div className='flex  items-center'>
+              <i
+                style={{fontSize: '2rem', color: isOrgEnabled ? 'green' : 'red'  }}
+                className={`mr-2 pi ${isOrgEnabled ? 'pi-lock-open' : 'pi-lock' } `}
+              />
+            { isOrgEnabled ? 'Enabled' : 'Disabled'}
+
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div className="cl-profileSectionHeader cl-profileSectionHeader__organizationDanger 🔒️ cl-internal-cd7qq7">
+        <div className="cl-profileSectionTitle cl-profileSectionTitle__organizationDanger 🔒️ cl-internal-1aock5z">
+          <p className="cl-profileSectionTitleText cl-profileSectionTitleText__organizationDanger 🔒️ cl-internal-1y71s3o" data-localization-key="organizationProfile.profilePage.dangerSection.leaveOrganization.title">
+             Organization Status
+          </p>
+        </div>
+      </div>
+
+    </div>
   )
 }
 
@@ -36,76 +76,53 @@ const UsersIcon = () => {
 
 const OrganizationProfilePage = () => {
   const path = usePathname();
+  const [isOrgEnabled, setIsOrgEnabled] = useState(null)
+
   const { organization } = useOrganization()
-  const [fetchedRoles, setRoles] = useState<OrganizationCustomRoleKey[]>([])
-  const isPopulated = useRef(false)
+  const renderCount = useRef(0)
+  const { user } = useUser()
+
+  const { is_admin } = user ? user.publicMetadata : { is_admin: false}
+  const { is_org_enabled } =  organization?.publicMetadata || {}
+  useEffect(() => {
+    if (is_org_enabled !== undefined) setIsOrgEnabled(is_org_enabled)
+  }, [is_org_enabled]);
+
+
+  const updateOrgOnClick = useCallback(async () => {
+    toast.promise(updateOrg({ shouldDisable: !is_org_enabled }), {
+      loading: 'Modifying Organization Status',
+      success: (data) => {
+        return `Successfully Changed Organization Status To ${data.isOrgEnabled ? 'Enabled' : 'Disabled'}`;
+      },
+      onAutoClose: () => window.location.reload(),
+      duration: 1500
+
+    });
+
+
+  }, [is_org_enabled]);
 
   useEffect(() => {
-    if (isPopulated.current) return
-    organization
-      ?.getRoles({
-        pageSize: 10,
-        initialPage: 1,
-      })
-      .then((res) => {
-        isPopulated.current = true
-        setRoles(
-          res.data
-            .map((roles) => roles.key as OrganizationCustomRoleKey)
-            .map((role: string) => ({name: role.split(':')[1], code: role }))
-        )
-      })
-  }, [organization?.id])
+    if (isOrgEnabled !== null && path.includes('organization-general') && renderCount.current < 1 && is_admin) {
+      renderCount.current += 1
+      setTimeout(() => {
+        const container = document.createElement('div');
+        // document.body.appendChild(container);
+        const root = ReactDOM.createRoot(container);
+        root.render(<EnabledOrDisabledOrg updateOrgOnClick={updateOrgOnClick} isOrgEnabled={isOrgEnabled} />);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const list = document.querySelector('.cl-navbarButtons');
-      if (list) {
-        const elements = {};
-        Array.from(list.children).forEach(child => {
+        document.getElementsByClassName('cl-profilePage__organizationGeneral')[0].append(container)
 
-          if (child.textContent.includes("Settings")) elements.settings = child;
-          if (child.textContent.includes("Members")) elements.members = child;
-          if (child.textContent.includes("Employees")) elements.employees = child;
-        });
+      }, 500)
+    }
+  }, [path, is_admin, isOrgEnabled, updateOrgOnClick]);
 
-        // Check if all elements are found
-        if (elements.members && elements.employees && elements.settings) {
-          // Clear the existing content of the list
-          while (list.firstChild) {
-            list.removeChild(list.firstChild);
-          }
 
-          // Append elements in the specific order: Members, Employees, Settings
-          list.appendChild(elements.members);
-          list.appendChild(elements.employees);
-          list.appendChild(elements.settings);
-
-          clearInterval(interval);
-        }
-      }
-    }, 100);
-  }, []);
-
-    useEffect(() => {
-      if (path === '/organization-profile') {
-        const inter = setInterval(() => {
-          const tabContainer = document.querySelector('.cl-tabListContainer')
-          const inviteBtn = document.querySelector('.cl-membersPageInviteButton')
-          if (tabContainer && inviteBtn) {
-            const secondTab = tabContainer.children[1];
-            secondTab.classList.add('hide');
-            inviteBtn.classList.add('hide')
-            clearInterval(inter)
-          }
-
-        }, 100)
-      }
-
-      }, [path]);
 
   return (
     <QueryClientProvider client={queryClient} >
+      <Toaster richColors position='top-right' />
       <div className='flex w-full justify-center mt-10'>
 
         <OrganizationProfile path='/organization-profile' routing='path' >
@@ -121,7 +138,7 @@ const OrganizationProfilePage = () => {
             url='add-employees'
             labelIcon={<AddIcon />}
           >
-            <AddEmployeeFormPage fetchedRoles={fetchedRoles} />
+            <AddEmployeeFormPage />
           </OrganizationProfile.Page>
           {/*<OrganizationProfile.Page*/}
           {/*  label='Edit Employees'*/}

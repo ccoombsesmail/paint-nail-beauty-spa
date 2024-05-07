@@ -29,7 +29,7 @@ const validationSchema = Yup.object().shape({
   organizationRole: Yup.string().required('Role Level Is Required')
 });
 
-const CreateEmployeeForm = ({ fetchedRoles, isEdit, selectedEmployee }: any) => {
+const CreateEmployeeForm = ({ isEdit, selectedEmployee }: any) => {
   const router = useRouter()
   const { data: enums } = useQuery('enums', getEnums, {
     initialData: {

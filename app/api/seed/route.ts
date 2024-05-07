@@ -32,7 +32,6 @@ const seedEmployees = async () => {
         }
       })
     } catch (e) {
-      console.log(employee)
       console.log(e)
     }
 

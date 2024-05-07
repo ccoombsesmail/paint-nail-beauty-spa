@@ -129,7 +129,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       });
     }
 
-    if (bronzeOrNonActiveBronze.includes(createCustomerPayload.membershipLevel) && !createCustomerPayload.serviceCategorySelection) {
+    if (createCustomerPayload.membershipLevel === $Enums.Membership.Bronze && !createCustomerPayload.serviceCategorySelection) {
       return new NextResponse(JSON.stringify({ error: 'Failed To Create Customer. \n Bronze Members Must Select A Service Category' }), {
         headers: { 'content-type': 'application/json' },
         status: 400
@@ -251,13 +251,16 @@ export async function POST(req: NextRequest, res: NextResponse) {
 export async function PATCH(req: NextRequest, res: NextResponse) {
 
   try {
-    // Accumulate the request body content from the ReadableStream
     const { masterCode, ...payload } = await req.json();
-    // Create a new customer record in the database using the parsed data
     const customer = await prisma.customer.update({
       where: { id: payload.id },
       data: {
-        ...payload
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        email: payload.email,
+        phoneNumber: payload.phoneNumber,
+        serviceCategorySelection: payload.serviceCategorySelection,
+        notes: payload.notes,
       }
     });
 
@@ -299,7 +302,6 @@ export async function DELETE(req: NextRequest, res: NextResponse) {
   } catch (error: unknown) {
     console.error('Failed to delete customer:', error);
     const err = error as PrismaClientKnownRequestError
-    console.log(err.cause)
     if (err?.meta?.field_name === 'transactions_customer_id_fkey (index)') {
       return new NextResponse(JSON.stringify({ error: `Cannot Delete Customer With Saved Transactions. Please Delete The Transactions First` }), {
         headers: { 'content-type': 'application/json' },

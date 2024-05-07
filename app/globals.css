@@ -11,6 +11,9 @@
     @tailwind utilities;
 }
 
+.cl-profileSectionHeader {
+    align-self: center !important;
+}
 .cl-navbar {
     max-width: unset !important;
     width: 100% !important;

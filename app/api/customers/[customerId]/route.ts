@@ -33,14 +33,7 @@ export async function GET(req: NextRequest, { params }: { params: { customerId: 
 
   const formattedCustomer = {
       ...customer,
-      // @ts-ignore
-      membershipLevel: membershipTypeEnumMap.get(customer.membershipLevel),
     }
 
   return NextResponse.json({ customer: formattedCustomer })
-}
-
-export async function POST(req: NextRequest, res: NextResponse) {
-
-
 }

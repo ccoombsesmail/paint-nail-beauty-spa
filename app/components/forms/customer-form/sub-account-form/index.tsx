@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
-import { Formik, Field } from 'formik';
-import { Button } from 'primereact/button';
+import React from 'react';
+import { Field } from 'formik';
 import { FloatingLabelInput, PhoneInput } from '../../formik/inputs';
-import { Divider } from '@tremor/react';
 import * as Yup from 'yup';
 import {
   CountryCodeDropdown,
-  FloatingSelect,
-  selectedMembershipTemplate,
-  selectedServiceCategoryTemplate
 } from '../../formik/selects';
 
 
