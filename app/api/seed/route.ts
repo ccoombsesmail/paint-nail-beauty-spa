@@ -1,5 +1,5 @@
 
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient } from '@clerk/nextjs/server';
 
 
 import path from 'path';
