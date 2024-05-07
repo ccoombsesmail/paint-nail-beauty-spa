@@ -49,12 +49,6 @@ export async function POST(req: NextRequest) {
         return acc
     }, 0)
 
-    console.log(transactions)
-
-    console.log(actualPaymentCollected)
-
-
-
 
     // Calculate the new cashback balance by adding the additionalCashback to the current balance
 
@@ -194,43 +188,45 @@ export async function GET(req: NextRequest) {
 
 
     visits = await prisma.visit.findMany({
-      where,
+      // where,
+      where: {
+        OR: [
+          {
+            customer: {
+              OR: [
+                { firstName: { contains: search, mode: 'insensitive' } },
+                { lastName: { contains: search, mode: 'insensitive' } },
+                ...phoneCondition,
+                { email: { contains: search, mode: 'insensitive' } },
+              ],
+            },
+          },
+          {
+            transactions: {
+              some: {
+                employee: {
+                  OR: [
+                    { firstName: { contains: search, mode: 'insensitive' } },
+                    { lastName: { contains: search, mode: 'insensitive' } },
+                    ...phoneCondition,
+                    { email: { contains: search, mode: 'insensitive' } },
+                  ],
+                },
+              },
+            },
+          },
+        ],
+      },
       include: {
         customer: true,
         transactions: {
           include: {
-            employee: {
-              where: {
-                OR: [
-                  {
-                    firstName: {
-                      contains: search,
-                      mode: 'insensitive',
-                    },
-                  },
-                  {
-                    lastName: {
-                      contains: search,
-                      mode: 'insensitive',
-                    },
-                  },
-                  ...phoneCondition,
-                  {
-                    email: {
-                      contains: search,
-                      mode: 'insensitive',
-                    },
-                  },
-                ],
-              },
-            }
-          }
-
+            employee: true,
+          },
         },
       },
     });
   } else  {
-    console.log(sessionClaims?.org_id)
     visits = await prisma.visit.findMany({
       where: {
         createdAtOrganizationId: sessionClaims?.org_id
@@ -247,20 +243,23 @@ export async function GET(req: NextRequest) {
   }
 
   const formattedVisits = visits.map(visit => {
+
+    // @ts-ignore
     visit.transactions = visit.transactions.map((tx) => {
       return {
         ...tx,
         serviceType: serviceTypeEnumMap.get(tx.serviceType || ''),
-        customerName: visit.customer ? `${visit.customer.firstName} ${visit.customer.lastName || ''}` : null,
-        customerEmail: visit.customer ? visit.customer.email : null,
-        customerPhoneNumber: visit.customer ? visit.customer.phoneNumber : null,
         customerDialCode: visit.customer ? visit.customer.dialCode : null,
         technicianName: tx.employee ? `${tx.employee.firstName} ${tx.employee.lastName || ''}` : null,
       };
     })
-    return visit
+    return {
+      ...visit,
+      customerName: visit.customer ? `${visit.customer.firstName} ${visit.customer.lastName || ''}` : null,
+      customerEmail: visit.customer ? visit.customer.email : null,
+      customerPhoneNumber: visit.customer ? visit.customer.phoneNumber : null,
+    }
   });
-  console.log(formattedVisits)
 
   return NextResponse.json({ visits: formattedVisits });
 }
@@ -312,7 +311,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
         where: { id: customerId },
         data: { cashbackBalance: newCashbackBalance },
       });
-      return await tx.transaction.update({
+      return tx.transaction.update({
         where: { id: body.id },
         data: {
           serviceType,
@@ -325,7 +324,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
           technicianEmployeeId,
           notes
         }
-      })
+      });
     })
 
     // Send the created customer as a response

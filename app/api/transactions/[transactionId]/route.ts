@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../database/prismaClient';
-import { membershipTypeEnumMap, serviceTypeEnumMap } from '../../../types/enums';
-import { Transaction } from '@prisma/client';
 
 
 
@@ -9,12 +7,16 @@ export async function GET(req: NextRequest, { params }: { params: { transactionI
 
   const transactionId = params.transactionId
 
-  const transaction: Transaction | null = await prisma.transaction.findUnique({
+  const transaction = await prisma.transaction.findUnique({
     where: {
       id: transactionId,
     },
     include: {
-      customer: true,
+      Visit: {
+        include: {
+          customer: true
+        }
+      },
       employee: true
     }
   });
@@ -29,7 +31,8 @@ export async function GET(req: NextRequest, { params }: { params: { transactionI
   }
 
   const formattedTransaction = {
-      ...transaction
+      ...transaction,
+      customer: transaction?.Visit?.customer
     }
 
   return NextResponse.json({ transaction: formattedTransaction })

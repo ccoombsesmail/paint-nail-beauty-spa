@@ -11,8 +11,15 @@ import {
 } from '../../types/enums';
 
 import { $Enums } from '@prisma/client'
+import { clerkClient } from '@clerk/nextjs/server';
 
 export async function GET(req: NextRequest){
+
+  const orgs = await clerkClient.organizations.getOrganizationList({})
+  const orgNameMap = orgs.data.reduce((acc: { [key: string] : string}, org) => {
+    acc[org.id] = org.name
+    return acc
+  }, {})
   const membershipTypes = Object.keys($Enums.Membership).map(key => ({
     name: membershipTypeEnumMap.get(key),
     code: $Enums.Membership[key as keyof typeof $Enums.Membership],
@@ -51,7 +58,8 @@ export async function GET(req: NextRequest){
       paymentMethodTypes,
       serviceCategoryTypes,
       employmentStatusTypes,
-      organizationRoleTypes
+      organizationRoleTypes,
+      orgNameMap
     }
   })
 }

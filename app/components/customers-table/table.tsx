@@ -171,8 +171,6 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
   const dt = useRef(null);
   const { user, isLoaded } = useUser()
 
-  console.log(user)
-
   const exportCSV = useCallback( (selectionOnly: boolean) => {
     if (dt.current) { // @ts-ignore
       dt.current.exportCSV({ selectionOnly });

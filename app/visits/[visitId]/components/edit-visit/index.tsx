@@ -1,19 +1,34 @@
-import React, { useState } from 'react';
-import { Formik, Form, Field, yupToFormErrors, validateYupSchema, FieldArray } from 'formik';
-import { Dialog } from 'primereact/dialog';
+"use client"
+
+import React, {useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { Field, FieldArray, Form, Formik } from 'formik';
+
 import { Button } from 'primereact/button';
-import { FloatingLabelInput, ServiceDurationInput } from '../formik/inputs';
 import * as Yup from 'yup';
-import { FloatingSelect, SearchableEmployeeSelect, SearchableUserSelect } from '../formik/selects';
+import { Card } from 'primereact/card';
 import { useMutation, useQuery } from 'react-query';
-import { getEnums } from '../../../client-api/enums/enum-queries';
-import { createTransaction } from '../../../client-api/employees/employee-queries';
 import { toast, Toaster } from 'sonner';
+import { Divider } from '@tremor/react';
 import { AxiosError } from 'axios';
+import { getEnums } from '../../../../client-api/enums/enum-queries';
+import { LoadingSpinner } from '../../../../components/loading-screen';
+import { CalanderInput } from '../../../../components/forms/formik/date-pickers';
+import {
+  FloatingSelect,
+  SearchableEmployeeSelect,
+  SearchableUserSelect
+} from '../../../../components/forms/formik/selects';
+import { paymentMethodTypeEnumMap, serviceTypeEnumMap } from '../../../../types/enums';
+import { FloatingLabelInput, ServiceDurationInput } from '../../../../components/forms/formik/inputs';
+import { TextBoxInput } from '../../../../components/forms/formik/textbox/input';
+import DeleteTransaction from '../delete-transaction';
+import { useUser } from '@clerk/nextjs';
+import { fetchVisits, patchVisit } from '../../../../client-api/visits/visit-queries';
 import { Customer } from '@prisma/client';
-import { TextBoxInput } from '../formik/textbox/input';
-import { CalanderInput } from '../formik/date-pickers';
-import { Divider } from 'primereact/divider';
+
+
+
 
 const validationSchema = Yup.object().shape({
   customerId: Yup.string().required('Customer is required'),
@@ -35,21 +50,8 @@ const validationSchema = Yup.object().shape({
       technicianEmployeeId: Yup.string().required('Technician is required'),
     })),
 
-  cashbackBalanceToUse: Yup.number()
-    .min(0, 'Value must be greater than or equal to 0')
-    .test(
-      'max-dynamic',
-      'Value exceeds the cashback balance',
-      function(value) {
-        // @ts-ignore
-        return value === undefined || value <= this.options.context.cashbackBalance;
-      }
-    )
-    .optional()
 
 });
-
-// @ts-ignore
 
 const emptyTransaction = {
   serviceType: undefined,
@@ -62,9 +64,13 @@ const emptyTransaction = {
   technicianEmployeeId: undefined,
 }
 
-const CreateTransactionDialog = ({ refetchTransactions }: any) => {
-  const [showDialog, setShowDialog] = useState(false);
+export default function EditVisit() {
+
+  const params = useParams<{visitId: string}>()
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+
   const { data: enums } = useQuery('enums', getEnums, {
     initialData: {
       membershipTypes: [],
@@ -72,113 +78,96 @@ const CreateTransactionDialog = ({ refetchTransactions }: any) => {
       paymentMethodTypes: []
     }
   });
+  const { user } = useUser()
 
-  const { mutateAsync } = useMutation(createTransaction, {
-    onSuccess: () => {
-      refetchTransactions();
-      setShowDialog(false);
-    }
-
+  const { is_admin } = user ? user.publicMetadata : { is_admin: false}
+  const { data: visit, isLoading: isVisitLoading, refetch } = useQuery(['visits', params.visitId], () => fetchVisits(params.visitId), {
+    onSuccess: (data) => console.log('Data fetched:', data),
+    onError: (error) => toast.error(`Error Searching For Transactions: ${error}`,),
   });
 
+  const { mutateAsync } = useMutation(patchVisit, {
+    onSuccess: () => {
+      setTimeout(() => {
+        router.push('/transactions')
+      }, 1500)
+    },
+  });
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 2000)
 
+  }, []);
+
+
+
+  if (isLoading) return  <LoadingSpinner />
 
   return (
-    <>
-      <Button
-        style={{ backgroundColor: 'var(--pink-400)' }}
-        label='Create Visit'
-        icon='pi pi-plus'
-        onClick={() => setShowDialog(true)}
-        id='cy-create-visit-btn'
-      />
-      <Toaster richColors position='top-right' />
 
-      <Dialog
-        header='Create Visit'
-        visible={showDialog}
-        className='md:w-[90vw] w-[80vw]'
-        modal
-        onHide={() => setShowDialog(false)}
+    <Card title="Edit Visit">
+      <Formik
+        initialValues={{
+          ...visit
+        }}
+        validationSchema={validationSchema} // Add the validation schema to Formik
+        onSubmit={async (values, { setSubmitting }) => {
+          try {
+
+            console.log(values)
+
+            const visitPayload = {
+              ...values,
+              visitId: params.visitId
+            }
+
+
+            toast.promise(mutateAsync(visitPayload), {
+              loading: 'Updating Visit...',
+              success: (data: any) => {
+                setSubmitting(false);
+                return `Visit has been updated`;
+              },
+              error: (data: AxiosError<{ error: string }>) => {
+                setSubmitting(false);
+                return `${data.response?.data.error}`;
+              },
+            });
+
+          } catch (error) {
+            console.error('Error:', error);
+          }
+          setSubmitting(false);
+        }}
       >
-        <Formik
-          initialValues={{
-            userEnteredDate: undefined,
-            customerId: undefined,
-            cashbackBalanceToUse: 0,
-            transactions: [{
-              serviceType: undefined,
-              serviceDuration: undefined,
-              totalServicePrice: undefined,
-              actualPaymentCollected: undefined,
-              discountedServicePrice: undefined,
-              tip: undefined,
-              paymentMethod: undefined,
-              technicianEmployeeId: undefined,
-            }]
-          }}
-          validate={(values) => {
-            try {
-              validateYupSchema(values, validationSchema, true, { cashbackBalance: selectedCustomer?.cashbackBalance || 0 });
-            } catch (err) {
-              return yupToFormErrors(err);
-            }
-            return {};
-          }}
-          context={{ maxValue: selectedCustomer?.cashbackBalance || 0 }}
-          onSubmit={async (values, { setSubmitting }) => {
-            try {
-              console.log(values)
+        {({ isSubmitting, setFieldValue, values }) => (
+          <Form className='flex flex-wrap gap-x-2 my-7 gap-y-8'>
+            <Field
+              name='visitDate'
+              as={CalanderInput}
+              placeholder='Date'
+              type='text'
+              className='max-h-[50px] w-[22rem]'
+              showIcon
+              showButtonBar
+              iconPos='left'
+              setFieldValue={setFieldValue}
+              value={new Date(values.visitDate)}
 
-              toast.promise(mutateAsync(values), {
-                loading: 'Creating Visit...',
-                success: (data: any) => {
-                  setSubmitting(false);
-                  setSelectedCustomer(null);
-                  return `Visit has been created`;
-                },
-                error: (data: AxiosError<{ error: string }>) => {
-                  setSubmitting(false);
-                  return `${data.response?.data.error}`;
-                }
-              });
-
-            } catch (error) {
-              console.error('Error:', error);
-            }
-
-
-            setSubmitting(false);
-            setShowDialog(false);
-          }}
-        >
-          {({ isSubmitting, setFieldValue, values }) => (
-            <Form className='flex flex-wrap gap-x-2 my-7 gap-y-8'>
-              <div className='flex gap-x-2'>
-              <Field
-                name='visitDate'
-                as={CalanderInput}
-                placeholder='Visit Date'
-                type='text'
-                className='max-h-[50px] w-[22rem]'
-                showIcon
-                showButtonBar
-                iconPos='left'
-                setFieldValue={setFieldValue}
-              />
-              <Field
-                id='cy-customer-search-select'
-                width='w-[22rem]'
-                name='customerId'
-                as={SearchableUserSelect}
-                placeholder='Customer Search'
-                setFieldValue={setFieldValue}
-                setSelectedCustomer={setSelectedCustomer}
-              />
-              </div>
-              <Divider />
-              <FieldArray name="transactions">
-                {({ insert, remove, push }) => ( <>
+            />
+            <Field
+              width='w-[22rem]'
+              name='customerId'
+              setSelectedCustomer={setSelectedCustomer}
+              initValue={visit.customer}
+              as={SearchableUserSelect}
+              placeholder='Customer Search'
+              setFieldValue={setFieldValue}
+            />
+            <Divider />
+            <FieldArray name="transactions">
+              {({ insert, remove, push }) => ( <>
                   {values.transactions.length > 0 &&
                     values.transactions.map((transaction, index) => {
                       const clear = (name: string, clearEmployeeSelect: () => void) => {
@@ -202,6 +191,7 @@ const CreateTransactionDialog = ({ refetchTransactions }: any) => {
                             id='cy-technician-search-select'
                             width='w-[22rem]'
                             name={`transactions.${index}.technicianEmployeeId`}
+                            initValue={transaction.employee}
                             as={SearchableEmployeeSelect}
                             clear={clear}
                             placeholder='Technician Search'
@@ -214,6 +204,10 @@ const CreateTransactionDialog = ({ refetchTransactions }: any) => {
                             as={FloatingSelect}
                             setFieldValue={setFieldValue}
                             placeholder='Service Type'
+                            initValue={{
+                              name: serviceTypeEnumMap.get(transaction.serviceType),
+                              code: transaction.serviceType
+                            }}
                             filter
                             type='text'
                             options={enums.serviceTypes}
@@ -233,6 +227,10 @@ const CreateTransactionDialog = ({ refetchTransactions }: any) => {
                             setFieldValue={setFieldValue}
                             placeholder='Payment Method'
                             options={enums.paymentMethodTypes}
+                            initValue={{
+                              name: paymentMethodTypeEnumMap.get(transaction.paymentMethod),
+                              code: transaction.paymentMethod
+                            }}
                             className='w-[22rem]' />
 
                           <Field
@@ -275,49 +273,27 @@ const CreateTransactionDialog = ({ refetchTransactions }: any) => {
                       );
                     })}
 
-                {selectedCustomer ? (
-                  <div className='flex justify-end w-[100%]'>
-                      <Field
-                      name='cashbackBalanceToUse'
-                      as={FloatingLabelInput}
-                      placeholder='Cashback Balance To Use'
-                      type='number'
-                      className='w-[22rem]' />
-                      <Button
-                        id='cy-available-cashback-balance'
-                        type='button'
-                        text
-                        raised
-                        onClick={() => console.log()}
-                        className='ml-5 mb-6'>Available
-                        Balance: {(Number(selectedCustomer?.cashbackBalance) - values.cashbackBalanceToUse) || 0}
-                      </Button>
-                    </div>
-                  )
-
-                  : null
-                }
-
-                <div className='flex justify-start w-[100%] font-bold'>
-                  <Button type='button' label='Add Transaction' icon='pi pi-check' onClick={() => push(emptyTransaction)} />
-                </div>
+                  <div className='flex justify-start w-[100%] font-bold'>
+                    <Button type='button' label='Add Transaction' icon='pi pi-check' onClick={() => push(emptyTransaction)} />
+                  </div>
 
 
-                  </>
-                )}
-              </FieldArray>
-              <Divider />
-              <div className='flex w-full justify-end'>
-                <Button label='Cancel' icon='pi pi-times' className='p-button-text'
-                        onClick={() => setShowDialog(false)} />
-                <Button type='submit' label='Submit' icon='pi pi-check' disabled={isSubmitting} />
-              </div>
-            </Form>
-          )}
-        </Formik>
-      </Dialog>
-    </>
+                </>
+              )}
+            </FieldArray>
+            <Divider />
+            <div className='flex w-full justify-end'>
+              <Button type='submit' label='Submit' icon='pi pi-check' disabled={isSubmitting} />
+            </div>
+          </Form>
+        )}
+      </Formik>
+
+      <Toaster richColors position='top-right' />
+      {(visit && is_admin) && <DeleteTransaction transaction={visit} />}
+
+    </Card>
+
+
   );
-};
-
-export default CreateTransactionDialog;
+}

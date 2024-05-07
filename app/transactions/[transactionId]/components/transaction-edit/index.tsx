@@ -32,15 +32,25 @@ import { useUser } from '@clerk/nextjs';
 
 const validationSchema = Yup.object().shape({
   customerId: Yup.string().required('Customer is required'),
-  serviceType: Yup.string().required('Service Type is required'),
-  serviceDuration: Yup.number().required('Service Duration is Required'),
-  totalServicePrice: Yup.number().required('Total Service Price is required'),
-  actualPaymentCollected: Yup.number().required('Actual Payment Collected is required'),
-  tip: Yup.number().required('Tip is required (enter 0 if none)'),
-  paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'PayPal', 'CreditCard']).required('Payment Method is required'),
-  technicianEmployeeId: Yup.string().required('Technician is required'),
-  userEnteredDate: Yup.date().required("Transaction DateTime is Required")
-});
+  visitDate: Yup.date().required('Visit Date is Required'),
+  transactions: Yup.array()
+    .of(Yup.object().shape({
+      serviceType: Yup.string().required('Service Type is required'),
+      serviceDuration: Yup.number().required('Service Duration is Required'),
+      totalServicePrice: Yup.number().required('Total Service Price is required'),
+      actualPaymentCollected: Yup.number().required('Actual Payment Collected is required'),
+      discountedServicePrice: Yup.number().required('Discounted Service Price is required'),
+      tip: Yup.number()
+        .when('serviceType', {
+          is: (serviceType: string) => serviceType !== 'Package',
+          then: (schema) => schema.required('Tip is required (enter 0 if none)'),
+          otherwise: (schema) => schema.optional(),
+        }),
+      paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'PayPal', 'WeChat', 'CreditCard']).required('Payment Method is required'),
+      technicianEmployeeId: Yup.string().required('Technician is required'),
+    })),
+})
+
 export default function TransactionEditPage() {
 
   const params = useParams<{transactionId: string}>()

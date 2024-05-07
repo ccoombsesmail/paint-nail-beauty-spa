@@ -7,6 +7,8 @@ import { Button } from 'primereact/button';
 import { useUser } from '@clerk/nextjs';
 import { formatPhoneNumber, phoneNumberTemplate } from '../../utils/format-phone-number';
 import { FilterMatchMode } from 'primereact/api';
+import { useQuery } from 'react-query';
+import { getEnums } from '../../client-api/enums/enum-queries';
 
 
 const tipTemplate = (rowData: any) => {
@@ -32,9 +34,9 @@ const amountCollectedTemplate = (rowData: any) => {
   )
 }
 
-const editTemplate = (transaction: { id: string }, router: AppRouterInstance) => {
+const editTemplate = (visit: { id: string }, router: AppRouterInstance) => {
   const onClick = () => {
-    router.push(`transactions/${transaction.id}`)
+    router.push(`visits/${visit.id}`)
   }
   return (
     <button type='button' onClick={onClick} className="flex items-center justify-between hover:opacity-50 cursor-pointer">
@@ -77,12 +79,8 @@ const rowExpansionTemplate = (data: any, router: any) => {
         value={data.transactions}
         columnResizeMode="expand"
       >
-        <Column field="" header="" body={(tx) => editTemplate(tx, router)} />
         <Column  field="technicianName" header="Technician"  style={{ minWidth: '300px' }}></Column>
 
-        <Column field="customerEmail" header="Email"  style={{ width: '10%' }}></Column>
-        <Column field="customerDialCode" header="" hidden ></Column>
-        <Column body={customerNumberTemplate} field="customerPhoneNumber" header="Number"  style={{ width: '20%' }}></Column>
         <Column field="serviceType" header="Service Type"  style={{ width: '10%' }}></Column>
         <Column field="serviceDuration" header="Duration (hrs)"  style={{ width: '10%' }}></Column>
         <Column body={totalPriceTemplate} field="totalServicePrice" header="Total Service Price"  style={{ width: '10%' }}></Column>
@@ -107,6 +105,13 @@ export default function TransactionsTable({ visits, isLoading }: { visits: any[]
 
   const { user, isLoaded } = useUser()
   const dt = useRef(null);
+
+  const { data: enums } = useQuery('enums', getEnums, {
+    initialData: {
+      orgNameMap: {}
+    }
+  });
+
   const exportCSV = useCallback( (selectionOnly: boolean) => {
     if (dt.current) { // @ts-ignore
       dt.current.exportCSV({ selectionOnly });
@@ -153,6 +158,11 @@ export default function TransactionsTable({ visits, isLoading }: { visits: any[]
     </div>
   );
 
+  const orgNameBody = (rowData: any) => {
+    return (
+      <span>{enums.orgNameMap[rowData.createdAtOrganizationId]}</span>
+    )
+  }
 
   if (!isLoaded) return null
 
@@ -179,11 +189,15 @@ export default function TransactionsTable({ visits, isLoading }: { visits: any[]
         // tableStyle={{ minWidth: '50rem' }}
         loading={isLoading}
       >
+        <Column field="" header="" body={(visit) => editTemplate(visit, router)} />
         <Column expander={allowExpansion} style={{ width: '5rem' }} />
         <Column field="visitDate" header="Visit Date" body={dateTemplate}  />
 
         <Column field="customer.firstName" header="Customer Name" ></Column>
-        <Column field="createdAtOrganizationId" header="Org Id" ></Column>
+        <Column field="customerEmail" header="Email"  style={{ width: '10%' }}></Column>
+        <Column field="customerDialCode" header="" hidden ></Column>
+        <Column body={customerNumberTemplate} field="customerPhoneNumber" header="Number"  style={{ width: '20%' }}></Column>
+        <Column body={orgNameBody} field="createdAtOrganizationId" header="Visit Location" ></Column>
 
 
       </DataTable>
