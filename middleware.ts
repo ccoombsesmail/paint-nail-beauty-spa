@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
 import { decodeJwt } from 'jose';
-import { clerkMiddleware, createRouteMatcher, redirectToSignIn } from '@clerk/nextjs/server';
-import prisma from './app/database/prismaClient';
-import { router } from 'next/client';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-
-const publicRoutesDev = ["/api/clerk", 'api/enums', "/api/seed", '/not-authorized', 'organization-profile']
-const publicRoutesCypress = ["/api/clerk", 'api/enums', "/api/seed", '/not-authorized', '/', '/transactions']
-const publicRoutesProd = ["/api/clerk", 'api/enums', '/not-authorized',]
+const publicRoutesDev = ["/api/clerk", '/api/enums', "/api/seed", '/not-authorized', '/organization-profile']
+const publicRoutesCypress = ["/api/clerk", '/api/enums', "/api/seed", '/not-authorized', '/', '/transactions']
+const publicRoutesProd = ["/api/clerk", '/api/enums', '/not-authorized',]
 
 let pubRoutes: string[]
 
@@ -33,6 +30,7 @@ export default clerkMiddleware(async (auth, req) => {
   let token, is_admin, is_org_enabled
      try {
         token = await auth().getToken({ template: 'custom' })
+       // @ts-ignore
        const decoded = decodeJwt(token)
        is_admin = decoded.is_admin
        is_org_enabled = decoded.is_org_enabled
