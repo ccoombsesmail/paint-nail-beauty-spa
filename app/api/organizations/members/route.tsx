@@ -194,6 +194,9 @@ export async function PATCH(req: NextRequest) {
 
     try {
       const role = organizationRoleTypeEnumMap.get(organizationRole)
+      console.log(role)
+      console.log(sessionClaims?.org_id)
+      console.log(userId)
       if (role) {
         await clerkClient.organizations.updateOrganizationMembership(
           {
