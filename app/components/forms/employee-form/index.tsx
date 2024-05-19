@@ -7,8 +7,8 @@ import {
   CountryCodeDropdown,
   FloatingSelect,
   SearchableEmployeeSelectNonFormik,
-  SearchableUserSelectNonFormik, selectedEmploymentStatusTemplate,
-  selectedRoleTemplate
+  SearchableUserSelectNonFormik, selectedEmploymentStatusTemplate, selectedEmploymentStatusTemplateFormik,
+  selectedRoleTemplate, selectedRoleTemplateFormik
 } from '../formik/selects';
 import { useMutation, useQuery } from 'react-query';
 import { AxiosError } from 'axios';
@@ -141,7 +141,7 @@ const CreateEmployeeForm = ({ isEdit, selectedEmployee }: any) => {
             <Form className='flex flex-wrap my-7 '>
               <div className='grid grid-cols-3 xl:grid-cols-3 gap-y-4 gap-x-0'>
 
-                <Field name='firstName' as={FloatingLabelInput} placeholder='First Name' type='text'                 className='w-[14rem]' />
+                <Field name='firstName' as={FloatingLabelInput} placeholder='First Name' type='text' className='w-[14rem]' />
                 <Field name='lastName' as={FloatingLabelInput} placeholder='Last Name' type='text'   className='w-[14rem]' />
                 <Field name='email' as={FloatingLabelInput} placeholder='Email' type='email' readOnly={isEdit} disabled={isEdit}    className='w-[100%] col-span-1' />
                 <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number' nolabel className='w-[14rem]' />
@@ -154,7 +154,7 @@ const CreateEmployeeForm = ({ isEdit, selectedEmployee }: any) => {
                   as={FloatingSelect}
                   placeholder='Role'
                   options={enums.organizationRoleTypes}
-                  valueTemplate={selectedRoleTemplate}
+                  valueTemplate={selectedRoleTemplateFormik}
                 />
 
                 <Field
@@ -164,7 +164,7 @@ const CreateEmployeeForm = ({ isEdit, selectedEmployee }: any) => {
                   as={FloatingSelect}
                   placeholder='Employment Status'
                   options={enums.employmentStatusTypes}
-                  valueTemplate={selectedEmploymentStatusTemplate}
+                  valueTemplate={selectedEmploymentStatusTemplateFormik}
                 />
 
                 <Field

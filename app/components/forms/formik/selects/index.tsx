@@ -24,6 +24,18 @@ export const selectedEmploymentStatusTemplate = (option: string) => {
   return <span className="h-[50px]">Select Status</span>;
 };
 
+export const selectedEmploymentStatusTemplateFormik = (option:  { name: string, code: string }) => {
+  if (option) {
+    return (
+      <div className='flex align-items-center w-[100px] h-[50px]'>
+        <div>{option.name}</div>
+      </div>
+    );
+  }
+
+  return <span className="h-[50px]">Select Status</span>;
+};
+
 export const selectedRoleTemplate = (option: string) => {
   if (option) {
     return (
@@ -35,6 +47,19 @@ export const selectedRoleTemplate = (option: string) => {
 
   return <span>Select Role</span>;
 };
+
+export const selectedRoleTemplateFormik = (option: { name: string, code: string }) => {
+  if (option) {
+    return (
+      <div className='flex align-items-center w-[100px] h-[50px]'>
+        <div>{option.name}</div>
+      </div>
+    );
+  }
+
+  return <span>Select Role</span>;
+};
+
 
 export const selectedMembershipTemplate = (option: { name: string, code: string }) => {
   if (option) {
