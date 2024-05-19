@@ -184,6 +184,11 @@ enum PaymentMethod {
   WeChat
   Cash
   CreditCard
+  CupertinoCredit
+  CupertinoBalance
+  CurpertinoGiftBag
+  LocalGiftPack
+  LocalShopBalance
 }
 
 enum ServiceCategory {
