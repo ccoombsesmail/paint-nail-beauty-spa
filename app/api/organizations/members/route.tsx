@@ -205,8 +205,8 @@ export async function PATCH(req: NextRequest) {
         throw Error("Role Does Not exist")
       }
     } catch (e) {
-      console.log('Failed To Update Org Member', e);
-      return new NextResponse(JSON.stringify({ error: 'Failed To Add Employee to Organization' }), {
+      console.error('Failed To Update Org Member', e);
+      return new NextResponse(JSON.stringify({ error: 'Failed To Update Org Member' }), {
         headers: { 'content-type': 'application/json' },
         status: 500
       });

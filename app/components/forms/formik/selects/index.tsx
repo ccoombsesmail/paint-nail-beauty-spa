@@ -12,23 +12,23 @@ import CustomerForm from '../../customer-form';
 import { Divider } from 'primereact/divider';
 
 
-export const selectedEmploymentStatusTemplate = (option: { name: string, code: string }) => {
+export const selectedEmploymentStatusTemplate = (option: string) => {
   if (option) {
     return (
-      <div className='flex align-items-center'>
-        <div>{option.name}</div>
+      <div className='flex align-items-center w-[100px] h-[50px]'>
+        <div>{option}</div>
       </div>
     );
   }
 
-  return <span>Select Status</span>;
+  return <span className="h-[50px]">Select Status</span>;
 };
 
-export const selectedRoleTemplate = (option: { name: string, code: string }) => {
+export const selectedRoleTemplate = (option: string) => {
   if (option) {
     return (
-      <div className='flex align-items-center'>
-        <div>{option.name}</div>
+      <div className='flex align-items-center w-[100px] h-[50px]'>
+        <div>{option}</div>
       </div>
     );
   }

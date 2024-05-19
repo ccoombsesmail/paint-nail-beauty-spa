@@ -24,6 +24,10 @@ import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
 import { InputMask } from 'primereact/inputmask';
 import { Button } from 'primereact/button';
+import {
+  selectedEmploymentStatusTemplate, selectedRoleTemplate,
+  selectedServiceCategoryTemplate
+} from '../../../../components/forms/formik/selects';
 
 
 export default function MembersTable() {
@@ -134,10 +138,17 @@ export default function MembersTable() {
   };
 
   const textBoxEditor = (options: ColumnEditorOptions) => {
-    return <InputTextarea cols={30} rows={1} type="text" value={options.value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)} />;
+    return <InputTextarea
+      cols={30}
+      rows={1}
+      type="text"
+      value={options.value}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)}
+    />;
   };
 
   const roleEditor = (options: ColumnEditorOptions) => {
+
     return (
       <Dropdown
         // valueTemplate={roleBodyTemplate}
@@ -146,24 +157,39 @@ export default function MembersTable() {
         onChange={(e: DropdownChangeEvent) => {
           options.editorCallback!(e.value);
         }}
+        pt={{
+          root: {
+            className: 'h-[50px]'
+          },
+        }}
+
         placeholder="Select a Role"
+        valueTemplate={selectedRoleTemplate}
         itemTemplate={(option) => {
-          return <Tag value={option} severity={getSeverity(option)}></Tag>;
+          return <div><Tag value={option} severity={getSeverity(option)}></Tag> </div>;
         }}
       />
     );
   };
 
   const statusEditor = (options: ColumnEditorOptions) => {
+
     return (
       <Dropdown
-        // valueTemplate={roleBodyTemplate}
         value={options.value}
-        options={enums.employmentStatusTypes.map(({ code }) => code) }
+        pt={{
+          root: {
+            className: 'h-[50px]'
+          },
+        }}
+        options={enums.employmentStatusTypes.map(({ name }) => name) }
         onChange={(e: DropdownChangeEvent) => {
           options.editorCallback!(e.value);
         }}
         placeholder="Select a Role"
+
+        valueTemplate={selectedEmploymentStatusTemplate}
+        itemTemplate={(option) => <div>{option}</div>}
       />
     );
   };
