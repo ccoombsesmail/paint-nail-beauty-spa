@@ -35,8 +35,10 @@ export default clerkMiddleware(async (auth, req) => {
        is_admin = decoded.is_admin
        is_org_enabled = decoded.is_org_enabled
      } catch (e) {
+      console.log(e)
      }
-
+     console.log(token)
+  console.log(is_org_enabled)
 
 
     if (token && !is_admin && !is_org_enabled && !req.nextUrl.pathname.includes('organization-disabled') && !pubRoutes.includes(req.nextUrl.pathname)) {
