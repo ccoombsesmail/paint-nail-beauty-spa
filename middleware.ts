@@ -42,7 +42,8 @@ export default clerkMiddleware(async (auth, req) => {
      console.log(is_org_enabled)
 
     if (is_org_enabled === null || !token) {
-      NextResponse.redirect('/')
+      const base = new URL("/", req.url);
+      NextResponse.redirect(base)
     }
 
 
