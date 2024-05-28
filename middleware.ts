@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { decodeJwt } from 'jose';
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkClient, clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
 const publicRoutesDev = ["/api/clerk", '/api/enums', "/api/seed", '/not-authorized', '/organization-profile']
 const publicRoutesCypress = ["/api/clerk", '/api/enums', "/api/seed", '/not-authorized', '/', '/transactions']
@@ -35,6 +35,14 @@ export default clerkMiddleware(async (auth, req) => {
        console.log("decoded", decoded)
        is_admin = decoded.is_admin
        is_org_enabled = decoded.is_org_enabled
+       console.log(typeof decoded.orgs)
+       const orgId = Object.keys(decoded.orgs)[0]
+       console.log(orgId)
+       const org = await clerkClient.organizations.getOrganization({
+         organizationId: orgId
+       })
+       console.log("he")
+       console.log(org.publicMetadata.is_org_enabled)
      } catch (e) {
       console.log(e)
      }
