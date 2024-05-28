@@ -34,26 +34,19 @@ export default clerkMiddleware(async (auth, req) => {
        const decoded = decodeJwt(token)
        console.log("decoded", decoded)
        is_admin = decoded.is_admin
-       is_org_enabled = decoded.is_org_enabled
        console.log(typeof decoded.orgs)
        const orgId = Object.keys(decoded.orgs)[0]
-       console.log(orgId)
        const org = await clerkClient.organizations.getOrganization({
          organizationId: orgId
        })
-       console.log("he")
-       console.log(org.publicMetadata.is_org_enabled)
+       is_org_enabled = org.publicMetadata.is_org_enabled
      } catch (e) {
-      console.log(e)
+       console.log(e)
+       auth().protect();
+
      }
      console.log(token)
      console.log(is_org_enabled)
-
-    if (is_org_enabled === null || !token) {
-      const base = new URL("/", req.url);
-      NextResponse.redirect(base)
-    }
-
 
     if (token && !is_admin && !is_org_enabled && !req.nextUrl.pathname.includes('organization-disabled') && !pubRoutes.includes(req.nextUrl.pathname)) {
       const notAuthUrl = new URL("/organization-disabled", req.url);
