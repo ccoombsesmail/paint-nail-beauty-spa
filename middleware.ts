@@ -32,13 +32,18 @@ export default clerkMiddleware(async (auth, req) => {
         token = await auth().getToken({ template: 'custom' })
        // @ts-ignore
        const decoded = decodeJwt(token)
+       console.log("decoded", decoded)
        is_admin = decoded.is_admin
        is_org_enabled = decoded.is_org_enabled
      } catch (e) {
       console.log(e)
      }
      console.log(token)
-  console.log(is_org_enabled)
+     console.log(is_org_enabled)
+
+    if (is_org_enabled === null || !token) {
+      NextResponse.redirect('/')
+    }
 
 
     if (token && !is_admin && !is_org_enabled && !req.nextUrl.pathname.includes('organization-disabled') && !pubRoutes.includes(req.nextUrl.pathname)) {
