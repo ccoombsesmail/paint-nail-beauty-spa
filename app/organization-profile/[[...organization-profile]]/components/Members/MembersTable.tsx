@@ -65,7 +65,7 @@ export default function MembersTable() {
   });
   const { data: members }  = useQuery(['members'], () => fetchMembers(organization.id!), {
     // onSuccess: (data) => console.log('Data fetched:', data),
-    onError: (error) => toast.error(`Error Searching For Customers: ${error}`),
+    onError: (error) => toast.error(`Error Searching For Members: ${error}`),
     enabled: !!organization
 
   });
@@ -73,7 +73,7 @@ export default function MembersTable() {
 
 
   if (!isLoaded) {
-    return <>Loading</>;
+    return <span>Loading</span>;
   }
 
   const getSeverity = (value: string) => {
@@ -82,9 +82,6 @@ export default function MembersTable() {
         return 'info';
       case 'org:employee':
         return 'secondary';
-      case 'org:member':
-        return 'success';
-
       default:
         return null;
     }

@@ -221,7 +221,8 @@ export async function PATCH(req: NextRequest) {
 
     console.log(updatedUserResponse.id, "updatedUserResponse.id")
     console.log(phoneNumber)
-    const oldMember = await prisma.employee.findFirst({
+
+    const oldMember = await prisma.employee.findUnique({
       where: {
         userId: updatedUserResponse.id
       },
@@ -230,7 +231,7 @@ export async function PATCH(req: NextRequest) {
 
     const newOrgMember = await prisma.employee.update({
       where: {
-        userId: updatedUserResponse.id
+        userId: oldMember?.id
       },
       data: {
         firstName,
@@ -242,6 +243,8 @@ export async function PATCH(req: NextRequest) {
         employmentStatus: employmentStatus as $Enums.EmploymentStatus
       }
     });
+
+    console.log("new", newOrgMember)
 
     return new NextResponse(JSON.stringify(newOrgMember), {
       headers: { 'content-type': 'application/json' },
