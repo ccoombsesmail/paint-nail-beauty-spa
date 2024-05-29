@@ -72,7 +72,6 @@ model Customer {
 
   parent     Customer? @relation("SubAccount", fields: [parentId], references: [id])
   subAccount Customer? @relation("SubAccount")
-  Visit      Visit?
 
   @@map("customers")
 }
@@ -80,12 +79,10 @@ model Customer {
 model Visit {
   id                      String   @id @default(uuid())
   visitDate               DateTime @map("visit_date")
-  customerId              String   @unique @map("customer_id") @db.VarChar(300)
+  customerId              String   @map("customer_id") @db.VarChar(300)
   createdAtOrganizationId String   @map("created_at_organization_id") @db.VarChar(300)
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
-
-  customer Customer @relation(fields: [customerId], references: [id])
 
   transactions Transaction[]
 
