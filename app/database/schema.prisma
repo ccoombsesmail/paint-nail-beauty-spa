@@ -206,7 +206,6 @@ enum EmploymentStatus {
 
 enum OrganizationRole {
   Employee
-  Member
   Admin
   Franchisor
 }

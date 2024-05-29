@@ -126,7 +126,6 @@ export const employmentStatusTypeEnumMap = new Map<string, string>([
 
 export const organizationRoleTypeEnumMap = new Map<string, string>([
     [$Enums.OrganizationRole.Employee, "org:employee"],
-    [$Enums.OrganizationRole.Member, "org:member"],
     [$Enums.OrganizationRole.Admin, "org:admin"],
     [$Enums.OrganizationRole.Franchisor, "org:franchisor"],
   ]
@@ -135,7 +134,6 @@ export const organizationRoleTypeEnumMap = new Map<string, string>([
 
 export const clerkToPostgresRoleTypeEnumMap = new Map<string, string>([
   ["org:employee", $Enums.OrganizationRole.Employee],
-  ["org:member", $Enums.OrganizationRole.Member],
   ["org:admin", $Enums.OrganizationRole.Admin],
   ["org:franchisor", $Enums.OrganizationRole.Franchisor]
 ]);
