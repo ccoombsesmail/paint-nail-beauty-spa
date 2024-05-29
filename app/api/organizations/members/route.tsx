@@ -220,6 +220,13 @@ export async function PATCH(req: NextRequest) {
     }
 
     console.log(updatedUserResponse.id, "updatedUserResponse.id")
+    console.log(phoneNumber)
+    const oldMember = await prisma.employee.findFirst({
+      where: {
+        userId: updatedUserResponse.id
+      },
+    })
+    console.log(oldMember)
 
     const newOrgMember = await prisma.employee.update({
       where: {
