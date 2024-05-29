@@ -4,7 +4,7 @@ import prisma from '../../../database/prismaClient';
 import { clerkClient } from '@clerk/nextjs/server';
 import { User } from '@clerk/backend';
 import { EmployeePostData } from '../../../client-api/organizations/organization-queries';
-import { $Enums, OrganizationRole, Prisma } from '@prisma/client';
+import { $Enums, OrganizationRole } from '@prisma/client';
 import {
   clerkToPostgresRoleTypeEnumMap,
   membershipTypeEnumMap,
@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
         ...u,
         // @ts-ignore
         membershipLevel: membershipTypeEnumMap.get(u.membershipLevel),
-        phoneNumber: u.phoneNumber ? `${u.phoneNumber}` : null,
         organizationRole: u.organizationRole
       };
     });
@@ -231,7 +230,7 @@ export async function PATCH(req: NextRequest) {
 
     const newOrgMember = await prisma.employee.update({
       where: {
-        userId: oldMember?.id
+        id: oldMember?.id
       },
       data: {
         firstName,
