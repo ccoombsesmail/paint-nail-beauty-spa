@@ -34,9 +34,6 @@ membershipTypeEnumMap.forEach((value, key) => {
   reversedMembershipTypeEnumMap.set(value, key);
 });
 
-console.log(reversedMembershipTypeEnumMap)
-
-
 
 
 export const serviceTypeEnumMap = new Map<string, string>([

@@ -178,8 +178,6 @@ export async function PATCH(req: NextRequest) {
       });
     }
 
-    console.log(sessionClaims)
-
     let updatedUserResponse: User;
     try {
       updatedUserResponse = await clerkClient.users.updateUser(userId, {
@@ -220,6 +218,8 @@ export async function PATCH(req: NextRequest) {
         status: 500
       });
     }
+
+    console.log(updatedUserResponse.id, "updatedUserResponse.id")
 
     const newOrgMember = await prisma.employee.update({
       where: {

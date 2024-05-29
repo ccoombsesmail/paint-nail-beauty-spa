@@ -27,6 +27,7 @@ const isProtectedRoute = createRouteMatcher([
 ], );
 
 export default clerkMiddleware(async (auth, req) => {
+  if (pubRoutes.includes(req.nextUrl.pathname)) return
   let token, is_admin, is_org_enabled
      try {
         token = await auth().getToken({ template: 'custom' })
@@ -42,12 +43,8 @@ export default clerkMiddleware(async (auth, req) => {
        is_org_enabled = org.publicMetadata.is_org_enabled
      } catch (e) {
        console.error(e)
-       const home = new URL("/", req.url);
-       // return NextResponse.redirect(home)
-       // auth().protect();
-
      }
-     
+
     if (token && !is_admin && !is_org_enabled && !req.nextUrl.pathname.includes('organization-disabled') && !pubRoutes.includes(req.nextUrl.pathname)) {
       const notAuthUrl = new URL("/organization-disabled", req.url);
       return NextResponse.redirect(notAuthUrl)
