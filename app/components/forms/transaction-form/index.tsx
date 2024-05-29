@@ -31,7 +31,7 @@ const validationSchema = Yup.object().shape({
           then: (schema) => schema.required('Tip is required (enter 0 if none)'),
           otherwise: (schema) => schema.optional(),
         }),
-      paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'PayPal', 'WeChat', 'CreditCard']).required('Payment Method is required'),
+      paymentMethod: Yup.string().required('Payment Method is required'),
       technicianEmployeeId: Yup.string().required('Technician is required'),
     })),
 

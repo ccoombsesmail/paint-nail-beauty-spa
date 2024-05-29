@@ -12,3 +12,9 @@ export const patchVisit = async (visitData: any) => {
   const { data } = await axiosClient.patch('/visits', visitData);
   return data;
 };
+
+
+export const deleteVisit = async (visitId: any) => {
+  const { data } = await axiosClient.delete(`/visits/${visitId}`);
+  return data;
+};

@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
           }
         } catch (cleanupError: Error | any) {
           console.error('Cleanup failed', cleanupError);
-          throw new Error('Cleanup failed: ' + cleanupError?.message);
+          throw error;
         }
         throw error;
       }
@@ -128,9 +128,9 @@ export async function POST(req: NextRequest) {
       status: 200
     });
 
-  } catch (error) {
+  } catch (error: Error | any) {
     console.error('Failed To Create New Member:', error);
-    return new NextResponse(JSON.stringify({ error: 'Failed To Create New Member' }), {
+    return new NextResponse(JSON.stringify({ error: error.message || 'Failed To Create New Member' }), {
       headers: { 'content-type': 'application/json' },
       status: 500
     });
@@ -169,6 +169,16 @@ export async function PATCH(req: NextRequest) {
         status: 401
       });
     }
+    const role = organizationRoleTypeEnumMap.get(organizationRole)
+
+    if (role === 'org:admin' && !sessionClaims?.org_permissions?.includes('org:admin:newadmin')) {
+      return new NextResponse(JSON.stringify({ error: 'Insufficient permissions to assign new admin' }), {
+        headers: { 'content-type': 'application/json' },
+        status: 401
+      });
+    }
+
+    console.log(sessionClaims)
 
     let updatedUserResponse: User;
     try {
@@ -193,10 +203,6 @@ export async function PATCH(req: NextRequest) {
     }
 
     try {
-      const role = organizationRoleTypeEnumMap.get(organizationRole)
-      console.log(role)
-      console.log(sessionClaims?.org_id)
-      console.log(userId)
       if (role) {
         await clerkClient.organizations.updateOrganizationMembership(
           {

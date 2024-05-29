@@ -64,9 +64,7 @@ export const selectedRoleTemplateFormik = (option: { name: string, code: string 
 export const selectedMembershipTemplate = (option: { name: string, code: string }) => {
   if (option) {
     return (
-      <div className='flex align-items-center'>
-        <div>{option.name}</div>
-      </div>
+      <span>{option.name}</span>
     );
   }
 
@@ -256,12 +254,12 @@ export const SearchableEmployeeSelect = (props: any) => {
 
   const [selectedUser, setSelectedUser] = useState(props.initValue ? [props.initValue] : null);
 
-  useEffect(() => {
-    console.log(field.value)
-    if (field.value === 'clear') {
-      props.clear(field.name, () => setSelectedUser(null))
-    }
-  }, [field.name, field.value])
+  // useEffect(() => {
+  //   console.log(field.value)
+  //   if (field.value === 'clear') {
+  //     props.clear(field.name, () => setSelectedUser(null))
+  //   }
+  // }, [field.name, field.value])
 
   const [search, setSearch] = useState<string[]>([]);
   const { data: users, refetch } = useQuery(['employees', search, searchAttempt], () => fetchEmployees(search[0]), {

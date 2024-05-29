@@ -160,7 +160,7 @@ export default function TransactionsTable({ visits, isLoading }: { visits: any[]
 
   const orgNameBody = (rowData: any) => {
     return (
-      <span>{enums.orgNameMap[rowData.createdAtOrganizationId]}</span>
+      <span>{enums?.orgNameMap[rowData.createdAtOrganizationId]}</span>
     )
   }
 

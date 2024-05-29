@@ -15,7 +15,6 @@ export async function PATCH(req: NextRequest) {
     const { sessionClaims } = auth();
     const { is_admin }: { is_admin: boolean } = user.publicMetadata as { is_admin: boolean };
 
-
     const body = await req.json();
     const {
       shouldDisable

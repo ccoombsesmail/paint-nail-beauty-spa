@@ -10,7 +10,19 @@ interface VisitPatchData {
   visitDate: DateTime;
   customerId: string;
   transactions: Transaction[]
+
 }
+
+function findDiffIds(original: any[], modified: any[]) {
+  const originalIds = new Set(original.map(item => item.id));
+  const modifiedIds = new Set(modified.map(item => item.id));
+
+  const addedIds = [...modifiedIds].filter(id => !originalIds.has(id));
+  const removedIds = [...originalIds].filter(id => !modifiedIds.has(id));
+
+  return { addedIds, removedIds };
+}
+
 export async function PATCH(req: NextRequest, res: NextResponse) {
 
   try {
@@ -33,6 +45,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
     } = body as VisitPatchData
 
 
+
     const originalVisit = await prisma.visit.findUnique({
       where: { id: visitId },
       include: {
@@ -47,6 +60,9 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
         status: 500,
       })
     }
+
+
+    const {  addedIds, removedIds } = findDiffIds(originalVisit.transactions, transactions)
 
     const originalActualAmountCollected = originalVisit.transactions.reduce((acc, tx) => {
       acc += Number(tx.actualPaymentCollected)
@@ -76,7 +92,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
         data: { cashbackBalance: newCashbackBalance },
       });
       for (const transaction of transactions) {
-        const {employee, ...rest} = transaction
+        const {...rest} = transaction
         await tx.transaction.upsert({
           where: { id: rest.id || '' },
           create: {
@@ -108,6 +124,13 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
             visitId: visitId
           }
         });
+      }
+      for ( const removedId of removedIds) {
+        await tx.transaction.delete({
+          where: {
+            id: removedId
+          }
+        })
       }
       return tx.visit.update({
         where: { id: visitId },

@@ -28,6 +28,7 @@ import {
   selectedEmploymentStatusTemplate, selectedRoleTemplate,
   selectedServiceCategoryTemplate
 } from '../../../../components/forms/formik/selects';
+import { Inplace, InplaceContent, InplaceDisplay } from 'primereact/inplace';
 
 
 export default function MembersTable() {
@@ -107,7 +108,7 @@ export default function MembersTable() {
         error: (data: AxiosError<{ error: string; }>) => {
           return `${data.response?.data.error}`;
         },
-        duration: 70000
+        duration: 5000
       });
     }
   };
@@ -123,12 +124,13 @@ export default function MembersTable() {
       },
     });
   }
-  const textEditor = (options: ColumnEditorOptions) => {
-    return <InputText type="text" value={options.value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)} />;
+  const textEditor = (options: ColumnEditorOptions, shouldDisable = false) => {
+    return <InputText className='min-w-[200px]' disabled={shouldDisable} type="text" value={options.value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)} />;
   };
 
   const phoneEditor = (options: ColumnEditorOptions) => {
     return <InputMask
+      className='min-w-[200px]'
       mask="999-999-9999"
       placeholder="999-999-9999"
       type="text"
@@ -139,6 +141,7 @@ export default function MembersTable() {
 
   const textBoxEditor = (options: ColumnEditorOptions) => {
     return <InputTextarea
+      className='min-w-[200px]'
       cols={30}
       rows={1}
       type="text"
@@ -200,6 +203,22 @@ export default function MembersTable() {
     )
   };
 
+  const addressBody = (rowData: Employee) => {
+    return (
+      <span style={{display: 'flex', whiteSpace: 'nowrap'}} className='text-nowrap'>{rowData.address}</span>
+      // <Inplace pt={{
+      //   display: {
+      //     className: 'text-primary'
+      //   }
+      // }}>
+      //   <InplaceDisplay>Address</InplaceDisplay>
+      //   <InplaceContent>
+      //     <span style={{display: 'flex', whiteSpace: 'nowrap'}} className='text-nowrap'>{rowData.address}</span>
+      //   </InplaceContent>
+      // </Inplace>
+    )
+  };
+
   const roleBodyTemplate = (rowData: Employee) => {
     if (!rowData) return null
     return <Tag value={rowData.organizationRole} severity={getSeverity(rowData.organizationRole)}></Tag>;
@@ -210,7 +229,7 @@ export default function MembersTable() {
       <Avatar image={rowData.profileImage || ''} shape='circle' size='large' />
     )
   };
-
+  console.log(members)
   return (
     <div className="card p-fluid">
       <Toaster richColors position='top-right' />
@@ -221,12 +240,14 @@ export default function MembersTable() {
         value={members}
         editMode="row"
         dataKey="id"
+        sortOrder={-1}
+        sortField={"createdAt"}
         onRowEditComplete={onRowEditComplete}
         tableStyle={{ minWidth: '50rem' }}
         className='rounded-3xl'
         pt={{
           wrapper: {
-            className: "rounded-2xl border-b-gray-300 border-[1px] "
+            className: "rounded-2xl border-b-gray-300 border-[1px] max-h-[60vh] "
           },
 
       }}
@@ -234,12 +255,14 @@ export default function MembersTable() {
       >
         <Column style={{width: '1rem'}} body={avatarBody} field="" header=""></Column>
         <Column rowEditor={true} headerStyle={{ minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
-        <Column field="firstName" header="First Name" editor={(options) => textEditor(options)} ></Column>
-        <Column field="lastName" header="Last Name" editor={(options) => textEditor(options)} ></Column>
+        <Column className='min-w-[200px]' field="firstName" header="First Name" editor={(options) => textEditor(options)} ></Column>
+        <Column className='min-w-[200px]' field="lastName" header="Last Name" editor={(options) => textEditor(options)} ></Column>
         <Column field="employmentStatus" header="Status" editor={(options) => statusEditor(options)} ></Column>
-        <Column field="organizationRole" header="Role" body={roleBodyTemplate} editor={(options) => roleEditor(options)}></Column>
-        <Column field="phoneNumber" header="Phone" editor={(options) => phoneEditor(options)} ></Column>
-        <Column field="address" header="Address" editor={(options) => textBoxEditor(options)} ></Column>
+        <Column  field="organizationRole" header="Role" body={roleBodyTemplate} editor={(options) => roleEditor(options)}></Column>
+        <Column  className='min-w-[200px]' field="phoneNumber" header="Phone" editor={(options) => phoneEditor(options)} ></Column>
+        <Column field="email" header="Email" editor={(options) => textEditor(options, true)} ></Column>
+
+        <Column body={addressBody} field="address" header="Address" editor={(options) => textBoxEditor(options)} ></Column>
         <Column body={deleteBody} field="" header="" ></Column>
 
         {/*<Column field="price" header="Price" body={priceBodyTemplate} editor={(options) => priceEditor(options)} style={{ width: '20%' }}></Column>*/}

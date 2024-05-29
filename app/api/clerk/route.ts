@@ -23,9 +23,9 @@ export async function POST(req: NextRequest) {
       // case 'user.deleted':
       //   await deleteEmployee(payload.data.id || '');
       //   break;
-      // case 'user.updated':
-      //   await updateEmployee(payload.data)
-      //   break;
+      case 'user.updated':
+        await updateEmployee(payload.data)
+        break;
       case 'organization.created':
         // @ts-ignore
         await createOrganization(payload.data);

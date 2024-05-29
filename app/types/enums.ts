@@ -34,6 +34,8 @@ membershipTypeEnumMap.forEach((value, key) => {
   reversedMembershipTypeEnumMap.set(value, key);
 });
 
+console.log(reversedMembershipTypeEnumMap)
+
 
 
 
@@ -94,10 +96,9 @@ export const paymentMethodTypeEnumMap = new Map<string, string>([
       [$Enums.PaymentMethod.Cash, "Cash"],
       [$Enums.PaymentMethod.CreditCard, "Credit Card"],
       [$Enums.PaymentMethod.CupertinoBalance, "Cupertino Balance"],
-      [$Enums.PaymentMethod.CupertinoCredit, "Cupertino Credit"],
-      [$Enums.PaymentMethod.CurpertinoGiftBag, "Cupertino Gift Bag"],
-      [$Enums.PaymentMethod.LocalShopBalance, "Local Shop Balance"],
-      [$Enums.PaymentMethod.LocalGiftPack, "Local Gift Pack"],
+      [$Enums.PaymentMethod.CurpertinoPackage, "Cupertino Package"],
+      [$Enums.PaymentMethod.LocalStoreBalance, "Local Store Balance"],
+      [$Enums.PaymentMethod.LocalStorePackage, "Local Store Package"],
 
   ]
 )

@@ -24,10 +24,9 @@ function OrganizationDisabled() {
       </h2>
       <h2  className='text-1xl'>
         Please Contact The Admin To Request Access
-
       </h2>
       <h3>
-        Email: zztc2004@gmail.com
+        Email: zztc2004@gmail.com or jayzhang@paintnailbeautyspa.net
       </h3>
     </main>
   );

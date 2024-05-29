@@ -46,7 +46,7 @@ const validationSchema = Yup.object().shape({
           then: (schema) => schema.required('Tip is required (enter 0 if none)'),
           otherwise: (schema) => schema.optional(),
         }),
-      paymentMethod: Yup.string().oneOf(['Venmo', 'Zelle', 'Cash', 'PayPal', 'WeChat', 'CreditCard']).required('Payment Method is required'),
+      paymentMethod: Yup.string().required('Payment Method is required'),
       technicianEmployeeId: Yup.string().required('Technician is required'),
     })),
 
@@ -84,7 +84,9 @@ export default function EditVisit() {
   const { data: visit, isLoading: isVisitLoading, refetch } = useQuery(['visits', params.visitId], () => fetchVisits(params.visitId), {
     onSuccess: (data) => console.log('Data fetched:', data),
     onError: (error) => toast.error(`Error Searching For Transactions: ${error}`,),
+    cacheTime: 0
   });
+
 
   const { mutateAsync } = useMutation(patchVisit, {
     onSuccess: () => {
@@ -158,7 +160,7 @@ export default function EditVisit() {
               width='w-[22rem]'
               name='customerId'
               setSelectedCustomer={setSelectedCustomer}
-              initValue={visit.customer}
+              initValue={visit?.customer}
               as={SearchableUserSelect}
               placeholder='Customer Search'
               setFieldValue={setFieldValue}
@@ -166,22 +168,15 @@ export default function EditVisit() {
             <Divider />
             <FieldArray name="transactions">
               {({ insert, remove, push }) => ( <>
-                  {values.transactions.length > 0 &&
+                  {values.transactions?.length > 0 &&
                     values.transactions.map((transaction, index) => {
-                      const clear = (name: string, clearEmployeeSelect: () => void) => {
-                        if (name === `transactions.${index}.technicianEmployeeId`) {
-                          clearEmployeeSelect()
-                        }
-
-                      }
                       return (
-                        <div key={index} className='flex flex-wrap gap-x-2 my-7 gap-y-8 relative'>
-                          { values.transactions.length > 1 && <button onClick={async () => {
-                            await setFieldValue(`transactions.${index}.technicianEmployeeId`, 'clear');
+                        <div key={transaction.id} className='flex flex-wrap gap-x-2 my-7 gap-y-8 relative'>
+                          { (values.transactions.length > 1 && is_admin) ? <button onClick={async () => {
                             remove(index);
                           }} type='button' className='absolute right-0 top-0'>
                             <i className='pi pi-times-circle' style={{ fontSize: '2rem' }}></i>
-                          </button>}
+                          </button> : null}
                           <div className='col-span-3 w-[100%] font-bold'>
                             <h1>Transaction: {index + 1}</h1>
                           </div>
@@ -191,7 +186,6 @@ export default function EditVisit() {
                             name={`transactions.${index}.technicianEmployeeId`}
                             initValue={transaction.employee}
                             as={SearchableEmployeeSelect}
-                            clear={clear}
                             placeholder='Technician Search'
                             setFieldValue={setFieldValue}
                             className='w-[22rem]' />
@@ -288,7 +282,7 @@ export default function EditVisit() {
       </Formik>
 
       <Toaster richColors position='top-right' />
-      {(visit && is_admin) && <DeleteTransaction transaction={visit} />}
+      {(visit && is_admin) && <DeleteTransaction visit={visit} />}
 
     </Card>
 

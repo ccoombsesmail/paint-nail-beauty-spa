@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { Panel } from 'primereact/panel';
 import { Button } from 'primereact/button';
-import { Transaction } from '@prisma/client';
+import { Transaction, Visit } from '@prisma/client';
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { useMutation } from 'react-query';
 import { AxiosError } from 'axios';
@@ -12,16 +12,17 @@ import { toast, Toaster } from 'sonner';
 
 import { useRouter } from 'next/navigation';
 import { deleteTransaction } from '../../../../client-api/transactions/transaction-queries';
+import { deleteVisit } from '../../../../client-api/visits/visit-queries';
 
 export default function DeleteTransaction({
-                                transaction
+                                visit
                               }: {
-  transaction: Transaction
+  visit: Visit
 }) {
 
   const router = useRouter();
 
-  const { mutateAsync } = useMutation(deleteTransaction, {
+  const { mutateAsync } = useMutation(deleteVisit, {
     onSuccess: async (data) => {
       setTimeout(() => {
         router.push('/transactions');
@@ -34,10 +35,10 @@ export default function DeleteTransaction({
 
   const onConfirmClick = async () => {
     try {
-      toast.promise(mutateAsync(transaction.id), {
-        loading: 'Deleting Transaction...',
+      toast.promise(mutateAsync(visit.id), {
+        loading: 'Deleting Visit...',
         success: (data: any) => {
-          return `Transaction has been Deleted`;
+          return `Visit has been Deleted`;
         },
         error: (data: AxiosError<{ error: string }>) => {
           return `${data.response?.data.error}`;
@@ -54,7 +55,7 @@ export default function DeleteTransaction({
   const openConfirmPopup = (event: any) => {
     confirmPopup({
       target: event.currentTarget,
-      message: 'Are you sure you want to delete this transaction?',
+      message: 'Are you sure you want to delete this visit?',
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'reject',
       className: 'max-w-64 cy-transaction-delete-confirm-popup',
@@ -65,7 +66,7 @@ export default function DeleteTransaction({
 
   return (
 
-    <Panel header='Delete Transaction'>
+    <Panel header='Delete Visit'>
       <div className='mt-4 flex w-full justify-between pb-20'>
         <ConfirmPopup />
 
@@ -73,9 +74,9 @@ export default function DeleteTransaction({
           loading={isSubmitting}
           disabled={isSubmitting}
           onClick={openConfirmPopup}
-          label='Delete Transaction'
+          label='Delete Visit'
           className='h-[48px]'
-          id='cy-transaction-delete-btn'
+          id='cy-visit-delete-btn'
         />
       </div>
       <Toaster richColors position='top-right' />

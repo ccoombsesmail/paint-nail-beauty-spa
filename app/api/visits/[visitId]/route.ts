@@ -47,3 +47,59 @@ export async function GET(req: NextRequest, { params }: { params: { visitId: str
 
   return NextResponse.json({ visit: formattedVisit })
 }
+
+
+export async function DELETE(req: NextRequest, { params }: { params: { visitId: string } }) {
+  const visitId = params.visitId
+  console.log(visitId)
+  try {
+    if (visitId) {
+
+      await prisma.$transaction(async (tx) => {
+
+        const visit = await tx.visit.findUnique({
+          where: {
+            id: visitId
+          },
+          include: {
+            transactions: true
+          }
+        })
+
+        if (!visit) {
+          throw new Error("Could Not Find Visit")
+        }
+
+        for (const transaction of visit.transactions) {
+          await prisma.transaction.delete({
+            where: {
+              id: transaction.id
+            }
+          })
+        }
+
+        await prisma.visit.delete({
+          where: {id: visitId }
+        });
+      })
+
+
+
+      // Send the created customer as a response
+      return new NextResponse(JSON.stringify({ success: true }), {
+        headers: { 'content-type': 'application/json' },
+        status: 200
+      });
+    } else {
+      throw Error('No Id Provided To Delete');
+    }
+  } catch (error: unknown) {
+    console.error('Failed to delete visit:', error);
+    // @ts-ignore
+    return new NextResponse(JSON.stringify({ error: `Failed To Delete Visit: ${error.message}` }), {
+      headers: { 'content-type': 'application/json' },
+      status: 500
+    });
+  }
+
+}

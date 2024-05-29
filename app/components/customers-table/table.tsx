@@ -137,6 +137,20 @@ const dateTemplate = (rowData: any) => {
   )
 }
 
+const activatedDateTemplate = (rowData: any) => {
+  if (!rowData.membershipActivationDate) return <span></span>
+  const date = new Date(rowData.membershipActivationDate)
+  const formattedDate = date.toLocaleString('en-US', {
+    month: 'long', // "February"
+    day: '2-digit', // "19"
+    year: 'numeric', // "2024"
+  });
+  return (
+    <span>{formattedDate}</span>
+  )
+}
+
+
 const franchiseTemplate = (rowData: any) => {
   return (
     <span>{franchiseCodeToDisplayNameMap.get(rowData.createdAtFranchiseCode)}</span>
@@ -242,7 +256,7 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
         <Column field="" header="" body={(customer) => editTemplate(customer, router)} />
         <Column expander={allowExpansion} style={{ width: '5rem' }} />
         <Column field="membershipPurchaseDate" header="Joined" body={dateTemplate}  />
-        <Column field="membershipActivationDate" header="Activated" body={dateTemplate}  />
+        <Column field="membershipActivationDate" header="Activated" body={activatedDateTemplate}  />
 
         <Column body={franchiseTemplate}  field="createdAtFranchiseCode" header="Purchase Location"></Column>
         <Column field="firstName" header="First" ></Column>
