@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Customer } from '@prisma/client';
 import prisma from '../../../../database/prismaClient';
-import { currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { silverOrGold } from '../../../../types/enums';
 import { normalizePhoneNumber } from '../../utils/ normalizePhoneNumber';
 
@@ -69,18 +69,18 @@ export async function PATCH(req: NextRequest, { params }: { params: { customerId
         })
       }
     }
-    const { franchise_code } = user.publicMetadata
+    const { sessionClaims } = auth();
 
 
     const createdCustomer = await prisma.customer.create({
       data: {
         ...body,
         phoneNumber: normalizePhoneNumber(body.phoneNumber),
-        createdAtFranchiseCode: franchise_code as string,
         membershipLevel: customer.membershipLevel,
         membershipPurchaseDate: customer.membershipPurchaseDate,
         membershipActivationDate: customer.membershipActivationDate,
         parentId: customer.id,
+        createdAtOrganizationId: sessionClaims?.org_id
       } as Customer,
     });
 

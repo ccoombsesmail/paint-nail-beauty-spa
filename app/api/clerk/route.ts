@@ -3,6 +3,7 @@ import { WebhookEvent } from '@clerk/backend';
 import { Webhook } from 'svix';
 import prisma from '../../database/prismaClient';
 import { OrganizationJSON } from '@clerk/types';
+import { clerkClient } from '@clerk/nextjs/server';
 
 
 export async function POST(req: NextRequest) {
@@ -48,6 +49,11 @@ export async function POST(req: NextRequest) {
 
 async function createOrganization(orgData: OrganizationJSON) {
   const { id, name, slug } = orgData;
+  clerkClient.organizations.updateOrganization(id, {
+    publicMetadata: {
+      "is_org_enabled": true
+    }
+  })
   await prisma.organization.create({
     data: {
       id,

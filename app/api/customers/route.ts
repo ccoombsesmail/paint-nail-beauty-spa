@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../database/prismaClient';
 import { $Enums, Customer, Prisma } from '@prisma/client';
-import { bronzeOrNonActiveBronze, membershipTypeEnumMap, silverOrGold } from '../../types/enums';
-import { currentUser } from '@clerk/nextjs/server';
+import { membershipTypeEnumMap, silverOrGold } from '../../types/enums';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { normalizePhoneNumber } from './utils/ normalizePhoneNumber';
 import QueryMode = Prisma.QueryMode;
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -112,6 +112,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
         status: 401
       });
     }
+
+    const { sessionClaims } = auth();
+
     const createCustomerPayload = await req.json();
 
     const normalizedPhoneNumber = normalizePhoneNumber(createCustomerPayload.phoneNumber);
@@ -144,8 +147,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
       });
     }
 
-
-    const { franchise_code } = user.publicMetadata;
 
     const { subAccountInfo, ...mainUserInfo } = createCustomerPayload;
     const mainUser: Customer = mainUserInfo;
@@ -209,10 +210,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
         data: {
           ...mainUserInfo,
           serviceCategorySelection: mainUserInfo.serviceCategorySelection || null,
-          createdAtFranchiseCode: franchise_code,
           ...membershipDates,
           ...canTransferValues,
-          phoneNumber: normalizedPhoneNumber
+          phoneNumber: normalizedPhoneNumber,
+          createdAtOrganizationId: sessionClaims?.org_id
         }
       });
 
@@ -224,7 +225,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
             serviceCategorySelection: createdCustomer.serviceCategorySelection || null,
             parentId: createdCustomer.id,
             ...membershipDates,
-            createdAtFranchiseCode: franchise_code,
             phoneNumber: normalizePhoneNumber(subAccountInfo.phoneNumber)
           }
         });

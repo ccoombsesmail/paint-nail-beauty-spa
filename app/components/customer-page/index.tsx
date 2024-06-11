@@ -31,7 +31,7 @@ const validationSchema = Yup.object().shape({
   serviceCategorySelection: Yup.string().when('membershipLevel', {
     is: (membershipLevel: string) => membershipLevel === 'Bronze',
     then: (schema) => schema.required('Service Category Is Required'),
-    otherwise: (schema) => schema.optional()
+    otherwise: (schema) => schema.optional().nullable()
   }),
 });
 export default function CustomerProfilePage({ unlock, masterCode } : { unlock: boolean, masterCode: string}) {
@@ -105,7 +105,8 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
           setSubmitting(false);
         }}
       >
-        {({ isSubmitting, values, setFieldValue }) => {
+        {({ isSubmitting, values, setFieldValue, errors }) => {
+          console.log(errors)
           return (
 
           <Form className='flex flex-wrap gap-x-2 my-7 gap-y-8 '>

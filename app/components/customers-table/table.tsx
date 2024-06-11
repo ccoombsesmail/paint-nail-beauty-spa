@@ -20,6 +20,8 @@ import { Button } from 'primereact/button';
 import { useUser } from '@clerk/nextjs';
 import { phoneNumberTemplate } from '../../utils/format-phone-number';
 import { franchiseCodeToDisplayNameMap } from '../../utils/franchise-code-mapping';
+import { useQuery } from 'react-query';
+import { getEnums } from '../../client-api/enums/enum-queries';
 
 interface Customer {
   id: string;
@@ -151,9 +153,9 @@ const activatedDateTemplate = (rowData: any) => {
 }
 
 
-const franchiseTemplate = (rowData: any) => {
+const organizationTemplate = (rowData: any, orgNameMap: any) => {
   return (
-    <span>{franchiseCodeToDisplayNameMap.get(rowData.createdAtFranchiseCode)}</span>
+    <span>{orgNameMap[rowData.createdAtOrganizationId]}</span>
   )
 }
 const allowExpansion = (rowData: any) => {
@@ -161,14 +163,14 @@ const allowExpansion = (rowData: any) => {
 };
 
 
-const rowExpansionTemplate = (data: any, router: any) => {
+const rowExpansionTemplate = (data: any, router: any, orgNameMap: any) => {
 
   return (
     <div className="p-3 flex justify-center items-center flex-col w-full" >
       <h1 className='mb-3 text-xl'>Sub Account For {data.firstName} {data.lastName}</h1>
       <DataTable showGridlines className='w-5/6 ' value={[data.subAccount]}>
         <Column field="" header="" body={(customer) => editTemplate(customer, router)} />
-        <Column body={franchiseTemplate}  field="createdAtFranchiseCode" header="Purchase Location"></Column>
+        <Column body={(row) => organizationTemplate(row, orgNameMap)}  field="createdAtOrganizationId" header="Purchase Location"></Column>
         <Column field="firstName" header="First" ></Column>
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>
@@ -184,7 +186,12 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
   const dt = useRef(null);
   const { user, isLoaded } = useUser()
-
+  const { data: enums } = useQuery('enums', getEnums, {
+    initialData: {
+      orgNameMap: {}
+    }
+  });
+  console.log(enums)
   const exportCSV = useCallback( (selectionOnly: boolean) => {
     if (dt.current) { // @ts-ignore
       dt.current.exportCSV({ selectionOnly });
@@ -242,7 +249,7 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
         stripedRows
         expandedRows={expandedRows}
         onRowToggle={(e) => setExpandedRows(e.data)}
-        rowExpansionTemplate={(data) => rowExpansionTemplate(data, router)}
+        rowExpansionTemplate={(data) => rowExpansionTemplate(data, router, enums.orgNameMap || {})}
         sortField="membershipPurchaseDate"
         sortOrder={-1}
         resizableColumns
@@ -258,7 +265,7 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
         <Column field="membershipPurchaseDate" header="Joined" body={dateTemplate}  />
         <Column field="membershipActivationDate" header="Activated" body={activatedDateTemplate}  />
 
-        <Column body={franchiseTemplate}  field="createdAtFranchiseCode" header="Purchase Location"></Column>
+        <Column body={(row) => organizationTemplate(row, enums.orgNameMap || {})}  field="createdAtFranchiseCode" header="Purchase Location"></Column>
         <Column field="firstName" header="First" ></Column>
         <Column field="lastName" header="Last" ></Column>
         <Column field="email" header="Email"  ></Column>
@@ -269,7 +276,7 @@ export default function CustomersTable({ customers, isCustomersLoading }: { cust
         <Column  className='min-w-[150px]' field="serviceCategorySelection" header="Category" body={serviceTypeColTemplate} ></Column>
         <Column field="notes" header="Notes" ></Column>
 
-        <Column field="createdAtFranchiseCode" header="" hidden ></Column>
+        <Column field="createdAtOrganizationId" header="" hidden ></Column>
 
       </DataTable>
     </div>
