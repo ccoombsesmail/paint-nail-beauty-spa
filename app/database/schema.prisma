@@ -12,12 +12,13 @@ datasource db {
 }
 
 model Organization {
-  id         String   @id
-  name       String   @unique @map("name") @db.VarChar(300)
-  slug       String   @unique @map("slug") @db.VarChar(300)
-  isDisabled Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id         String     @id
+  name       String     @unique @map("name") @db.VarChar(300)
+  slug       String     @unique @map("slug") @db.VarChar(300)
+  isDisabled Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customers  Customer[] @relation("Org")
 
   @@map("organizations")
 }
@@ -57,7 +58,7 @@ model Customer {
   membershipLevel                    Membership       @default(NonMember) @map("membership_level")
   membershipPurchaseDate             DateTime?        @map("membership_purchase_date")
   membershipActivationDate           DateTime?        @map("membership_activation_date")
-  createdAtOrganizationId            String?          @map("created_at_organization_id")
+  createdAtOrganizationId            String           @default("org_2gRl5DFn3aOjPbD14iGUq2UXQEb") @map("created_at_organization_id")
   parentId                           String?          @unique @db.VarChar(300)
   serviceCategorySelection           ServiceCategory? @map("service_category_selection")
   canTransferMembership              Boolean          @default(false) @map("can_transfer_membership")
@@ -72,8 +73,9 @@ model Customer {
 
   parent     Customer? @relation("SubAccount", fields: [parentId], references: [id])
   subAccount Customer? @relation("SubAccount")
+  visits     Visit[]
 
-  visits Visit[]
+  organization Organization @relation("Org", fields: [createdAtOrganizationId], references: [id])
 
   @@map("customers")
 }
