@@ -57,7 +57,7 @@ model Customer {
   membershipLevel                    Membership       @default(NonMember) @map("membership_level")
   membershipPurchaseDate             DateTime?        @map("membership_purchase_date")
   membershipActivationDate           DateTime?        @map("membership_activation_date")
-  createdAtOrganizationId            String           @map("created_at_organization_id")
+  createdAtOrganizationId            String?          @map("created_at_organization_id")
   parentId                           String?          @unique @db.VarChar(300)
   serviceCategorySelection           ServiceCategory? @map("service_category_selection")
   canTransferMembership              Boolean          @default(false) @map("can_transfer_membership")
