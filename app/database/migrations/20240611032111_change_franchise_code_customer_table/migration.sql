@@ -6,5 +6,5 @@
 
 */
 -- AlterTable
-ALTER TABLE "customers" DROP COLUMN "created_at_franchise_code",
-ADD COLUMN     "created_at_organization_id" TEXT NOT NULL;
+ALTER TABLE "customers"
+RENAME COLUMN "created_at_franchise_code" TO "created_at_organization_id";
