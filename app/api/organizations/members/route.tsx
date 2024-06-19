@@ -176,12 +176,12 @@ export async function PATCH(req: NextRequest) {
     }
     const role = organizationRoleTypeEnumMap.get(organizationRole)
 
-    if (role === 'org:admin' && !sessionClaims?.org_permissions?.includes('org:admin:newadmin')) {
-      return new NextResponse(JSON.stringify({ error: 'Insufficient permissions to assign new admin' }), {
-        headers: { 'content-type': 'application/json' },
-        status: 401
-      });
-    }
+    // if (role === 'org:admin' && !sessionClaims?.org_permissions?.includes('org:admin:newadmin')) {
+    //   return new NextResponse(JSON.stringify({ error: 'Insufficient permissions to assign new admin' }), {
+    //     headers: { 'content-type': 'application/json' },
+    //     status: 401
+    //   });
+    // }
 
     let updatedUserResponse: User;
     try {
