@@ -18,18 +18,36 @@ import MembershipTransfer from './membership-transfer';
 import BalanceTransfer from './balance-transfer';
 import AddSubAccount from './add-sub-account';
 import { TextBoxInput } from '../forms/formik/textbox/input';
+import MembershipDelete from './membership-delete';
+import { useUser } from '@clerk/nextjs';
+import { FloatingSelect, selectedServiceCategoryTemplate } from '../forms/formik/selects';
+import { getEnums } from '../../client-api/enums/enum-queries';
+import { $Enums } from '@prisma/client';
+import { reversedMembershipTypeEnumMap } from '../../types/enums';
 
 
 const validationSchema = Yup.object().shape({
   phoneNumber: Yup.string().required('Phone Number is required'),
+  serviceCategorySelection: Yup.string().when('membershipLevel', {
+    is: (membershipLevel: string) => membershipLevel === 'Bronze',
+    then: (schema) => schema.required('Service Category Is Required'),
+    otherwise: (schema) => schema.optional().nullable()
+  }),
 });
 export default function CustomerProfilePage({ unlock, masterCode } : { unlock: boolean, masterCode: string}) {
   const router = useRouter()
   const params = useParams<{ customerId: string }>();
+  const { data: enums } = useQuery('enums', getEnums, {
+    initialData: {
+      serviceCategoryTypes: []
+    }
+  });
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useUser()
 
+  const { is_admin } = user ? user.publicMetadata : { is_admin: false}
   const { data: customer, isLoading: isCustomerLoading, refetch } = useQuery(['customer', params.customerId], () => fetchCustomer(params.customerId), {
-    onError: (error) => toast.error(`Error Searching For Transactions: ${error}`)
+    onError: (error) => toast.error(`Error Searching For Customer: ${error}`)
   });
 
   const { mutateAsync } = useMutation(editCustomer, {
@@ -47,11 +65,9 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
 
 
   if (isLoading || isCustomerLoading) return <LoadingSpinner />;
-
-
   return (
 
-    <Card title='Edit Customer Profile' id='edit-customer-card'>
+    <Card title='Edit Customer Profile' id='edit-customer-card' className='pb-10'>
       <Formik
         initialValues={{
           id: customer.id,
@@ -59,7 +75,9 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
           lastName: customer.lastName,
           email: customer.email,
           phoneNumber: customer.phoneNumber,
-          notes: customer.notes
+          notes: customer.notes,
+          membershipLevel: customer.membershipLevel,
+          serviceCategorySelection: customer.serviceCategorySelection
         }}
         validationSchema={validationSchema} // Add the validation schema to Formik
         onSubmit={async (values, { setSubmitting }) => {
@@ -87,7 +105,10 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
           setSubmitting(false);
         }}
       >
-        {({ isSubmitting, setFieldValue }) => (
+        {({ isSubmitting, values, setFieldValue, errors }) => {
+          console.log(errors)
+          return (
+
           <Form className='flex flex-wrap gap-x-2 my-7 gap-y-8 '>
             <Field name='firstName' as={FloatingLabelInput} placeholder='First Name' type='text' />
             <Field name='lastName' as={FloatingLabelInput} placeholder='Last Name' type='text' />
@@ -95,6 +116,19 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
             <div className='flex gap-x-2'>
               <Field name='phoneNumber' as={PhoneInput} placeholder='Phone Number' />
             </div>
+            {
+              values.membershipLevel === $Enums.Membership.Bronze || values.membershipLevel === $Enums.Membership.BronzeNonActive ? <Field
+                setFieldValue={setFieldValue}
+                name='serviceCategorySelection'
+                as={FloatingSelect}
+                initValue={{ name: customer.serviceCategorySelection, code: customer.serviceCategorySelection }}
+                placeholder='Service Category'
+                options={enums.serviceCategoryTypes}
+                valueTemplate={selectedServiceCategoryTemplate}
+                values={values}
+                // disabled={values.membershipLevel !== 'Bronze' && values.membershipLevel !== 'BronzeNonActive'}
+              /> : null
+            }
             <Field
               className='col-span-3'
               setFieldValue={setFieldValue}
@@ -103,6 +137,7 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
               placeholder='Additional Notes'
               width='w-full'
             />
+
             <div className='flex w-full justify-end'>
               <Button
                 type='submit'
@@ -113,7 +148,7 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
               />
             </div>
           </Form>
-        )}
+        )}}
       </Formik>
 
       <Divider className='my-12' />
@@ -133,6 +168,10 @@ export default function CustomerProfilePage({ unlock, masterCode } : { unlock: b
 
       {/*  @ts-ignore */}
       {customer && <BalanceTransfer customer={customer} refetchCustomer={refetch} unlock={unlock}   masterCode={masterCode} />}
+      <Divider className='my-12' />
+
+      {(customer && is_admin) && <MembershipDelete customer={customer} unlock={unlock}  masterCode={masterCode} />}
+
       <Toaster richColors position='top-right'/>
 
 

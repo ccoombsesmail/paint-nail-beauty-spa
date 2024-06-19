@@ -11,7 +11,29 @@
     @tailwind utilities;
 }
 
-
+.cl-profileSectionHeader {
+    align-self: center !important;
+}
+.cl-navbar {
+    max-width: unset !important;
+    width: 100% !important;
+}
+.cl-navbarButton__members {
+    display: none;
+}
+.cl-organizationSwitcherPreviewButton {
+    margin-top: 10px;
+}
+.cl-organizationProfile-root .cl-cardBox {
+    width: 100vw !important;
+    grid-template-columns: 1fr 5fr !important;
+}
+.cl-userPreview {
+    max-width: 30vw !important;
+}
+.hide {
+    display: none !important;
+}
 
 input:focus {
     box-shadow: 0 0 0 0.2rem #fbcfe8;

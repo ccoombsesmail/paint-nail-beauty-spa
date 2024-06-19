@@ -1,5 +1,5 @@
 import { useField } from 'formik';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { useQuery } from 'react-query';
 import { fetchCustomers } from '../../../../client-api/cutomers/customer-queries';
@@ -12,12 +12,59 @@ import CustomerForm from '../../customer-form';
 import { Divider } from 'primereact/divider';
 
 
+export const selectedEmploymentStatusTemplate = (option: string) => {
+  if (option) {
+    return (
+      <div className='flex align-items-center w-[100px] h-[50px]'>
+        <div>{option}</div>
+      </div>
+    );
+  }
+
+  return <span className="h-[50px]">Select Status</span>;
+};
+
+export const selectedEmploymentStatusTemplateFormik = (option:  { name: string, code: string }) => {
+  if (option) {
+    return (
+      <div className='flex align-items-center w-[100px] h-[50px]'>
+        <div>{option.name}</div>
+      </div>
+    );
+  }
+
+  return <span className="h-[50px]">Select Status</span>;
+};
+
+export const selectedRoleTemplate = (option: string) => {
+  if (option) {
+    return (
+      <div className='flex align-items-center w-[100px] h-[50px]'>
+        <div>{option}</div>
+      </div>
+    );
+  }
+
+  return <span>Select Role</span>;
+};
+
+export const selectedRoleTemplateFormik = (option: { name: string, code: string }) => {
+  if (option) {
+    return (
+      <div className='flex align-items-center w-[100px] h-[50px]'>
+        <div>{option.name}</div>
+      </div>
+    );
+  }
+
+  return <span>Select Role</span>;
+};
+
+
 export const selectedMembershipTemplate = (option: { name: string, code: string }) => {
   if (option) {
     return (
-      <div className='flex align-items-center'>
-        <div>{option.name}</div>
-      </div>
+      <span>{option.name}</span>
     );
   }
 
@@ -46,9 +93,9 @@ export const FloatingSelect = (props: any) => {
   };
 
   return (
-    <div>
+    <div className='pb-6'>
       <span className={`p-float-label`}>
-       <Dropdown {...props} valueTemplate={props.valueTemplate} value={option} onChange={onChange}
+       <Dropdown valueTemplate={props.valueTemplate} value={option} onChange={onChange}
                  options={props.options} optionLabel='name'
                  placeholder={props.placeholder} className={props.width ? props.width : `w-[14rem]`} />
            <label htmlFor={props.name}>{props.placeholder}</label>
@@ -90,7 +137,7 @@ export const CountryCodeDropdown = ({ options, setFieldValue, ...rest }) => {
     );
   };
   return (
-    <div className={`flex flex-col ${rest.className}`}>
+    <div className={`flex flex-col ${rest.className} pb-6`}>
       <Dropdown
         style={{ maxHeight: '50px' }}
         {...rest}
@@ -206,6 +253,14 @@ export const SearchableEmployeeSelect = (props: any) => {
   const [field, meta, helpers] = useField(props);
 
   const [selectedUser, setSelectedUser] = useState(props.initValue ? [props.initValue] : null);
+
+  // useEffect(() => {
+  //   console.log(field.value)
+  //   if (field.value === 'clear') {
+  //     props.clear(field.name, () => setSelectedUser(null))
+  //   }
+  // }, [field.name, field.value])
+
   const [search, setSearch] = useState<string[]>([]);
   const { data: users, refetch } = useQuery(['employees', search, searchAttempt], () => fetchEmployees(search[0]), {
     // onSuccess: (data) => console.log('Data fetched:', data),
@@ -263,6 +318,72 @@ export const SearchableEmployeeSelect = (props: any) => {
   );
 };
 
+
+
+export const SearchableEmployeeSelectNonFormik = (props: any) => {
+  const [searchAttempt, setSearchAttempt] = useState(0);
+
+
+  const [selectedUser, setSelectedUser] = useState( props.initValue ? [props.initValue] : null);
+  const [search, setSearch] = useState<string[]>([]);
+  const { data: users, refetch } = useQuery(['employees', search, searchAttempt], () => fetchEmployees(search[0]), {
+    // onSuccess: (data) => console.log('Data fetched:', data),
+    onError: (error) => toast.error(`Error Searching For Employees: ${error}`,),
+  });
+
+
+
+  const onChange = (e: any) => {
+    setSelectedUser(e.value);
+    props.setSelectedEmployee(e.value[0])
+  };
+
+  const onFilter = useCallback(async (e: any) => {
+    if (e.query) {
+      setSearch([e.query])
+    } else {
+      props.setFieldValue(props.name, null)
+    }
+    setSearchAttempt(prevAttempt => prevAttempt + 1);
+  }, [props])
+
+
+  return (
+    <div className={` ${props.width ? props.width : 'w-[14rem]'}`}>
+      <span className={`p-float-label ${props.className}  ${props.width ? props.width : 'w-[14rem]'}`}>
+        <AutoComplete
+          id={props.id}
+          multiple
+          delay={300}
+          selectionLimit={1}
+          virtualScrollerOptions={{ itemSize: 48, showLoader: true }}
+          showEmptyMessage
+          value={selectedUser}
+          emptyMessage="No Results"
+          placeholder="Enter Employee Name"
+          suggestions={props.fromCustomer ? users?.filter((u: Customer) => u.id !== props.fromCustomer.id) : users}
+          itemTemplate={userOptionTemplate}
+          selectedItemTemplate={selectedUserTemplate}
+          completeMethod={onFilter}
+          forceSelection
+          onChange={onChange}
+          className={`max-h-[50px] no-input-border  ${props.width ? props.width : 'w-[14rem]'}`}
+          disabled={props.disabled}
+          pt={{
+            input: {
+              className: `${props.width ? props.width : 'w-[14rem]'}`
+            }
+
+          }}
+        />
+
+           <label htmlFor={props.name}>{props.placeholder}</label>
+        </span>
+
+    </div>
+
+  );
+};
 
 
 export const SearchableUserSelectNonFormik = (props: any) => {

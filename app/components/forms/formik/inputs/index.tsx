@@ -2,7 +2,7 @@ import { InputMask } from 'primereact/inputmask';
 import { InputText } from 'primereact/inputtext';
 import { useField } from 'formik';
 import { InputNumber } from 'primereact/inputnumber';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 
 
 export const FloatingLabelInput = (props: any) => {
@@ -67,7 +67,7 @@ export const ServiceDurationInput = (props: any) => {
   );
 };
 
-export const PhoneInput = (props: any) => {
+const PhoneInputField = (props: any) => {
   const [field, meta, helpers] = useField(props);
 
   return (
@@ -75,17 +75,19 @@ export const PhoneInput = (props: any) => {
       <span className={`p-float-label ${props.className}`}>
         <InputMask
           {...props}
-          autocomplete="off"
-          autoComplete='off'
+          autoComplete="off"
           id='phone_input'
           mask='(999) 999-9999'
-          placeholder='(999) 999-9999'
+          // autoFocus={false}
+          // placeholder='(999) 999-9999'
 
         />
-        <label htmlFor='phone_input'>Phone Number</label>
+        <label htmlFor='phone_input'>{ props.nolabel ? '' :  'Phone Number'}</label>
       </span>
       {meta.error && meta.touched ? (<span className='text-red-500 ml-2 text-sm'>{meta.error}</span>) : null}
     </div>
 
   );
 };
+
+export const PhoneInput = memo(PhoneInputField)

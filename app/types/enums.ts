@@ -36,7 +36,6 @@ membershipTypeEnumMap.forEach((value, key) => {
 
 
 
-
 export const serviceTypeEnumMap = new Map<string, string>([
   [$Enums.ServiceType.Package, "Package"],
   [$Enums.ServiceType.NailRemoval, "Nail Removal"],
@@ -92,7 +91,12 @@ export const paymentMethodTypeEnumMap = new Map<string, string>([
       [$Enums.PaymentMethod.PayPal, "PayPal"],
       [$Enums.PaymentMethod.WeChat, "WeChat"],
       [$Enums.PaymentMethod.Cash, "Cash"],
-      [$Enums.PaymentMethod.CreditCard, "Credit Card"]
+      [$Enums.PaymentMethod.CreditCard, "Credit Card"],
+      [$Enums.PaymentMethod.CupertinoBalance, "Cupertino Balance"],
+      [$Enums.PaymentMethod.CurpertinoPackage, "Cupertino Package"],
+      [$Enums.PaymentMethod.LocalStoreBalance, "Local Store Balance"],
+      [$Enums.PaymentMethod.LocalStorePackage, "Local Store Package"],
+
   ]
 )
 
@@ -111,3 +115,25 @@ export const serviceCategoryTypeEnumMap = new Map<string, string>([
   ]
 )
 
+
+export const employmentStatusTypeEnumMap = new Map<string, string>([
+    [$Enums.EmploymentStatus.FullTime, "FullTime"],
+    [$Enums.EmploymentStatus.PartTime, "PartTime"],
+
+  ]
+)
+
+
+export const organizationRoleTypeEnumMap = new Map<string, string>([
+    [$Enums.OrganizationRole.Employee, "org:employee"],
+    [$Enums.OrganizationRole.Admin, "org:admin"],
+    [$Enums.OrganizationRole.Franchisor, "org:franchisor"],
+  ]
+)
+
+
+export const clerkToPostgresRoleTypeEnumMap = new Map<string, string>([
+  ["org:employee", $Enums.OrganizationRole.Employee],
+  ["org:admin", $Enums.OrganizationRole.Admin],
+  ["org:franchisor", $Enums.OrganizationRole.Franchisor]
+]);

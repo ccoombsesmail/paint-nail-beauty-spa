@@ -3,15 +3,32 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  membershipTypeEnumMap,
+  employmentStatusTypeEnumMap,
+  membershipTypeEnumMap, organizationRoleTypeEnumMap,
   paymentMethodTypeEnumMap,
   serviceCategoryTypeEnumMap,
   serviceTypeEnumMap
 } from '../../types/enums';
 
 import { $Enums } from '@prisma/client'
+import { clerkClient } from '@clerk/nextjs/server';
 
 export async function GET(req: NextRequest){
+
+  let orgs
+  let orgNameMap = {}
+
+  try {
+
+    orgs = await clerkClient.organizations.getOrganizationList({})
+    orgNameMap = orgs.data.reduce((acc: { [key: string]: string }, org) => {
+      acc[org.id] = org.name
+      return acc
+    }, {})
+
+  } catch (e) {
+    console.error(e)
+  }
   const membershipTypes = Object.keys($Enums.Membership).map(key => ({
     name: membershipTypeEnumMap.get(key),
     code: $Enums.Membership[key as keyof typeof $Enums.Membership],
@@ -33,11 +50,25 @@ export async function GET(req: NextRequest){
     code: $Enums.ServiceCategory[key as keyof typeof $Enums.ServiceCategory],
   }));
 
+  const employmentStatusTypes = Object.keys($Enums.EmploymentStatus).map(key => ({
+    name: employmentStatusTypeEnumMap.get(key),
+    code: $Enums.EmploymentStatus[key as keyof typeof $Enums.EmploymentStatus],
+  }));
+
+  const organizationRoleTypes = Object.keys($Enums.OrganizationRole).map(key => ({
+    name: $Enums.OrganizationRole[key as keyof typeof $Enums.OrganizationRole],
+    code: organizationRoleTypeEnumMap.get(key),
+
+  }));
+
   return NextResponse.json({ enums: {
       serviceTypes,
       membershipTypes,
       paymentMethodTypes,
-      serviceCategoryTypes
+      serviceCategoryTypes,
+      employmentStatusTypes,
+      organizationRoleTypes,
+      orgNameMap
     }
   })
 }

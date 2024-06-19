@@ -46,7 +46,7 @@ export function CalanderInput(props: any) {
             id={props.name}
             name={props.name}
             value={props.value}
-            placeholder='Date'
+            placeholder={props.placeholder || 'Date'}
             className={`max-h-[50px] w-[22rem] ${isFormFieldInvalid() ? 'p-invalid' : ''}`}
             showIcon
             iconPos='left'

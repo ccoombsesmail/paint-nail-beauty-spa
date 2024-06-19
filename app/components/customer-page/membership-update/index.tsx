@@ -22,6 +22,7 @@ import {
   nonActiveMembershipLevels,
   reversedMembershipTypeEnumMap
 } from '../../../types/enums';
+import { FloatLabel } from 'primereact/floatlabel';
 
 export default function MembershipUpdate({ customer, refetchCustomer, unlock, masterCode }
                                            : { customer: Customer, refetchCustomer: () => Promise<Customer>, unlock: boolean, masterCode: string}) {
@@ -65,7 +66,8 @@ export default function MembershipUpdate({ customer, refetchCustomer, unlock, ma
   }
   const allowedOptions = useMemo(() => enums.membershipTypes.map((option: {name: string, code: string}) => {
     if (unlock) return option
-    const customerCurrentMembeshipCode = reversedMembershipTypeEnumMap.get(customer.membershipLevel)
+    const customerCurrentMembeshipCode = customer.membershipLevel
+
     if (customerCurrentMembeshipCode === option.code) return option
     if (customerCurrentMembeshipCode === $Enums.Membership.Gold &&  belowGold.includes(option.code)) {
       return {
@@ -164,7 +166,7 @@ export default function MembershipUpdate({ customer, refetchCustomer, unlock, ma
   const { text1, text2 } = useMemo(() => {
     let text1 = '', text2 = ''
     if (unlock) return {text1: "In Unlocked Mode", text2: "Be Cautious"}
-    const customerMembershipLevelCode = reversedMembershipTypeEnumMap.get(customer.membershipLevel) || ''
+    const customerMembershipLevelCode = customer.membershipLevel || ''
     if (customerMembershipLevelCode === $Enums.Membership.NonMember) {
       return { text1: 'Not A Member', text2: '' }
     }
@@ -198,24 +200,29 @@ export default function MembershipUpdate({ customer, refetchCustomer, unlock, ma
           <span className='flex justify-center p-button p-component p-button-raised p-button-text h-[48px] min-w-[220px]'>
              {text1}
           </span>
-          <span className='mx-4 text-red-500 font-semibold absolute bottom-0 translate-y-[30px]'>
+          <span className='mx-4 text-red-500 font-semibold absolute bottom-0 translate-y-[30px] text-nowrap'>
             {text2}
           </span>
 
         </div>
-        <span className="p-float-label ">
+        {/*<FloatLabel >*/}
+          <div className='flex relative flex-col-reverse'>
            <Dropdown
              id="cy-membership-select"
-             valueTemplate={selectedMembershipTemplate}
+             valueTemplate={(opt) => selectedMembershipTemplate(option)}
              value={option}
              onChange={onChange}
              options={allowedOptions}
              optionLabel="name"
              placeholder="Select Membership"
+             pt={{
+
+             }}
              className="w-[24rem]"
            />
-               <label htmlFor="cy-membership-select">Select Membership</label>
-            </span>
+               {/*<label className='absolute top-[-30px]' htmlFor="cy-membership-select">Select Membership</label>*/}
+          </div>
+            {/*</FloatLabel>*/}
         </div>
         <ConfirmPopup />
 

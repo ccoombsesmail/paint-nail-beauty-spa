@@ -15,6 +15,5 @@ export function canUpgradeToGold(customer: Customer): boolean {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   // Check if the membership started within the last 60 days
-  console.log(diffDays)
   return diffDays <= 60;
 }

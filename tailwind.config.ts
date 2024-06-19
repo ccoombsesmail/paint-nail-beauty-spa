@@ -7,6 +7,11 @@ export default {
     // './node_modules/@tremor/**/*.{js,ts,jsx,tsx,mdx}'
   ],
   theme: {
+    extend: {
+      colors: {
+        primary: '#ec4899'
+      }
+    }
     // transparent: 'transparent',
     // current: 'currentColor',
     // extend: {

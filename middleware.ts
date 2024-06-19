@@ -1,13 +1,12 @@
-import { authMiddleware, redirectToSignIn  } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
 import { decodeJwt } from 'jose';
+import { clerkClient, clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
+const publicRoutesDev = ["/api/clerk", '/api/enums', "/api/seed", '/not-authorized', '/organization-profile']
+const publicRoutesCypress = ["/api/clerk", '/api/enums', "/api/seed", '/not-authorized', '/', '/transactions']
+const publicRoutesProd = ["/api/clerk", '/api/enums', '/not-authorized',]
 
-const publicRoutesDev = ["/api/clerk", "/api/seed", '/not-authorized']
-const publicRoutesCypress = ["/api/clerk", "/api/seed", '/not-authorized', '/', '/transactions']
-const publicRoutesProd = ["/api/clerk", '/not-authorized',]
-
-let pubRoutes
+let pubRoutes: string[]
 
 switch (process.env.PUBLIC_ROUTES) {
   case "development":
@@ -23,37 +22,38 @@ switch (process.env.PUBLIC_ROUTES) {
     pubRoutes = publicRoutesProd
 }
 
-console.log(pubRoutes)
-export default authMiddleware({
-  publicRoutes: pubRoutes,
-  async afterAuth(auth, req, evt) {
+const isProtectedRoute = createRouteMatcher([
+  '/(.*)',
+], );
 
-    if (req.nextUrl.pathname === '/not-authorized') {
-      return NextResponse.next();
+export default clerkMiddleware(async (auth, req) => {
+  if (pubRoutes.includes(req.nextUrl.pathname)) return
+  let token, is_admin, is_org_enabled
+     try {
+        token = await auth().getToken({ template: 'custom' })
+       // @ts-ignore
+       const decoded = decodeJwt(token)
+       is_admin = decoded.is_admin
+       // @ts-ignore
+       const orgId = Object.keys(decoded.orgs)[0]
+       const org = await clerkClient.organizations.getOrganization({
+         organizationId: orgId
+       })
+       // @ts-ignore
+       is_org_enabled = org.publicMetadata.is_org_enabled
+     } catch (e) {
+       console.error(e)
+     }
+
+    if (token && !is_admin && !is_org_enabled && !req.nextUrl.pathname.includes('organization-disabled') && !pubRoutes.includes(req.nextUrl.pathname)) {
+      const notAuthUrl = new URL("/organization-disabled", req.url);
+      return NextResponse.redirect(notAuthUrl)
     }
-
-    const token = await auth.getToken({ template: 'franchise_code'})
-
-    if (token) {
-      const payload = decodeJwt(token as string)
-
-      if (!payload.franchise_code && req.nextUrl.href !== `${req.nextUrl.origin}/not-authorized`) {
-        return NextResponse.redirect( `${req.nextUrl.origin}/not-authorized` );
-      }
-
+    if (!pubRoutes.includes(req.nextUrl.pathname) && isProtectedRoute(req)) {
+      auth().protect();
     }
+})
 
-    if (!auth.userId && !auth.isPublicRoute) {
-      return redirectToSignIn({ returnBackUrl: req.url });
-    }
-    // If the user is logged in and trying to access a protected route, allow them to access route
-    if (auth.userId && !auth.isPublicRoute) {
-      return NextResponse.next();
-    }
-    // Allow users visiting public routes to access them
-    return NextResponse.next();
-  },
-});
 
 
 

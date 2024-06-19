@@ -1,5 +1,5 @@
 
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient } from '@clerk/nextjs/server';
 
 
 import path from 'path';
@@ -32,7 +32,6 @@ const seedEmployees = async () => {
         }
       })
     } catch (e) {
-      console.log(employee)
       console.log(e)
     }
 

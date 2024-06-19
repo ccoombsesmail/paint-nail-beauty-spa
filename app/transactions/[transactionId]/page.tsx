@@ -1,7 +1,7 @@
 "use client"
 
 import { QueryClient, QueryClientProvider } from 'react-query';
-import TransactionEditPage from '../../layouts/transaction-edit-page';
+import TransactionEditPage from './components/transaction-edit';
 
 const queryClient = new QueryClient();
 

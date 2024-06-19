@@ -4,7 +4,7 @@ export const fetchTransactions = async (search: string | null) => {
   // if (!search) return []
   const { data } = await axiosClient.get(`/transactions?search=${search}`);
   // Or use your custom Axios instance: const { data } = await api.get(`/customers?search=${search}`);
-  return data.transactions || [];
+  return data.visits || [];
 };
 
 export const fetchTransaction = async (transactionId: string | null) => {
@@ -27,6 +27,11 @@ export const fetchUserTransactions = async (customerId: string | null) => {
 
 
 export const editTransaction = async (transactionData: any) => {
-  const { data } = await axiosClient.patch('transactions', transactionData);
+  const { data } = await axiosClient.patch('/transactions', transactionData);
+  return data;
+};
+
+export const deleteTransaction = async (transactionId: any) => {
+  const { data } = await axiosClient.delete(`/transactions?transactionId=${transactionId}`);
   return data;
 };

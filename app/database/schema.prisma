@@ -11,21 +11,38 @@ datasource db {
   directUrl = env("POSTGRES_PRISMA_URL_NON_POOLING") // uses direct connection
 }
 
-model Employee {
-  id              String    @id @default(uuid())
-  userId          String    @unique @map("user_id") @db.VarChar(100)
-  email           String    @unique @map("email") @db.VarChar(200)
-  firstName       String?   @map("first_name") @db.VarChar(100)
-  lastName        String?   @map("last_name") @db.VarChar(100)
-  phoneNumber     String?   @unique @map("phone_number") @db.VarChar(100)
-  profileImage    String?   @map("profile_image") @db.VarChar(1000)
-  isEmailVerified Boolean   @default(false) @map("is_email_verified")
-  franchiseCode   String    @map("franchise_code")
-  lastSignIn      DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+model Organization {
+  id         String     @id
+  name       String     @unique @map("name") @db.VarChar(300)
+  slug       String     @unique @map("slug") @db.VarChar(300)
+  isDisabled Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customers  Customer[] @relation("Org")
 
-  transactions Transaction[]
+  @@map("organizations")
+}
+
+model Employee {
+  id               String           @id @default(uuid())
+  userId           String           @unique @map("user_id") @db.VarChar(100)
+  email            String           @unique @map("email") @db.VarChar(200)
+  firstName        String?          @map("first_name") @db.VarChar(100)
+  lastName         String?          @map("last_name") @db.VarChar(100)
+  phoneNumber      String?          @unique @map("phone_number") @db.VarChar(100)
+  profileImage     String?          @map("profile_image") @db.VarChar(1000)
+  isEmailVerified  Boolean          @default(false) @map("is_email_verified")
+  franchiseCode    String?          @map("franchise_code")
+  lastSignIn       DateTime?
+  address          String?
+  employmentStatus EmploymentStatus @default(FullTime) @map("role_type")
+  organizationRole OrganizationRole @default(Employee) @map("organization_role")
+  notes            String?          @db.VarChar(5000)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  transactions   Transaction[]
+  organizationId String?       @map("organization_id")
 
   @@map("employees")
 }
@@ -41,7 +58,7 @@ model Customer {
   membershipLevel                    Membership       @default(NonMember) @map("membership_level")
   membershipPurchaseDate             DateTime?        @map("membership_purchase_date")
   membershipActivationDate           DateTime?        @map("membership_activation_date")
-  createdAtFranchiseCode             String           @map("created_at_franchise_code")
+  createdAtOrganizationId            String           @default("org_2gRl5DFn3aOjPbD14iGUq2UXQEb") @map("created_at_organization_id")
   parentId                           String?          @unique @db.VarChar(300)
   serviceCategorySelection           ServiceCategory? @map("service_category_selection")
   canTransferMembership              Boolean          @default(false) @map("can_transfer_membership")
@@ -54,32 +71,51 @@ model Customer {
   createdAt                          DateTime         @default(now()) @map("created_at")
   updatedAt                          DateTime         @updatedAt @map("updated_at")
 
-  parent       Customer?     @relation("SubAccount", fields: [parentId], references: [id])
-  subAccount   Customer?     @relation("SubAccount")
-  transactions Transaction[]
+  parent     Customer? @relation("SubAccount", fields: [parentId], references: [id])
+  subAccount Customer? @relation("SubAccount")
+  visits     Visit[]
+
+  organization Organization @relation("Org", fields: [createdAtOrganizationId], references: [id])
 
   @@map("customers")
 }
 
+model Visit {
+  id                      String   @id @default(uuid())
+  visitDate               DateTime @map("visit_date")
+  customerId              String   @map("customer_id") @db.VarChar(300)
+  createdAtOrganizationId String   @map("created_at_organization_id") @db.VarChar(300)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  // transactions Transaction[]
+  @@map("visits")
+}
+
 model Transaction {
-  id                     String        @id @default(uuid())
-  userEnteredDate        DateTime      @map("user_entered_date")
-  serviceType            ServiceType?  @map("service_type")
-  serviceDuration        Decimal?      @map("service_duration") @db.Decimal(10, 2)
-  totalServicePrice      Decimal?      @map("total_service_price") @db.Decimal(10, 2)
-  discountedServicePrice Decimal?      @map("discounted_service_price") @db.Decimal(10, 2)
-  actualPaymentCollected Decimal       @map("actual_payment_collected") @db.Decimal(10, 2)
-  tip                    Decimal?      @db.Decimal(10, 2)
-  paymentMethod          PaymentMethod @map("payment_method")
-  technicianEmployeeId   String?       @map("technician_employee_id") @db.VarChar(100)
-  customerId             String        @map("customer_id") @db.VarChar(100)
-  franchiseCode          String        @map("franchise_code")
-  notes                  String?       @map("notes") @db.VarChar(10000)
-  createdAt              DateTime      @default(now()) @map("created_at")
-  updatedAt              DateTime      @updatedAt @map("updated_at")
+  id                      String        @id @default(uuid())
+  serviceType             ServiceType?  @map("service_type")
+  userEnteredDate         DateTime?     @map("user_entered_date")
+  serviceDuration         Decimal?      @map("service_duration") @db.Decimal(10, 2)
+  totalServicePrice       Decimal?      @map("total_service_price") @db.Decimal(10, 2)
+  discountedServicePrice  Decimal?      @map("discounted_service_price") @db.Decimal(10, 2)
+  actualPaymentCollected  Decimal       @map("actual_payment_collected") @db.Decimal(10, 2)
+  tip                     Decimal?      @db.Decimal(10, 2)
+  paymentMethod           PaymentMethod @map("payment_method")
+  customerId              String?       @map("customer_id") @db.VarChar(100)
+  franchiseCode           String?       @map("franchise_code")
+  technicianEmployeeId    String?       @map("technician_employee_id") @db.VarChar(100)
+  organizationId          String?       @map("organization_id")
+  organizationDisplayName String        @default("") @map("organization_display_name")
+  notes                   String?       @map("notes") @db.VarChar(10000)
+  createdAt               DateTime      @default(now()) @map("created_at")
+  updatedAt               DateTime      @updatedAt @map("updated_at")
   // Relation to User model
-  employee               Employee?     @relation(fields: [technicianEmployeeId], references: [id])
-  customer               Customer      @relation(fields: [customerId], references: [id])
+  employee                Employee?     @relation(fields: [technicianEmployeeId], references: [id])
+  // Visit                   Visit?        @relation(fields: [visitId], references: [id])
+  visitId                 String        @map("visit_id")
 
   @@map("transactions")
 }
@@ -153,6 +189,10 @@ enum PaymentMethod {
   WeChat
   Cash
   CreditCard
+  CupertinoBalance
+  CurpertinoPackage
+  LocalStorePackage
+  LocalStoreBalance
 }
 
 enum ServiceCategory {
@@ -161,4 +201,15 @@ enum ServiceCategory {
   Facial
   BodySpa
   HairRemoval
+}
+
+enum EmploymentStatus {
+  FullTime
+  PartTime
+}
+
+enum OrganizationRole {
+  Employee
+  Admin
+  Franchisor
 }

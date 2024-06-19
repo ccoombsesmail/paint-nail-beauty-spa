@@ -26,6 +26,11 @@ export const editMembership = async (membershipPatchData: any) => {
   return data;
 };
 
+export const deleteMembership = async (customerId: string) => {
+  const { data } = await axiosClient.delete(`customers?id=${customerId}`);
+  return data;
+};
+
 export const transferMembership = async (membershipPatchData: {masterCode: string, fromCustomerId: string, toCustomerId: string}) => {
   const {masterCode, ...rest} = membershipPatchData
   const { data } = await axiosClient.patch(`customers/membership-transfer?code=${masterCode}`, rest);
