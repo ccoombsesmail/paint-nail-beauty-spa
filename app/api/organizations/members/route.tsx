@@ -76,17 +76,23 @@ export async function POST(req: NextRequest) {
 
     const transaction = await prisma.$transaction(async (prisma) => {
       try {
+        const publicMetadata = organizationRole === "org:employee" ? {
+            isFranchiseAdmin: false
+          } : {
+          isFranchiseAdmin: true
+        }
         newUserResponse = await clerkClient.users.createUser({
           firstName,
           lastName,
           emailAddress: [email || `${firstName}.${lastName}@${lastName}.pnbs`],
-          password: 'pnbs-12345678'
+          password: 'pnbs-12345678',
+          publicMetadata
         });
 
         orgResponse = await clerkClient.organizations.createOrganizationMembership({
           organizationId,
           userId: newUserResponse.id,
-          role: organizationRole
+          role: "org:admin" // temp until can bring down price from Clerk
         });
 
         newOrgMember = await prisma.employee.create({

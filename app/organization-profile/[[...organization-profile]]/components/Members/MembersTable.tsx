@@ -153,7 +153,7 @@ export default function MembersTable() {
       <Dropdown
         // valueTemplate={roleBodyTemplate}
         value={options.value}
-        options={enums.organizationRoleTypes.map(({ name }) => name) }
+        options={enums.organizationRoleTypes.map(({ name }) => name).filter(opt => opt !== "Franchisor") }
         onChange={(e: DropdownChangeEvent) => {
           options.editorCallback!(e.value);
         }}

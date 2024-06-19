@@ -125,7 +125,7 @@ const OrganizationProfilePage = () => {
       <Toaster richColors position='top-right' />
       <div className='flex w-full justify-center mt-10'>
 
-        <OrganizationProfile path='/organization-profile' routing='path' >
+        <OrganizationProfile path='/organization-profile' routing='path'>
           <OrganizationProfile.Page
             label='Members'
             url='employees'
