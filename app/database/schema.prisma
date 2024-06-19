@@ -90,7 +90,8 @@ model Visit {
 
   customer Customer @relation(fields: [customerId], references: [id])
 
-  // transactions Transaction[]
+  transactions Transaction[]
+
   @@map("visits")
 }
 
@@ -114,7 +115,7 @@ model Transaction {
   updatedAt               DateTime      @updatedAt @map("updated_at")
   // Relation to User model
   employee                Employee?     @relation(fields: [technicianEmployeeId], references: [id])
-  // Visit                   Visit?        @relation(fields: [visitId], references: [id])
+  Visit                   Visit?        @relation(fields: [visitId], references: [id])
   visitId                 String        @map("visit_id")
 
   @@map("transactions")
