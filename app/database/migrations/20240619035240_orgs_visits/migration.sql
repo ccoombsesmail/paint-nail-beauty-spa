@@ -26,8 +26,6 @@ RENAME COLUMN "created_at_franchise_code" TO "created_at_organization_id";
 
 ALTER TABLE "customers"
 ALTER COLUMN "created_at_organization_id" SET NOT NULL,
-
-ALTER TABLE "customers"
 ALTER COLUMN "created_at_organization_id" SET DEFAULT 'default_org_id';
 
 -- AlterTable
