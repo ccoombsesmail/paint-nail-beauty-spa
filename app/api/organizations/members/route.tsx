@@ -176,6 +176,12 @@ export async function PATCH(req: NextRequest) {
     }
     const role = organizationRoleTypeEnumMap.get(organizationRole)
 
+    const publicMetadata = organizationRole === "org:employee" ? {
+      isFranchiseAdmin: false
+    } : {
+      isFranchiseAdmin: true
+    }
+
     // if (role === 'org:admin' && !sessionClaims?.org_permissions?.includes('org:admin:newadmin')) {
     //   return new NextResponse(JSON.stringify({ error: 'Insufficient permissions to assign new admin' }), {
     //     headers: { 'content-type': 'application/json' },
@@ -187,7 +193,8 @@ export async function PATCH(req: NextRequest) {
     try {
       updatedUserResponse = await clerkClient.users.updateUser(userId, {
         firstName,
-        lastName
+        lastName,
+        publicMetadata
       });
     } catch (e) {
       console.log('Failed To Update Clerk User', e);
@@ -211,7 +218,7 @@ export async function PATCH(req: NextRequest) {
           {
             organizationId: sessionClaims?.org_id,
             userId,
-            role
+            role: "org:admin" // temp until can bring down price from Clerk
           })
       } else {
         throw Error("Role Does Not exist")
