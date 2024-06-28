@@ -42,7 +42,6 @@ export async function PATCH(req: NextRequest) {
         status: 400,
       })
     }
-    console.log("Is Unlocked", unlock)
     if (!unlock) {
       if (fromCustomer.membershipLevel === $Enums.Membership.NonMember) {
         return new NextResponse(JSON.stringify({ error: "Cannot transfer membership from a Non Member" }), {
