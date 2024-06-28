@@ -225,7 +225,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
             serviceCategorySelection: createdCustomer.serviceCategorySelection || null,
             parentId: createdCustomer.id,
             ...membershipDates,
-            phoneNumber: normalizePhoneNumber(subAccountInfo.phoneNumber)
+            phoneNumber: normalizePhoneNumber(subAccountInfo.phoneNumber),
+            createdAtOrganizationId: sessionClaims?.org_id
           }
         });
       }
