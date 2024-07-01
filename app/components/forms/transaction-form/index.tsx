@@ -32,6 +32,7 @@ const validationSchema = Yup.object().shape({
           otherwise: (schema) => schema.optional(),
         }),
       paymentMethod: Yup.string().required('Payment Method is required'),
+      tipPaymentMethod: Yup.string().optional(),
       technicianEmployeeId: Yup.string().required('Technician is required'),
     })),
 
@@ -260,7 +261,16 @@ const CreateTransactionDialog = ({ refetchTransactions }: any) => {
                             as={FloatingLabelInput}
                             placeholder='Tip'
                             type='number'
-                            className='w-[22rem]' />
+                            className='w-[10rem]' />
+
+                          <Field
+                            width='w-[16rem]'
+                            name={`transactions.${index}.tipPaymentMethod`}
+                            as={FloatingSelect}
+                            setFieldValue={setFieldValue}
+                            placeholder='Tip Payment Method'
+                            options={enums.paymentMethodTypes}
+                            className='w-[16rem]' />
 
                           <Field
                             setFieldValue={setFieldValue}

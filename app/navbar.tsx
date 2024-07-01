@@ -30,6 +30,40 @@ export default function Navbar() {
 
   ];
 
+  useEffect(() => {
+
+    const addClick = () => {
+      const trigger = document.querySelector('.cl-organizationSwitcherTrigger')
+      if (trigger) {
+
+        document.querySelector('.cl-organizationSwitcherTrigger')?.addEventListener("click", () => {
+          console.log("here")
+          setTimeout(() => {
+            const parentElement = document.querySelector('.cl-organizationSwitcherPopoverActions');
+            if (parentElement) {
+              parentElement.querySelector(".cl-userPreview__personalWorkspace")?.parentElement.remove()
+            }
+          }, 100)
+
+        })
+        return true
+      }
+      return false
+    };
+
+    // Set an interval to check for the element and delete it
+    const checkIntervalId = setInterval(() => {
+      if (addClick()) {
+        clearInterval(checkIntervalId); // Clear the interval once the element is found and deleted
+      }
+    }, 1000);
+
+    // Clean up the intervals on component unmount
+    return () => {
+      clearInterval(checkIntervalId);
+    };
+  }, []);
+
   if (!isLoaded) return null
 
   return (
