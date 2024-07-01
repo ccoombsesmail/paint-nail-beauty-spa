@@ -87,9 +87,12 @@ const rowExpansionTemplate = (data: any, router: any) => {
         <Column body={discountedServicePrice} field="discountedServicePrice" header="Discounted Price"  style={{ width: '10%' }}></Column>
 
         <Column body={amountCollectedTemplate} field="actualPaymentCollected" header="Payment Collected"  style={{ width: '10%' }}></Column>
+        <Column field="paymentMethod" header="Payment Method"  style={{ width: '10%' }}></Column>
+
         <Column body={tipTemplate} field="tip" header="Tip"  ></Column>
 
-        <Column field="paymentMethod" header="PaymentMethod"  style={{ width: '10%' }}></Column>
+        <Column field="tipPaymentMethod" header="Tip Payment Method"  style={{ width: '10%' }}></Column>
+
         <Column field="notes" header="Notes" ></Column>
         <Column field="franchiseCode" header="" hidden ></Column>
 
