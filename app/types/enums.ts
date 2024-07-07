@@ -38,6 +38,7 @@ membershipTypeEnumMap.forEach((value, key) => {
 
 export const serviceTypeEnumMap = new Map<string, string>([
   [$Enums.ServiceType.Package, "Package"],
+  [$Enums.ServiceType.Other, "Other"],
   [$Enums.ServiceType.NailRemoval, "Nail Removal"],
   [$Enums.ServiceType.HandCare, "Hand Care"],
   [$Enums.ServiceType.FootCare, "Foot Care"],
