@@ -144,6 +144,7 @@ enum Membership {
 
 enum ServiceType {
   Package
+  Other
   NailRemoval
   HandCare
   FootCare
