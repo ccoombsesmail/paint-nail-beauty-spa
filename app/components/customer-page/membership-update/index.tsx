@@ -114,12 +114,12 @@ export default function MembershipUpdate({ customer, refetchCustomer, unlock, ma
         disabled: true
       }
     }
-    if ((daysSinceStartDate >= 60 && option.name === "Gold")) {
-      return {
-        ...option,
-        disabled: true
-      }
-    }
+    // if ((daysSinceStartDate >= 60 && option.name === "Gold")) {
+    //   return {
+    //     ...option,
+    //     disabled: true
+    //   }
+    // }
     // @ts-ignore
     if (bronzeOrHigher.includes(customer.membershipLevel) && nonActiveMembershipLevels.includes(option.code)){
       return {
